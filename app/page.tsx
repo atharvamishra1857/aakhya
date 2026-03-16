@@ -90,10 +90,10 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold text-[#5D1224] font-serif">
               Latest Arrivals
             </h2>
-            <div className="w-16 h-1 bg-[#D4AF37] mt-4 mx-auto"></div>
+            <div className="w-16 h-1 bg-[#D4AF37] mt-2 mx-auto"></div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {products.map((item: any) => {
               const product = item.node;
               return (
@@ -101,7 +101,7 @@ export default function Home() {
                   key={product.id}
                   className="group relative bg-white p-4 rounded-xl shadow-sm hover:shadow-xl transition-all duration-500"
                 >
-                  <div className="aspect-[4/5] overflow-hidden rounded-lg bg-gray-100 relative">
+                  <div className="aspect-[3/4] overflow-hidden rounded-lg bg-gray-100 relative">
                     <Link href={`/product/${product.handle}`}>
                       <Image
                         src={product.images.edges[0].node.url}

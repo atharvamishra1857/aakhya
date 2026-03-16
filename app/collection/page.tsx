@@ -28,7 +28,7 @@ export default function CollectionPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-[#5D1224] flex flex-col pt-24">
+    <div className="min-h-screen bg-[#FDFBF7] text-[#5D1224] flex flex-col pt-12">
       <Navbar />
 
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 w-full">
