@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,16 +10,15 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          maroon: "#5D1224",
-          gold: "#EAC775", /* Updated from #D4AF37 for WCAG AA contrast against maroon */
-          cream: "#FDFBF7",
-          light: "#F5F2EA",
-          text: "#1F2937",
+          maroon: "#8B2F4A",
+          gold: "#F2D27A",
+          cream: "#FFFEFA",
+          light: "#FAF7F1",
+          text: "#2B2F36",
         },
       },
-
       fontFamily: {
-        brand: ["var(--font-brand)"], // Now font-brand will work perfectly!
+        brand: ["var(--font-brand)"],
       },
     },
   },

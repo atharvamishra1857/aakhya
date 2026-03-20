@@ -18,9 +18,9 @@ import { useCart } from "@/context/cartcontext";
 
 // Example array of product images
 const PRODUCT_IMAGES = [
-  "https://images.unsplash.com/photo-1605000520633-e98cc8b4b7c0?q=80&w=2000",
-  "https://images.unsplash.com/photo-1610189012928-8b9612c62c82?q=80&w=2000",
-  "https://images.unsplash.com/photo-1583391733958-d11e0c460064?q=80&w=2000",
+  "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://images.unsplash.com/photo-1618901185975-d59f7091bcfe?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://images.unsplash.com/photo-1610189012928-8b9612c62c82?q=80&w=2000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
 ];
 
 export default function ProductPage() {
