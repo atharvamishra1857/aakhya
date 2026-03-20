@@ -11,8 +11,9 @@ module.exports = {
       colors: {
         brand: {
           maroon: "#5D1224",
-          gold: "#D4AF37",
+          gold: "#EAC775", /* Updated from #D4AF37 for WCAG AA contrast against maroon */
           cream: "#FDFBF7",
+          light: "#F5F2EA",
           text: "#1F2937",
         },
       },

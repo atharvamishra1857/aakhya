@@ -9,7 +9,7 @@ export default function AccountPage() {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-[#5D1224] flex flex-col pt-24">
+    <div className="min-h-screen bg-brand-cream text-brand-maroon flex flex-col pt-24">
       <Navbar />
 
       <main className="flex-grow flex flex-col items-center justify-center px-6 py-12">
@@ -22,13 +22,13 @@ export default function AccountPage() {
             <div className="flex justify-center gap-6 text-sm tracking-widest uppercase font-medium">
               <button
                 onClick={() => setIsLogin(true)}
-                className={`transition-colors duration-300 pb-1 border-b-2 ${isLogin ? "border-[#D4AF37] text-[#5D1224]" : "border-transparent text-[#5D1224]/50 hover:text-[#5D1224]"}`}
+                className={`transition-colors duration-300 pb-1 border-b-2 ${isLogin ? "border-brand-gold text-brand-maroon" : "border-transparent text-brand-maroon/50 hover:text-brand-maroon"}`}
               >
                 Login
               </button>
               <button
                 onClick={() => setIsLogin(false)}
-                className={`transition-colors duration-300 pb-1 border-b-2 ${!isLogin ? "border-[#D4AF37] text-[#5D1224]" : "border-transparent text-[#5D1224]/50 hover:text-[#5D1224]"}`}
+                className={`transition-colors duration-300 pb-1 border-b-2 ${!isLogin ? "border-brand-gold text-brand-maroon" : "border-transparent text-brand-maroon/50 hover:text-brand-maroon"}`}
               >
                 Register
               </button>
@@ -52,23 +52,23 @@ export default function AccountPage() {
                   <input
                     type="email"
                     placeholder="Email Address"
-                    className="w-full bg-transparent border-b border-[#5D1224]/20 py-3 text-[#5D1224] placeholder:text-[#5D1224]/40 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                    className="w-full bg-transparent border-b border-brand-maroon/20 py-3 text-brand-maroon placeholder:text-brand-maroon/40 focus:outline-none focus:border-brand-gold transition-colors"
                   />
                   <div className="flex flex-col gap-2">
                     <input
                       type="password"
                       placeholder="Password"
-                      className="w-full bg-transparent border-b border-[#5D1224]/20 py-3 text-[#5D1224] placeholder:text-[#5D1224]/40 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                      className="w-full bg-transparent border-b border-brand-maroon/20 py-3 text-brand-maroon placeholder:text-brand-maroon/40 focus:outline-none focus:border-brand-gold transition-colors"
                     />
                     <Link
                       href="#"
-                      className="text-xs text-[#D4AF37] hover:underline self-end mt-1"
+                      className="text-xs text-brand-gold hover:underline self-end mt-1"
                     >
                       Forgot Password?
                     </Link>
                   </div>
 
-                  <button className="w-full bg-[#5D1224] text-[#FDFBF7] py-4 mt-4 tracking-widest uppercase text-sm font-medium hover:bg-[#D4AF37] transition-colors">
+                  <button className="w-full bg-brand-maroon text-brand-cream py-4 mt-4 tracking-widest uppercase text-sm font-medium hover:bg-brand-gold transition-colors">
                     Sign In
                   </button>
                 </motion.form>
@@ -87,26 +87,26 @@ export default function AccountPage() {
                     <input
                       type="text"
                       placeholder="First Name"
-                      className="w-full bg-transparent border-b border-[#5D1224]/20 py-3 text-[#5D1224] placeholder:text-[#5D1224]/40 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                      className="w-full bg-transparent border-b border-brand-maroon/20 py-3 text-brand-maroon placeholder:text-brand-maroon/40 focus:outline-none focus:border-brand-gold transition-colors"
                     />
                     <input
                       type="text"
                       placeholder="Last Name"
-                      className="w-full bg-transparent border-b border-[#5D1224]/20 py-3 text-[#5D1224] placeholder:text-[#5D1224]/40 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                      className="w-full bg-transparent border-b border-brand-maroon/20 py-3 text-brand-maroon placeholder:text-brand-maroon/40 focus:outline-none focus:border-brand-gold transition-colors"
                     />
                   </div>
                   <input
                     type="email"
                     placeholder="Email Address"
-                    className="w-full bg-transparent border-b border-[#5D1224]/20 py-3 text-[#5D1224] placeholder:text-[#5D1224]/40 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                    className="w-full bg-transparent border-b border-brand-maroon/20 py-3 text-brand-maroon placeholder:text-brand-maroon/40 focus:outline-none focus:border-brand-gold transition-colors"
                   />
                   <input
                     type="password"
                     placeholder="Password"
-                    className="w-full bg-transparent border-b border-[#5D1224]/20 py-3 text-[#5D1224] placeholder:text-[#5D1224]/40 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                    className="w-full bg-transparent border-b border-brand-maroon/20 py-3 text-brand-maroon placeholder:text-brand-maroon/40 focus:outline-none focus:border-brand-gold transition-colors"
                   />
 
-                  <button className="w-full bg-[#5D1224] text-[#FDFBF7] py-4 mt-4 tracking-widest uppercase text-sm font-medium hover:bg-[#D4AF37] transition-colors">
+                  <button className="w-full bg-brand-maroon text-brand-cream py-4 mt-4 tracking-widest uppercase text-sm font-medium hover:bg-brand-gold transition-colors">
                     Create Account
                   </button>
                 </motion.form>
@@ -118,3 +118,4 @@ export default function AccountPage() {
     </div>
   );
 }
+

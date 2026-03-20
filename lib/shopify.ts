@@ -1,6 +1,32 @@
 // lib/shopify.ts
 
-const MOCK_PRODUCTS = [
+export type ShopifyImageEdge = {
+  node: {
+    url: string;
+    altText?: string;
+  };
+};
+
+export type ShopifyProduct = {
+  id: string;
+  title: string;
+  handle: string;
+  description: string;
+  priceRange: {
+    minVariantPrice: {
+      amount: string;
+    };
+  };
+  images: {
+    edges: ShopifyImageEdge[];
+  };
+};
+
+export type ShopifyProductNode = {
+  node: ShopifyProduct;
+};
+
+const MOCK_PRODUCTS: ShopifyProduct[] = [
   {
     id: "1",
     title: "Banarasi Silk Saree",

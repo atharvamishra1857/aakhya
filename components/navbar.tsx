@@ -39,7 +39,7 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
 
   // --- COLOR ENGINE ---
   const textColorClass =
-    isHome && !isPastHero ? "text-[#FDFBF7]" : "text-[#5D1224]";
+    isHome && !isPastHero ? "text-brand-cream" : "text-brand-maroon";
 
   return (
     <>
@@ -52,14 +52,14 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
         <div className="flex items-center gap-2 z-[110]">
           <a href="/" className="group relative block drop-shadow-sm">
             <span
-              className={`text-2xl font-brand font-bold tracking-[0.2em] block transition-colors duration-500 group-hover:!text-[#D4AF37] ${
-                isMobileMenuOpen ? "text-[#FDFBF7]" : textColorClass
+              className={`text-2xl font-brand font-bold tracking-[0.2em] block transition-colors duration-500 group-hover:!text-brand-gold ${
+                isMobileMenuOpen ? "text-brand-cream" : textColorClass
               }`}
               style={{ WebkitTextStroke: "0px" }}
             >
               VREYA
             </span>
-            <span className="absolute -bottom-2 left-0 h-0.5 w-0 bg-[#D4AF37] transition-all duration-500 ease-out group-hover:w-full"></span>
+            <span className="absolute -bottom-2 left-0 h-0.5 w-0 bg-brand-gold transition-all duration-500 ease-out group-hover:w-full"></span>
           </a>
         </div>
 
@@ -82,12 +82,12 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
               className="group relative"
             >
               <span
-                className={`text-sm font-medium tracking-widest uppercase transition-colors duration-500 group-hover:!text-[#D4AF37] ${textColorClass}`}
+                className={`text-sm font-medium tracking-widest uppercase transition-colors duration-500 group-hover:!text-brand-gold ${textColorClass}`}
                 style={{ WebkitTextStroke: "0px" }}
               >
                 {item}
               </span>
-              <span className="absolute -bottom-1 left-1/2 w-0 h-0.5 bg-[#D4AF37] -translate-x-1/2 transition-all duration-300 group-hover:w-full"></span>
+              <span className="absolute -bottom-1 left-1/2 w-0 h-0.5 bg-brand-gold -translate-x-1/2 transition-all duration-300 group-hover:w-full"></span>
             </Link>
           ))}
         </div>
@@ -98,7 +98,8 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
           <button
             onClick={() => setIsSearchOpen(true)}
             suppressHydrationWarning
-            className={`hidden sm:block transition-colors duration-500 hover:!text-[#D4AF37] ${textColorClass}`}
+            aria-label="Open search"
+            className={`hidden sm:block transition-colors duration-500 hover:!text-brand-gold ${textColorClass}`}
           >
             <Search size={20} strokeWidth={1.5} />
           </button>
@@ -107,7 +108,8 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
           <Link
             href="/account"
             suppressHydrationWarning
-            className={`hidden sm:block transition-colors duration-500 hover:!text-[#D4AF37] ${textColorClass}`}
+            aria-label="User account"
+            className={`hidden sm:block transition-colors duration-500 hover:!text-brand-gold ${textColorClass}`}
           >
             <User size={20} strokeWidth={1.5} />
           </Link>
@@ -115,8 +117,9 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
           {/* Cart Icon with Dynamic Badge */}
           <button
             suppressHydrationWarning
-            className={`relative transition-colors duration-500 hover:!text-[#D4AF37] ${
-              isMobileMenuOpen ? "text-[#FDFBF7]" : textColorClass
+            aria-label="Open cart"
+            className={`relative transition-colors duration-500 hover:!text-brand-gold ${
+              isMobileMenuOpen ? "text-brand-cream" : textColorClass
             }`}
             onClick={openCart}
           >
@@ -124,7 +127,7 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
 
             {/* --- THE CART BADGE --- */}
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#D4AF37] text-[#5D1224] text-[10px] font-bold h-[18px] w-[18px] rounded-full flex items-center justify-center shadow-sm">
+              <span className="absolute -top-2 -right-2 bg-brand-gold text-brand-maroon text-[10px] font-bold h-[18px] w-[18px] rounded-full flex items-center justify-center shadow-sm">
                 {cartCount}
               </span>
             )}
@@ -133,9 +136,10 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
           {/* Mobile Menu Hamburger Toggle */}
           <button
             suppressHydrationWarning
+            aria-label="Toggle mobile menu"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`md:hidden transition-colors duration-500 hover:!text-[#D4AF37] ${
-              isMobileMenuOpen ? "text-[#FDFBF7]" : textColorClass
+            className={`md:hidden transition-colors duration-500 hover:!text-brand-gold ${
+              isMobileMenuOpen ? "text-brand-cream" : textColorClass
             }`}
           >
             {isMobileMenuOpen ? (
@@ -155,7 +159,7 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: "-100%" }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
-            className="fixed inset-0 z-[90] bg-[#5D1224] flex flex-col pt-32 px-8"
+            className="fixed inset-0 z-[90] bg-brand-maroon flex flex-col pt-32 px-8"
           >
             <div className="flex flex-col gap-8">
               {["Home", "Collection", "Our Story", "Support"].map((item, i) => (
@@ -178,7 +182,7 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
                               : "#"
                     }
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-3xl font-brand tracking-widest text-[#FDFBF7] hover:text-[#D4AF37] transition-colors border-b border-[#FDFBF7]/10 pb-4 block"
+                    className="text-3xl font-brand tracking-widest text-brand-cream hover:text-brand-gold transition-colors border-b border-brand-cream/10 pb-4 block"
                   >
                     {item}
                   </Link>
@@ -193,7 +197,7 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
                   setIsMobileMenuOpen(false);
                   setIsSearchOpen(true);
                 }}
-                className="flex items-center gap-2 text-[#FDFBF7]/80 hover:text-[#D4AF37]"
+                className="flex items-center gap-2 text-brand-cream/80 hover:text-brand-gold"
               >
                 <Search size={20} />
                 <span className="uppercase tracking-widest text-sm">
@@ -202,7 +206,7 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
               </button>
               <Link
                 href="/account"
-                className="flex items-center gap-2 text-[#FDFBF7]/80 hover:text-[#D4AF37]"
+                className="flex items-center gap-2 text-brand-cream/80 hover:text-brand-gold"
               >
                 <User size={20} />
                 <span className="uppercase tracking-widest text-sm">
@@ -222,12 +226,13 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
             animate={{ opacity: 1, backdropFilter: "blur(12px)" }}
             exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
             transition={{ duration: 0.5 }}
-            className="fixed inset-0 z-[200] bg-[#FDFBF7]/95 flex flex-col items-center justify-center px-6"
+            className="fixed inset-0 z-[200] bg-brand-cream/95 flex flex-col items-center justify-center px-6"
           >
             {/* Close Button */}
             <button
               onClick={() => setIsSearchOpen(false)}
-              className="absolute top-8 right-6 md:top-10 md:right-12 text-[#5D1224] hover:text-[#D4AF37] transition-colors"
+              aria-label="Close search"
+              className="absolute top-8 right-6 md:top-10 md:right-12 text-brand-maroon hover:text-brand-gold transition-colors"
             >
               <X size={32} strokeWidth={1} />
             </button>
@@ -244,7 +249,7 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
                   type="text"
                   autoFocus
                   placeholder="What are you looking for?"
-                  className="w-full bg-transparent border-b-2 border-[#5D1224]/20 py-4 text-3xl md:text-5xl font-serif text-[#5D1224] placeholder:text-[#5D1224]/30 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                  className="w-full bg-transparent border-b-2 border-brand-maroon/20 py-4 text-3xl md:text-5xl font-serif text-brand-maroon placeholder:text-brand-maroon/30 focus:outline-none focus:border-brand-gold transition-colors"
                 />
               </motion.div>
 
@@ -255,7 +260,7 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
                 transition={{ delay: 0.3, duration: 0.6 }}
                 className="flex flex-col items-center gap-4"
               >
-                <span className="text-xs tracking-[0.2em] uppercase font-bold text-[#D4AF37]">
+                <span className="text-xs tracking-[0.2em] uppercase font-bold text-brand-gold">
                   Popular Searches
                 </span>
                 <div className="flex flex-wrap justify-center gap-4 md:gap-8">
@@ -268,7 +273,7 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
                     <button
                       key={term}
                       onClick={() => setIsSearchOpen(false)}
-                      className="text-[#5D1224]/60 hover:text-[#5D1224] transition-colors font-light text-sm md:text-base border-b border-transparent hover:border-[#D4AF37] pb-1"
+                      className="text-brand-maroon/60 hover:text-brand-maroon transition-colors font-light text-sm md:text-base border-b border-transparent hover:border-brand-gold pb-1"
                     >
                       {term}
                     </button>
@@ -282,3 +287,4 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
     </>
   );
 }
+

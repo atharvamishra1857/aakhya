@@ -33,7 +33,7 @@ export default function SupportPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0); // First FAQ open by default
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-[#5D1224] flex flex-col pt-24">
+    <div className="min-h-screen bg-brand-cream text-brand-maroon flex flex-col pt-24">
       <Navbar />
 
       <main className="flex-grow max-w-7xl mx-auto w-full px-6 lg:px-8 py-12 md:py-20">
@@ -47,8 +47,8 @@ export default function SupportPage() {
           <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">
             Client Services
           </h1>
-          <div className="w-12 h-1 bg-[#D4AF37] mx-auto mb-6"></div>
-          <p className="font-light text-[#5D1224]/70">
+          <div className="w-12 h-1 bg-brand-gold mx-auto mb-6"></div>
+          <p className="font-light text-brand-maroon/70">
             Whether you are seeking advice on silk care, tracking an order, or
             looking for bridal consultation, our concierge team is at your
             service.
@@ -66,31 +66,31 @@ export default function SupportPage() {
             {/* Contact Details */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 bg-white p-8 rounded-2xl shadow-sm border border-black/5">
               <div>
-                <h3 className="font-bold uppercase tracking-widest text-xs text-[#D4AF37] mb-4">
+                <h3 className="font-bold uppercase tracking-widest text-xs text-brand-gold mb-4">
                   Email Us
                 </h3>
                 <div className="flex items-center gap-3 text-sm font-light">
-                  <Mail size={16} className="text-[#D4AF37]" />
+                  <Mail size={16} className="text-brand-gold" />
                   <span>concierge@vreya.com</span>
                 </div>
               </div>
               <div>
-                <h3 className="font-bold uppercase tracking-widest text-xs text-[#D4AF37] mb-4">
+                <h3 className="font-bold uppercase tracking-widest text-xs text-brand-gold mb-4">
                   Call Us
                 </h3>
                 <div className="flex items-center gap-3 text-sm font-light">
-                  <Phone size={16} className="text-[#D4AF37]" />
+                  <Phone size={16} className="text-brand-gold" />
                   <span>+91 98765 43210</span>
                 </div>
               </div>
               <div className="sm:col-span-2">
-                <h3 className="font-bold uppercase tracking-widest text-xs text-[#D4AF37] mb-4">
+                <h3 className="font-bold uppercase tracking-widest text-xs text-brand-gold mb-4">
                   Visit Our Boutique
                 </h3>
                 <div className="flex items-start gap-3 text-sm font-light">
                   <MapPin
                     size={16}
-                    className="text-[#D4AF37] shrink-0 mt-0.5"
+                    className="text-brand-gold shrink-0 mt-0.5"
                   />
                   <span>
                     124 Heritage Weavers Lane,
@@ -111,25 +111,25 @@ export default function SupportPage() {
                 <input
                   type="text"
                   placeholder="First Name"
-                  className="w-full bg-transparent border-b border-[#5D1224]/20 py-3 text-[#5D1224] placeholder:text-[#5D1224]/40 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                  className="w-full bg-transparent border-b border-brand-maroon/20 py-3 text-brand-maroon placeholder:text-brand-maroon/40 focus:outline-none focus:border-brand-gold transition-colors"
                 />
                 <input
                   type="text"
                   placeholder="Last Name"
-                  className="w-full bg-transparent border-b border-[#5D1224]/20 py-3 text-[#5D1224] placeholder:text-[#5D1224]/40 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                  className="w-full bg-transparent border-b border-brand-maroon/20 py-3 text-brand-maroon placeholder:text-brand-maroon/40 focus:outline-none focus:border-brand-gold transition-colors"
                 />
               </div>
               <input
                 type="email"
                 placeholder="Email Address"
-                className="w-full bg-transparent border-b border-[#5D1224]/20 py-3 text-[#5D1224] placeholder:text-[#5D1224]/40 focus:outline-none focus:border-[#D4AF37] transition-colors"
+                className="w-full bg-transparent border-b border-brand-maroon/20 py-3 text-brand-maroon placeholder:text-brand-maroon/40 focus:outline-none focus:border-brand-gold transition-colors"
               />
               <textarea
                 placeholder="How can we help you?"
                 rows={4}
-                className="w-full bg-transparent border-b border-[#5D1224]/20 py-3 text-[#5D1224] placeholder:text-[#5D1224]/40 focus:outline-none focus:border-[#D4AF37] transition-colors resize-none"
+                className="w-full bg-transparent border-b border-brand-maroon/20 py-3 text-brand-maroon placeholder:text-brand-maroon/40 focus:outline-none focus:border-brand-gold transition-colors resize-none"
               ></textarea>
-              <button className="bg-[#5D1224] text-[#FDFBF7] py-4 px-8 tracking-widest uppercase text-sm font-medium hover:bg-[#D4AF37] transition-colors w-fit mt-2">
+              <button className="bg-brand-maroon text-brand-cream py-4 px-8 tracking-widest uppercase text-sm font-medium hover:bg-brand-gold transition-colors w-fit mt-2">
                 Submit Request
               </button>
             </form>
@@ -144,20 +144,20 @@ export default function SupportPage() {
             <h2 className="text-2xl font-serif font-bold mb-8">
               Frequently Asked Questions
             </h2>
-            <div className="flex flex-col border-t border-[#5D1224]/10">
+            <div className="flex flex-col border-t border-brand-maroon/10">
               {faqs.map((faq, i) => (
-                <div key={i} className="border-b border-[#5D1224]/10">
+                <div key={i} className="border-b border-brand-maroon/10">
                   <button
                     onClick={() => setOpenFaq(openFaq === i ? null : i)}
                     className="w-full py-6 flex items-center justify-between text-left focus:outline-none group"
                   >
-                    <span className="font-medium text-lg group-hover:text-[#D4AF37] transition-colors pr-4">
+                    <span className="font-medium text-lg group-hover:text-brand-gold transition-colors pr-4">
                       {faq.question}
                     </span>
                     <motion.div
                       animate={{ rotate: openFaq === i ? 180 : 0 }}
                       transition={{ duration: 0.3 }}
-                      className="text-[#D4AF37] shrink-0"
+                      className="text-brand-gold shrink-0"
                     >
                       <ChevronDown size={20} />
                     </motion.div>
@@ -173,7 +173,7 @@ export default function SupportPage() {
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                         className="overflow-hidden"
                       >
-                        <p className="pb-6 text-[#5D1224]/70 font-light leading-relaxed">
+                        <p className="pb-6 text-brand-maroon/70 font-light leading-relaxed">
                           {faq.answer}
                         </p>
                       </motion.div>
@@ -188,3 +188,4 @@ export default function SupportPage() {
     </div>
   );
 }
+

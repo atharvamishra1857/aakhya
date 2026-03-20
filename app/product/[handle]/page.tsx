@@ -64,7 +64,7 @@ export default function ProductPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-[#5D1224]">
+    <div className="min-h-screen bg-brand-cream text-brand-maroon">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
@@ -79,8 +79,8 @@ export default function ProductPage() {
                   onClick={() => setActiveIndex(i)}
                   className={`relative w-20 h-24 shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
                     i === activeIndex
-                      ? "border-[#5D1224] opacity-100 shadow-md"
-                      : "border-transparent opacity-50 hover:opacity-100 hover:border-[#D4AF37]/50"
+                      ? "border-brand-maroon opacity-100 shadow-md"
+                      : "border-transparent opacity-50 hover:opacity-100 hover:border-brand-gold/50"
                   }`}
                 >
                   <Image
@@ -118,7 +118,7 @@ export default function ProductPage() {
 
           {/* ================= RIGHT: PRODUCT DETAILS ================= */}
           <div className="w-full lg:w-[45%] flex flex-col justify-center py-4">
-            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#D4AF37] border border-[#D4AF37]/30 rounded-full px-3 py-1 w-fit mb-4">
+            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-brand-gold border border-brand-gold/30 rounded-full px-3 py-1 w-fit mb-4">
               Heritage Collection
             </span>
 
@@ -128,7 +128,7 @@ export default function ProductPage() {
 
             <div className="flex items-center gap-4 mb-5">
               <span className="text-2xl font-bold">₹8,000.00</span>
-              <div className="flex items-center gap-1 text-[#D4AF37]">
+              <div className="flex items-center gap-1 text-brand-gold">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} size={14} fill="currentColor" />
                 ))}
@@ -138,9 +138,9 @@ export default function ProductPage() {
               </div>
             </div>
 
-            <div className="w-full h-px bg-[#5D1224]/10 mb-6"></div>
+            <div className="w-full h-px bg-brand-maroon/10 mb-6"></div>
 
-            <p className="text-[#5D1224]/70 font-light leading-relaxed mb-6 text-sm">
+            <p className="text-brand-maroon/70 font-light leading-relaxed mb-6 text-sm">
               Authentic Kanjivaram silk from Tamil Nadu. Known for its
               durability and heavy zari border. A masterpiece of South Indian
               weaving.
@@ -148,9 +148,9 @@ export default function ProductPage() {
 
             {/* FEATURE GRID (Hover Effects Restored) */}
             <div className="grid grid-cols-2 gap-3 mb-8">
-              <div className="group flex items-center gap-3 p-3 rounded-lg border border-[#5D1224]/10 bg-white hover:-translate-y-1 hover:shadow-md hover:border-[#D4AF37]/50 transition-all duration-300 cursor-default">
+              <div className="group flex items-center gap-3 p-3 rounded-lg border border-brand-maroon/10 bg-white hover:-translate-y-1 hover:shadow-md hover:border-brand-gold/50 transition-all duration-300 cursor-default">
                 <Truck
-                  className="text-[#D4AF37] shrink-0 group-hover:scale-110 transition-transform"
+                  className="text-brand-gold shrink-0 group-hover:scale-110 transition-transform"
                   size={18}
                 />
                 <div>
@@ -160,9 +160,9 @@ export default function ProductPage() {
                   <p className="text-[10px] text-gray-500">All over India</p>
                 </div>
               </div>
-              <div className="group flex items-center gap-3 p-3 rounded-lg border border-[#5D1224]/10 bg-white hover:-translate-y-1 hover:shadow-md hover:border-[#D4AF37]/50 transition-all duration-300 cursor-default">
+              <div className="group flex items-center gap-3 p-3 rounded-lg border border-brand-maroon/10 bg-white hover:-translate-y-1 hover:shadow-md hover:border-brand-gold/50 transition-all duration-300 cursor-default">
                 <ShieldCheck
-                  className="text-[#D4AF37] shrink-0 group-hover:scale-110 transition-transform"
+                  className="text-brand-gold shrink-0 group-hover:scale-110 transition-transform"
                   size={18}
                 />
                 <div>
@@ -172,9 +172,9 @@ export default function ProductPage() {
                   <p className="text-[10px] text-gray-500">100% Certified</p>
                 </div>
               </div>
-              <div className="group flex items-center gap-3 p-3 rounded-lg border border-[#5D1224]/10 bg-white hover:-translate-y-1 hover:shadow-md hover:border-[#D4AF37]/50 transition-all duration-300 cursor-default">
+              <div className="group flex items-center gap-3 p-3 rounded-lg border border-brand-maroon/10 bg-white hover:-translate-y-1 hover:shadow-md hover:border-brand-gold/50 transition-all duration-300 cursor-default">
                 <RefreshCcw
-                  className="text-[#D4AF37] shrink-0 group-hover:scale-110 transition-transform"
+                  className="text-brand-gold shrink-0 group-hover:scale-110 transition-transform"
                   size={18}
                 />
                 <div>
@@ -184,9 +184,9 @@ export default function ProductPage() {
                   <p className="text-[10px] text-gray-500">7-Day Guarantee</p>
                 </div>
               </div>
-              <div className="group flex items-center gap-3 p-3 rounded-lg border border-[#5D1224]/10 bg-white hover:-translate-y-1 hover:shadow-md hover:border-[#D4AF37]/50 transition-all duration-300 cursor-default">
+              <div className="group flex items-center gap-3 p-3 rounded-lg border border-brand-maroon/10 bg-white hover:-translate-y-1 hover:shadow-md hover:border-brand-gold/50 transition-all duration-300 cursor-default">
                 <Lock
-                  className="text-[#D4AF37] shrink-0 group-hover:scale-110 transition-transform"
+                  className="text-brand-gold shrink-0 group-hover:scale-110 transition-transform"
                   size={18}
                 />
                 <div>
@@ -205,8 +205,8 @@ export default function ProductPage() {
               onClick={handleAddToCart}
               disabled={cartState !== "idle"}
               className={`w-full py-4 rounded-md tracking-[0.15em] uppercase text-sm font-bold transition-all duration-300 flex items-center justify-center gap-3 shadow-md
-                ${cartState === "idle" ? "bg-[#5D1224] text-[#FDFBF7] hover:bg-[#D4AF37] hover:shadow-lg" : ""}
-                ${cartState === "adding" ? "bg-[#D4AF37] text-[#5D1224] cursor-not-allowed" : ""}
+                ${cartState === "idle" ? "bg-brand-maroon text-brand-cream hover:bg-brand-gold hover:shadow-lg" : ""}
+                ${cartState === "adding" ? "bg-brand-gold text-brand-maroon cursor-not-allowed" : ""}
                 ${cartState === "success" ? "bg-green-700 text-white cursor-default" : ""}
               `}
             >

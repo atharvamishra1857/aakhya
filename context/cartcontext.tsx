@@ -1,18 +1,28 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 
-// 1. Define what a Cart Item looks like
+// ================= TYPES =================
+
 export type CartItem = {
-  id: string; // Usually the Shopify Variant ID
+  id: string;
   title: string;
-  price: number; // Storing as a number makes math easy
+  price: number;
   image: string;
   quantity: number;
   handle: string;
 };
 
-// 2. Define the "Brain" interface
+// ================= CONTEXT TYPE =================
+
 type CartContextType = {
   isOpen: boolean;
   openCart: () => void;
@@ -27,77 +37,87 @@ type CartContextType = {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+// 🔑 session-based storage key
+const CART_STORAGE_KEY = "vreya_cart";
+
+// ================= PROVIDER =================
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-  const openCart = () => setIsOpen(true);
-  const closeCart = () => setIsOpen(false);
+  // ✅ LOAD FROM SESSION STORAGE (runs once)
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    if (typeof window === "undefined") return [];
 
-  // --- ADD TO CART LOGIC ---
-  const addToCart = (newItem: Omit<CartItem, "quantity">) => {
+    try {
+      const stored = sessionStorage.getItem(CART_STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const openCart = useCallback(() => setIsOpen(true), []);
+  const closeCart = useCallback(() => setIsOpen(false), []);
+
+  // ================= ADD TO CART =================
+  const addToCart = useCallback((newItem: Omit<CartItem, "quantity">) => {
     setCartItems((prevItems) => {
-      // Check if the item is already in the cart
       const existingItem = prevItems.find((item) => item.id === newItem.id);
-
       if (existingItem) {
-        // If it exists, just add 1 to the quantity
         return prevItems.map((item) =>
-          item.id === newItem.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
+          item.id === newItem.id ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      // If it's new, add it to the array with a quantity of 1
       return [...prevItems, { ...newItem, quantity: 1 }];
     });
-    openCart(); // Automatically open the drawer when they add something
-  };
+    setIsOpen(true);
+  }, []);
 
-  // --- SUBTRACT / ADD QUANTITY LOGIC ---
-  const updateQuantity = (id: string, delta: number) => {
+  // ================= UPDATE QUANTITY =================
+  const updateQuantity = useCallback((id: string, delta: number) => {
     setCartItems((prevItems) =>
       prevItems.map((item) => {
         if (item.id === id) {
           const newQuantity = item.quantity + delta;
-          // Prevent quantity from dropping below 1 (they must use the remove button to delete)
           return { ...item, quantity: Math.max(1, newQuantity) };
         }
         return item;
-      }),
+      })
     );
-  };
+  }, []);
 
-  // --- REMOVE COMPLETELY ---
-  const removeFromCart = (id: string) => {
+  // ================= REMOVE =================
+  const removeFromCart = useCallback((id: string) => {
     setCartItems((prev) => prev.filter((item) => item.id !== id));
-  };
+  }, []);
 
-  // --- AUTOMATED MATH ---
-  const cartTotal = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0,
-  );
+  // ================= SAVE TO SESSION STORAGE =================
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      sessionStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+    } catch (error) {
+      console.error("Cart save failed:", error);
+    }
+  }, [cartItems]);
+
+  // ================= DERIVED VALUES =================
+  const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
+  const contextValue = useMemo(() => ({
+    isOpen, openCart, closeCart, cartItems, addToCart, updateQuantity, removeFromCart, cartTotal, cartCount
+  }), [isOpen, openCart, closeCart, cartItems, addToCart, updateQuantity, removeFromCart, cartTotal, cartCount]);
+
   return (
-    <CartContext.Provider
-      value={{
-        isOpen,
-        openCart,
-        closeCart,
-        cartItems,
-        addToCart,
-        updateQuantity,
-        removeFromCart,
-        cartTotal,
-        cartCount,
-      }}
-    >
+    <CartContext.Provider value={contextValue}>
       {children}
     </CartContext.Provider>
   );
 }
+
+// ================= HOOK =================
 
 export function useCart() {
   const context = useContext(CartContext);

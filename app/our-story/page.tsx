@@ -133,7 +133,7 @@ export default function OurStory() {
             >
               <motion.div
                 style={{ opacity: headingsOpacity[i], y: headingsY[i] }}
-                className="absolute text-center"
+                className="absolute text-center will-change-transform"
               >
                 <h3 className="text-brand-gold text-sm md:text-base font-bold tracking-[0.4em] uppercase mb-4 drop-shadow-lg">
                   {chapter.subtitle}
@@ -145,7 +145,7 @@ export default function OurStory() {
 
               <motion.div
                 style={{ opacity: textsOpacity[i], y: textsY[i] }}
-                className="absolute max-w-2xl bg-black/40 backdrop-blur-md border border-white/10 p-8 md:p-12 rounded-2xl shadow-2xl text-center"
+                className="absolute max-w-2xl bg-black/40 backdrop-blur-md border border-white/10 p-8 md:p-12 rounded-2xl shadow-2xl text-center will-change-transform"
               >
                 <p className="text-lg md:text-2xl text-gray-100 leading-relaxed font-light">
                   {chapter.text}

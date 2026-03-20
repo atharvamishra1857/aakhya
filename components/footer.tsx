@@ -11,7 +11,7 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="bg-[#5D1224] text-[#FDFBF7] pt-16 pb-8 border-t border-[#D4AF37]/10 z-10 relative">
+    <footer className="bg-brand-maroon text-brand-cream pt-16 pb-8 border-t border-brand-gold/10 z-10 relative">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* --- MAIN FOOTER GRID --- */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
@@ -30,25 +30,25 @@ export default function Footer() {
             </div>
 
             {/* Replace the old paragraph with your new tagline */}
-            <p className="text-[#FDFBF7]/80 text-sm leading-relaxed max-w-xs">
+            <p className="text-brand-cream/80 text-sm leading-relaxed max-w-xs">
               Timeless Elegance in Every Thread.
             </p>
             <div className="flex items-center gap-5 mt-2">
               <a
                 href="#"
-                className="text-[#FDFBF7]/70 hover:text-[#D4AF37] transition-colors"
+                className="text-brand-cream/70 hover:text-brand-gold transition-colors"
               >
                 <Instagram size={20} strokeWidth={1.5} />
               </a>
               <a
                 href="#"
-                className="text-[#FDFBF7]/70 hover:text-[#D4AF37] transition-colors"
+                className="text-brand-cream/70 hover:text-brand-gold transition-colors"
               >
                 <Facebook size={20} strokeWidth={1.5} />
               </a>
               <a
                 href="#"
-                className="text-[#FDFBF7]/70 hover:text-[#D4AF37] transition-colors"
+                className="text-brand-cream/70 hover:text-brand-gold transition-colors"
               >
                 <Twitter size={20} strokeWidth={1.5} />
               </a>
@@ -57,14 +57,14 @@ export default function Footer() {
 
           {/* Column 2: The Collection */}
           <div>
-            <h4 className="text-[#D4AF37] text-sm font-bold tracking-widest uppercase mb-6">
+            <h4 className="text-brand-gold text-sm font-bold tracking-widest uppercase mb-6">
               The Collection
             </h4>
-            <ul className="flex flex-col gap-4 text-sm font-light text-[#FDFBF7]/80">
+            <ul className="flex flex-col gap-4 text-sm font-light text-brand-cream/80">
               <li>
                 <Link
                   href="/collection/banarasi"
-                  className="hover:text-[#D4AF37] transition-colors"
+                  className="hover:text-brand-gold transition-colors"
                 >
                   Banarasi Silk
                 </Link>
@@ -72,7 +72,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/collection/kanjivaram"
-                  className="hover:text-[#D4AF37] transition-colors"
+                  className="hover:text-brand-gold transition-colors"
                 >
                   Kanjivaram
                 </Link>
@@ -80,7 +80,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/collection/cotton"
-                  className="hover:text-[#D4AF37] transition-colors"
+                  className="hover:text-brand-gold transition-colors"
                 >
                   Cotton Handloom
                 </Link>
@@ -88,7 +88,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/collection/bridal"
-                  className="hover:text-[#D4AF37] transition-colors"
+                  className="hover:text-brand-gold transition-colors"
                 >
                   Bridal Edit
                 </Link>
@@ -96,7 +96,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/collection/new"
-                  className="hover:text-[#D4AF37] transition-colors"
+                  className="hover:text-brand-gold transition-colors"
                 >
                   New Arrivals
                 </Link>
@@ -106,14 +106,14 @@ export default function Footer() {
 
           {/* Column 3: Client Services (Smart Routing!) */}
           <div>
-            <h4 className="text-[#D4AF37] text-sm font-bold tracking-widest uppercase mb-6">
+            <h4 className="text-brand-gold text-sm font-bold tracking-widest uppercase mb-6">
               Client Services
             </h4>
-            <ul className="flex flex-col gap-4 text-sm font-light text-[#FDFBF7]/80">
+            <ul className="flex flex-col gap-4 text-sm font-light text-brand-cream/80">
               <li>
                 <Link
                   href="/support"
-                  className="hover:text-[#D4AF37] transition-colors"
+                  className="hover:text-brand-gold transition-colors"
                 >
                   Contact Us
                 </Link>
@@ -121,7 +121,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/support"
-                  className="hover:text-[#D4AF37] transition-colors"
+                  className="hover:text-brand-gold transition-colors"
                 >
                   Shipping & Returns
                 </Link>
@@ -129,7 +129,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/account"
-                  className="hover:text-[#D4AF37] transition-colors"
+                  className="hover:text-brand-gold transition-colors"
                 >
                   Track Your Order
                 </Link>
@@ -137,7 +137,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/support"
-                  className="hover:text-[#D4AF37] transition-colors"
+                  className="hover:text-brand-gold transition-colors"
                 >
                   Care Instructions
                 </Link>
@@ -145,7 +145,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/support"
-                  className="hover:text-[#D4AF37] transition-colors"
+                  className="hover:text-brand-gold transition-colors"
                 >
                   FAQs
                 </Link>
@@ -155,12 +155,12 @@ export default function Footer() {
 
           {/* Column 4: Contact Info */}
           <div>
-            <h4 className="text-[#D4AF37] text-sm font-bold tracking-widest uppercase mb-6">
+            <h4 className="text-brand-gold text-sm font-bold tracking-widest uppercase mb-6">
               Contact
             </h4>
-            <ul className="flex flex-col gap-6 text-sm font-light text-[#FDFBF7]/80">
+            <ul className="flex flex-col gap-6 text-sm font-light text-brand-cream/80">
               <li className="flex items-start gap-3">
-                <MapPin size={18} className="text-[#D4AF37] shrink-0 mt-0.5" />
+                <MapPin size={18} className="text-brand-gold shrink-0 mt-0.5" />
                 <span>
                   124 Heritage Weavers Lane,
                   <br />
@@ -168,11 +168,11 @@ export default function Footer() {
                 </span>
               </li>
               <li className="flex items-center gap-3">
-                <Phone size={18} className="text-[#D4AF37] shrink-0" />
+                <Phone size={18} className="text-brand-gold shrink-0" />
                 <span>+91 98765 43210</span>
               </li>
               <li className="flex items-center gap-3">
-                <Mail size={18} className="text-[#D4AF37] shrink-0" />
+                <Mail size={18} className="text-brand-gold shrink-0" />
                 <span>concierge@vreya.com</span>
               </li>
             </ul>
@@ -180,20 +180,20 @@ export default function Footer() {
         </div>
 
         {/* --- BOTTOM COPYRIGHT BAR --- */}
-        <div className="border-t border-[#FDFBF7]/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-light text-[#FDFBF7]/50">
+        <div className="border-t border-brand-cream/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-light text-brand-cream/50">
           <p>
             © {new Date().getFullYear()} VREYA Handlooms. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link
               href="/support"
-              className="hover:text-[#D4AF37] transition-colors"
+              className="hover:text-brand-gold transition-colors"
             >
               Privacy Policy
             </Link>
             <Link
               href="/support"
-              className="hover:text-[#D4AF37] transition-colors"
+              className="hover:text-brand-gold transition-colors"
             >
               Terms of Service
             </Link>
@@ -203,3 +203,4 @@ export default function Footer() {
     </footer>
   );
 }
+

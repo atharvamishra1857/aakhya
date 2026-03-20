@@ -5,7 +5,7 @@ import { CartProvider } from "@/context/cartcontext"; // Import Provider
 import CartDrawer from "@/components/cartDrawer"; // Import Component
 import Footer from "@/components/footer";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const brandFont = Playfair_Display({
   subsets: ["latin"],
   weight: ["400", "500", "600"], // Playfair looks great slightly bold!
