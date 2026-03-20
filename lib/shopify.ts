@@ -35,9 +35,9 @@ const MOCK_PRODUCTS: ShopifyProduct[] = [
     priceRange: { minVariantPrice: { amount: "4500.00" } },
     images: {
       edges: [
-        { node: { url: "https://images.unsplash.com/photo-1610030469983-98e550d615ef?q=80&w=800&auto=format&fit=crop", altText: "Banarasi Saree Front" } },
-        { node: { url: "https://images.unsplash.com/photo-1583391733959-1f5106240d16?q=80&w=800&auto=format&fit=crop", altText: "Zari Details" } },
-        { node: { url: "https://images.unsplash.com/photo-1605001089332-602f32fb3039?q=80&w=800&auto=format&fit=crop", altText: "Weaving process" } },
+        { node: { url: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", altText: "Banarasi Saree Front" } },
+        { node: { url: "https://images.unsplash.com/photo-1618901185975-d59f7091bcfe?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", altText: "Zari Details" } },
+        { node: { url: "https://images.unsplash.com/photo-1610189012928-8b9612c62c82?q=80&w=2000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", altText: "Weaving process" } },
       ],
     },
   },
@@ -49,8 +49,8 @@ const MOCK_PRODUCTS: ShopifyProduct[] = [
     priceRange: { minVariantPrice: { amount: "8000.00" } },
     images: {
       edges: [
-        { node: { url: "https://images.unsplash.com/photo-1610030469983-98e550d615ef?q=80&w=800&auto=format&fit=crop", altText: "Kanjivaram Full Drape" } }, // Reusing working image since 404
-        { node: { url: "https://images.unsplash.com/photo-1583391733959-1f5106240d16?q=80&w=800&auto=format&fit=crop", altText: "Border Work-2" } },
+        { node: { url: "https://images.unsplash.com/photo-1679006831648-7c9ea12e5807?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", altText: "Kanjivaram Full Drape" } }, // Reusing working image since 404
+        { node: { url: "https://images.unsplash.com/photo-1727430228383-aa1fb59db8bf?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", altText: "Border Work-2" } },
       ],
     },
   },
@@ -62,8 +62,8 @@ const MOCK_PRODUCTS: ShopifyProduct[] = [
     priceRange: { minVariantPrice: { amount: "1200.00" } },
     images: {
       edges: [
-        { node: { url: "https://images.unsplash.com/photo-1605001089332-602f32fb3039?q=80&w=800&auto=format&fit=crop", altText: "Cotton Texture" } }, // Reusing working image
-        { node: { url: "https://images.unsplash.com/photo-1610030469983-98e550d615ef?q=80&w=800&auto=format&fit=crop", altText: "Fabric Close Up-2" } },
+        { node: { url: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", altText: "Cotton Texture" } }, // Reusing working image
+        { node: { url: "https://images.unsplash.com/photo-1616756141603-6d37d5cde2a2?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", altText: "Fabric Close Up-2" } },
       ],
     },
   },

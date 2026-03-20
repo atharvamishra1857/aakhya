@@ -73,7 +73,7 @@ export default function CartDrawer() {
                                 <div className="flex justify-between items-end">
 
                                   {/* Quantity */}
-                                  <div className="flex items-center border">
+                                  <div className="flex items-center border mt-2">
                                     <button
                                       aria-label="Decrease quantity"
                                       onClick={() => {
@@ -84,7 +84,7 @@ export default function CartDrawer() {
                                       <Minus size={14} />
                                     </button>
 
-                                    <span>{item.quantity}</span>
+                                    <span className="px-2">{item.quantity}</span>
 
                                     <button
                                       aria-label="Increase quantity"
@@ -113,13 +113,18 @@ export default function CartDrawer() {
 
                     {/* Footer */}
                     {cartItems.length > 0 && (
-                      <div className="px-6 py-6 border-t">
+                      <div className="px-6 py-6 border-t text-black">
                         <div className="flex justify-between">
                           <p>Total</p>
                           <p>₹{cartTotal.toLocaleString()}</p>
                         </div>
+                        <div className="flex justify-between">
+                          <p>Delivery</p>
+                          <p>Free</p>
+                        </div>
+                        
 
-                        <button className="w-full mt-4">
+                        <button className="w-full mt-4 bg-brand-maroon text-brand-cream py-2 tracking-widest hover:bg-brand-gold hover:text-brand-maroon transition-all duration-300">
                           Checkout
                         </button>
                       </div>

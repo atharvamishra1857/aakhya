@@ -162,18 +162,16 @@ export default function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="text-brand-gold shrink-0 mt-0.5" />
                 <span>
-                  124 Heritage Weavers Lane,
-                  <br />
-                  Varanasi, UP 221001, India
+                  Pune, Maharashtra 411013, India
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone size={18} className="text-brand-gold shrink-0" />
-                <span>+91 98765 43210</span>
+                <span>+91 XXXXX XXXXX</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-brand-gold shrink-0" />
-                <span>concierge@vreya.com</span>
+                <span>[EMAIL_ADDRESS]</span>
               </li>
             </ul>
           </div>

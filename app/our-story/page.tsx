@@ -13,7 +13,7 @@ const CHAPTERS = [
     text: "Before Vreya was a brand, it was a rhythm. The clacking of wooden looms echoing through the narrow, sunlit lanes of Varanasi. Our ancestors didn't just weave silk; they wove stories of royalty, prayers, and timeless devotion into every six yards of fabric.",
     // REAL STOCK IMAGE of Varanasi/River
     image:
-      "https://images.unsplash.com/photo-1605000520633-e98cc8b4b7c0?q=80&w=2000",
+      "https://images.unsplash.com/reserve/bOvf94dPRxWu0u3QsPjF_tree.jpg?q=80&w=1176&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     id: 2,
@@ -22,7 +22,7 @@ const CHAPTERS = [
     text: "True luxury cannot be rushed. A single authentic Banarasi saree takes three master artisans over 150 hours to complete. From dyeing the raw silk in rich, earthly tones to the meticulous threading of pure gold Zari, our process defies modern fast fashion.",
     // REAL STOCK IMAGE of Golden Silk/Weaving
     image:
-      "https://images.unsplash.com/photo-1605000520633-e98cc8b4b7c0?q=80&w=2000",
+      "https://images.unsplash.com/photo-1454372182658-c712e4c5a1db?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     id: 3,
@@ -31,7 +31,7 @@ const CHAPTERS = [
     text: "Today, Vreya bridges the gap between ancient royal courts and the modern connoisseur. We preserve the dying arts of handloom weaving so that when you wear our silk, you aren't just wearing a garment—you are carrying history forward.",
     // REAL STOCK IMAGE of Silk Fabric
     image:
-      "https://images.unsplash.com/photo-1605000520633-e98cc8b4b7c0?q=80&w=2000",
+      "https://images.unsplash.com/photo-1619441207978-3d326c46e2c9?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
 ];
 
