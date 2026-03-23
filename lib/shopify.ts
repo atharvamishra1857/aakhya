@@ -1,5 +1,9 @@
 // lib/shopify.ts
 
+// ============================================================
+// TYPES
+// ============================================================
+
 export type ShopifyImageEdge = {
   node: {
     url: string;
@@ -15,10 +19,24 @@ export type ShopifyProduct = {
   priceRange: {
     minVariantPrice: {
       amount: string;
+      currencyCode: string;
     };
   };
   images: {
     edges: ShopifyImageEdge[];
+  };
+  variants: {
+    edges: {
+      node: {
+        id: string;
+        title: string;
+        availableForSale: boolean;
+        price: {
+          amount: string;
+          currencyCode: string;
+        };
+      };
+    }[];
   };
 };
 
@@ -26,67 +44,360 @@ export type ShopifyProductNode = {
   node: ShopifyProduct;
 };
 
-const MOCK_PRODUCTS: ShopifyProduct[] = [
-  {
-    id: "1",
-    title: "Banarasi Silk Saree",
-    handle: "banarasi-silk",
-    description: "A timeless classic from the ghats of Varanasi. Pure silk with gold zari work, perfect for weddings and special occasions. Handwoven by master artisans.",
-    priceRange: { minVariantPrice: { amount: "4500.00" } },
-    images: {
-      edges: [
-        { node: { url: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", altText: "Banarasi Saree Front" } },
-        { node: { url: "https://images.unsplash.com/photo-1618901185975-d59f7091bcfe?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", altText: "Zari Details" } },
-        { node: { url: "https://images.unsplash.com/photo-1610189012928-8b9612c62c82?q=80&w=2000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", altText: "Weaving process" } },
-      ],
-    },
-  },
-  {
-    id: "2",
-    title: "Kanjivaram Red Saree",
-    handle: "kanjivaram-red",
-    description: "Authentic Kanjivaram silk from Tamil Nadu. Known for its durability and heavy zari border. A masterpiece of South Indian weaving.",
-    priceRange: { minVariantPrice: { amount: "8000.00" } },
-    images: {
-      edges: [
-        { node: { url: "https://images.unsplash.com/photo-1679006831648-7c9ea12e5807?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", altText: "Kanjivaram Full Drape" } }, // Reusing working image since 404
-        { node: { url: "https://images.unsplash.com/photo-1727430228383-aa1fb59db8bf?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", altText: "Border Work-2" } },
-      ],
-    },
-  },
-  {
-    id: "3",
-    title: "Cotton Handloom",
-    handle: "cotton-handloom",
-    description: "Lightweight and breathable cotton handloom saree, ideal for daily office wear and summer days. Elegance meets absolute comfort.",
-    priceRange: { minVariantPrice: { amount: "1200.00" } },
-    images: {
-      edges: [
-        { node: { url: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", altText: "Cotton Texture" } }, // Reusing working image
-        { node: { url: "https://images.unsplash.com/photo-1616756141603-6d37d5cde2a2?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", altText: "Fabric Close Up-2" } },
-      ],
-    },
-  },
-];
+export type ShopifyCart = {
+  id: string;
+  checkoutUrl: string;
+  lines: {
+    edges: {
+      node: {
+        id: string;
+        quantity: number;
+        merchandise: {
+          id: string;
+          title: string;
+          product: {
+            title: string;
+            images: { edges: ShopifyImageEdge[] };
+          };
+          price: {
+            amount: string;
+            currencyCode: string;
+          };
+        };
+      };
+    }[];
+  };
+  cost: {
+    totalAmount: {
+      amount: string;
+      currencyCode: string;
+    };
+  };
+};
 
-// 1. Function to get ALL products (Used on the Home Page)
-export async function getProductsInCollection() {
-  // Simulate a quick network delay so animations trigger
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  
-  // Wrap them in the "node" structure Shopify uses
-  return MOCK_PRODUCTS.map((product) => ({
-    node: product,
-  }));
+// ============================================================
+// CONFIGURATION — all values come from environment variables,
+// never hardcoded. These are server-side only (no NEXT_PUBLIC_).
+// ============================================================
+
+function getShopifyConfig() {
+  const domain = process.env.SHOPIFY_STORE_DOMAIN;
+  const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+
+  if (!domain || !token) {
+    throw new Error(
+      "Missing Shopify environment variables. " +
+      "Ensure SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN are set in .env.local"
+    );
+  }
+
+  return {
+    endpoint: `https://${domain}/api/2024-01/graphql.json`,
+    token,
+  };
 }
 
-// 2. Function to get ONE product by its handle (Used on the Product Page)
-export async function getProduct(handle: string) {
-  // Simulate a quick network delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
+// ============================================================
+// CORE FETCHER — one place for all Shopify API calls
+// ============================================================
+
+type ShopifyFetchOptions = {
+  query: string;
+  variables?: Record<string, unknown>;
+  tags?: string[]; // For Next.js cache tag revalidation
+};
+
+async function shopifyFetch<T>({ query, variables, tags }: ShopifyFetchOptions): Promise<T> {
+  const { endpoint, token } = getShopifyConfig();
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      // Storefront API token — safe to use here since this runs server-side only
+      "X-Shopify-Storefront-Access-Token": token,
+    },
+    body: JSON.stringify({ query, variables }), // variables = safe, no string interpolation
+    next: {
+      // Cache responses; revalidate every 60s or when a tag is invalidated
+      revalidate: 60,
+      tags,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Shopify API error: ${response.status} ${response.statusText}`);
+  }
+
+  const json = await response.json();
+
+  // Shopify returns HTTP 200 even for GraphQL errors — check explicitly
+  if (json.errors) {
+    console.error("Shopify GraphQL errors:", json.errors);
+    throw new Error(json.errors[0]?.message ?? "Unknown Shopify GraphQL error");
+  }
+
+  return json.data as T;
+}
+
+// ============================================================
+// QUERIES — parameterized with variables, never interpolated
+// ============================================================
+
+const PRODUCTS_QUERY = `
+  query getProducts($first: Int!) {
+    products(first: $first) {
+      edges {
+        node {
+          id
+          title
+          handle
+          description
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          images(first: 5) {
+            edges {
+              node {
+                url
+                altText
+              }
+            }
+          }
+          variants(first: 10) {
+            edges {
+              node {
+                id
+                title
+                availableForSale
+                price {
+                  amount
+                  currencyCode
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+// Handle is passed as a variable — NOT string-interpolated into the query
+const PRODUCT_BY_HANDLE_QUERY = `
+  query getProduct($handle: String!) {
+    product(handle: $handle) {
+      id
+      title
+      handle
+      description
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      images(first: 5) {
+        edges {
+          node {
+            url
+            altText
+          }
+        }
+      }
+      variants(first: 10) {
+        edges {
+          node {
+            id
+            title
+            availableForSale
+            price {
+              amount
+              currencyCode
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+const CREATE_CART_MUTATION = `
+  mutation createCart($lines: [CartLineInput!]) {
+    cartCreate(input: { lines: $lines }) {
+      cart {
+        id
+        checkoutUrl
+        lines(first: 10) {
+          edges {
+            node {
+              id
+              quantity
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  price { amount currencyCode }
+                  product {
+                    title
+                    images(first: 1) { edges { node { url altText } } }
+                  }
+                }
+              }
+            }
+          }
+        }
+        cost {
+          totalAmount { amount currencyCode }
+        }
+      }
+    }
+  }
+`;
+
+const ADD_TO_CART_MUTATION = `
+  mutation addToCart($cartId: ID!, $lines: [CartLineInput!]!) {
+    cartLinesAdd(cartId: $cartId, lines: $lines) {
+      cart {
+        id
+        checkoutUrl
+        lines(first: 10) {
+          edges {
+            node {
+              id
+              quantity
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  price { amount currencyCode }
+                  product {
+                    title
+                    images(first: 1) { edges { node { url altText } } }
+                  }
+                }
+              }
+            }
+          }
+        }
+        cost {
+          totalAmount { amount currencyCode }
+        }
+      }
+    }
+  }
+`;
+
+const GET_CART_QUERY = `
+  query getCart($cartId: ID!) {
+    cart(id: $cartId) {
+      id
+      checkoutUrl
+      lines(first: 10) {
+        edges {
+          node {
+            id
+            quantity
+            merchandise {
+              ... on ProductVariant {
+                id
+                title
+                price { amount currencyCode }
+                product {
+                  title
+                  images(first: 1) { edges { node { url altText } } }
+                }
+              }
+            }
+          }
+        }
+      }
+      cost {
+        totalAmount { amount currencyCode }
+      }
+    }
+  }
+`;
+
+// ============================================================
+// PUBLIC API — these are the functions your pages/components call
+// ============================================================
+
+export async function getProductsInCollection(first = 20): Promise<ShopifyProductNode[]> {
+  const data = await shopifyFetch<{ products: { edges: ShopifyProductNode[] } }>({
+    query: PRODUCTS_QUERY,
+    variables: { first },
+    tags: ["products"],
+  });
+
+  return data.products.edges;
+}
+
+export async function getProduct(handle: string): Promise<ShopifyProduct | null> {
+  // Basic validation before it even reaches the API
+  if (!handle || typeof handle !== "string" || !/^[a-z0-9-]+$/.test(handle)) {
+    return null;
+  }
+
+  const data = await shopifyFetch<{ product: ShopifyProduct | null }>({
+    query: PRODUCT_BY_HANDLE_QUERY,
+    variables: { handle }, // passed as variable, never interpolated
+    tags: [`product-${handle}`],
+  });
+
+  return data.product;
+}
+
+export async function createCart(
+  variantId: string,
+  quantity = 1
+): Promise<ShopifyCart> {
+  const data = await shopifyFetch<{ cartCreate: { cart: ShopifyCart } }>({
+    query: CREATE_CART_MUTATION,
+    variables: {
+      lines: [{ merchandiseId: variantId, quantity }],
+    },
+  });
+
+  return data.cartCreate.cart;
+}
+
+export async function addToCart(
+  cartId: string,
+  variantId: string,
+  quantity = 1
+): Promise<ShopifyCart> {
+  const data = await shopifyFetch<{ cartLinesAdd: { cart: ShopifyCart } }>({
+    query: ADD_TO_CART_MUTATION,
+    variables: {
+      cartId,
+      lines: [{ merchandiseId: variantId, quantity }],
+    },
+  });
+
+  return data.cartLinesAdd.cart;
+}
+
+export async function getCart(cartId: string): Promise<ShopifyCart | null> {
+  const data = await shopifyFetch<{ cart: ShopifyCart | null }>({
+    query: GET_CART_QUERY,
+    variables: { cartId },
+  });
+
+  return data.cart;
+}
+
+// login  
+
+export function getShopifyAccountUrl(path: 'login' | 'register' | 'orders' = 'login') {
+  // Make sure this matches the variable name in your .env file
+  const domain = process.env.SHOPIFY_STORE_DOMAIN || process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN;
   
-  // Find the exact product
-  const product = MOCK_PRODUCTS.find((p) => p.handle === handle);
+  // If the domain is missing, gracefully fallback to the homepage to prevent crashes
+  if (!domain) return '/';
   
-  return product || null;
+  return `https://${domain}/account/${path}`;
 }

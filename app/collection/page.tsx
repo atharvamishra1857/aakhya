@@ -2,17 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { ShoppingBag } from "lucide-react";
-import { motion } from "framer-motion";
-import Navbar from "@/components/navbar"; // Check capitalization: "Navbar" or "navbar"
+import { SlidersHorizontal } from "lucide-react";
+import Navbar from "@/components/navbar";
 import { getProductsInCollection, ShopifyProductNode } from "@/lib/shopify";
+import { useCart } from "@/context/cartcontext";
 
 export default function CollectionPage() {
   const [products, setProducts] = useState<ShopifyProductNode[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { addToCart } = useCart();
 
-  // Fetch Shopify Products on load
   useEffect(() => {
     async function fetchData() {
       try {
@@ -28,85 +27,119 @@ export default function CollectionPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-brand-cream text-brand-maroon flex flex-col pt-12">
+    <div className="min-h-screen bg-brand-bgprimary text-brand-ink font-body flex flex-col pt-24">
       <Navbar />
 
-      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 w-full">
-        {/* --- PAGE HEADER --- */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center max-w-2xl mx-auto mb-16"
-        >
-          <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">
-            The Royal Collection
-          </h1>
-          <div className="w-12 h-1 bg-brand-gold mx-auto mb-6"></div>
-          <p className="font-light text-brand-maroon/70">
-            Craft takes time. We don’t try to compress it. 
-            Each piece reflects hours of work you can actually see, not just something labeled
-            “premium.”
-          </p>
-        </motion.div>
+      {/* Page Header Banner */}
+      <div className="relative w-full h-[40vh] md:h-[50vh] flex flex-col items-center justify-center mb-12 overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1596455607563-ad6193f76b17?q=80&w=1920" alt="Collection Banner" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-brand-ink/40"></div>
+        <div className="relative z-10 text-center text-brand-ivory px-6 mt-16">
+          <p className="font-body text-xs tracking-[0.3em] uppercase mb-4 opacity-80">The Complete Edit</p>
+          <h1 className="text-5xl md:text-7xl font-display italic">Linen Vests</h1>
+        </div>
+      </div>
 
-        {/* --- PRODUCT GRID --- */}
-        {isLoading ? (
-          /* Elegant Loading Spinner */
-          <div className="flex justify-center items-center py-32">
-            <div className="w-12 h-12 border-4 border-brand-gold border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {products.map((item: ShopifyProductNode, i) => {
-              const product = item.node;
-              return (
-                <motion.div
-                  // Staggered fade-in animation based on index (i)
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  key={product.id}
-                  className="group relative bg-white p-4 rounded-xl shadow-sm hover:shadow-xl transition-all duration-500"
-                >
-                  <div className="aspect-[4/5] overflow-hidden rounded-lg bg-gray-100 relative">
-                    <Link href={`/product/${product.handle}`}>
-                      <Image
-                        src={product.images.edges[0]?.node.url}
+      <main className="flex-grow max-w-[1600px] mx-auto px-6 py-6 md:py-12 w-full flex flex-col lg:flex-row gap-12">
+        {/* Sidebar */}
+        <aside className="w-full lg:w-64 shrink-0 border-b lg:border-b-0 lg:border-r border-brand-borderlight pb-8 lg:pb-0 lg:pr-8">
+           <div className="flex items-center gap-3 mb-8 lg:mb-12">
+             <SlidersHorizontal size={18} className="text-brand-ink" />
+             <span className="font-body text-sm tracking-widest uppercase">Filters</span>
+           </div>
+
+           <div className="space-y-8">
+             <div>
+               <h4 className="font-body text-xs tracking-widest uppercase mb-4 text-brand-gray">Hue</h4>
+               <ul className="space-y-3 font-body text-sm text-brand-ink/80">
+                 <li className="flex items-center gap-3 cursor-pointer group">
+                   <div className="w-4 h-4 rounded-full border border-brand-sage bg-brand-sage flex items-center justify-center">
+                     <span className="w-1.5 h-1.5 bg-brand-bgprimary rounded-full"></span>
+                   </div>
+                   <span className="group-hover:text-brand-sage transition-colors">Sage Green</span>
+                 </li>
+                 <li className="flex items-center gap-3 cursor-pointer group">
+                   <div className="w-4 h-4 rounded-full border border-brand-borderlight bg-transparent flex items-center justify-center"></div>
+                   <span className="group-hover:text-brand-rose transition-colors">Rose Pink</span>
+                 </li>
+                 <li className="flex items-center gap-3 cursor-pointer group">
+                   <div className="w-4 h-4 rounded-full border border-brand-borderlight bg-transparent flex items-center justify-center"></div>
+                   <span className="group-hover:text-brand-blue transition-colors">Powder Blue</span>
+                 </li>
+               </ul>
+             </div>
+             
+             <div>
+               <h4 className="font-body text-xs tracking-widest uppercase mb-4 text-brand-gray">Size</h4>
+               <div className="flex flex-wrap gap-2">
+                 {['XS', 'S', 'M', 'L', 'XL'].map(size => (
+                   <button key={size} className="w-10 h-10 border border-brand-borderlight rounded-full text-xs hover:border-brand-sage hover:text-brand-sage transition-colors">
+                     {size}
+                   </button>
+                 ))}
+               </div>
+             </div>
+           </div>
+        </aside>
+
+        {/* Product Grid */}
+        <div className="flex-1">
+          {isLoading || products.length === 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="aspect-square mb-6 rounded-xl animate-pulse bg-brand-bgsecondary"></div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {products.map((item: ShopifyProductNode) => {
+                const product = item.node;
+                return (
+                  <div key={product.id} className="group relative bg-brand-bgprimary border border-brand-borderlight rounded-xl overflow-hidden shadow-[0_2px_12px_rgba(44,37,32,0.06)] hover:-translate-y-1 transition-all duration-300">
+                    <Link href={`/product/${product.handle}`} className="block aspect-square overflow-hidden relative">
+                      <div className="absolute top-3 right-3 z-10 bg-[rgba(201,125,125,0.12)] text-brand-rose border border-[rgba(201,125,125,0.3)] text-[11px] px-[8px] py-[2px] rounded-full font-body backdrop-blur-sm">
+                        Limited
+                      </div>
+                      <img
+                        src={`${product.images.edges[0]?.node.url}&width=800&format=webp`}
                         alt={product.title}
-                        fill
-                        className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                        loading="lazy"
+                        onError={(e) => { e.currentTarget.src='https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80&auto=format'; e.currentTarget.onerror=null; }}
+                        className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700"
                       />
                     </Link>
 
-                    {/* Hover Add to Cart Button */}
-                    <Link
-                      href={`/product/${product.handle}`}
-                      className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md text-brand-maroon w-10 h-10 rounded-full flex items-center justify-center opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 shadow-lg z-10 hover:bg-brand-gold hover:text-brand-cream"
-                    >
-                      <ShoppingBag size={18} />
-                    </Link>
+                    <div className="p-5 text-center flex flex-col justify-between items-center gap-2">
+                      <Link href={`/product/${product.handle}`} className="block">
+                        <h3 className="font-display text-lg text-brand-ink">{product.title}</h3>
+                        <p className="font-body text-sm text-brand-gray mt-1 tracking-wide">₹{product.priceRange.minVariantPrice.amount}</p>
+                      </Link>
+                      <button 
+                        onClick={(e) => { 
+                          e.preventDefault(); 
+                          if (product.variants.edges.length > 0) {
+                            addToCart({ 
+                              id: product.variants.edges[0].node.id, 
+                              title: product.title, 
+                              price: Number(product.priceRange.minVariantPrice.amount), 
+                              image: product.images.edges[0].node.url, 
+                              handle: product.handle 
+                            });
+                          }
+                        }}
+                        className="text-[11px] font-body tracking-[0.2em] uppercase text-brand-rose border-b border-brand-rose/20 hover:border-brand-rose pb-[2px] mt-2 transition-colors cursor-pointer"
+                        aria-label="Quick Add to Cart"
+                      >
+                        Quick Add
+                      </button>
+                    </div>
                   </div>
-
-                  <div className="mt-4 flex flex-col px-1">
-                    <h3 className="text-lg font-serif font-medium text-gray-900 leading-tight group-hover:text-brand-maroon transition-colors truncate">
-                      {product.title}
-                    </h3>
-                    <p className="text-sm text-gray-500 mt-1 mb-2">
-                      Pure Silk Handloom
-                    </p>
-                    <p className="text-lg font-bold text-brand-maroon">
-                      ₹{product.priceRange.minVariantPrice.amount}
-                    </p>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );
 }
-

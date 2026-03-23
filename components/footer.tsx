@@ -11,7 +11,7 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="bg-brand-maroon text-brand-cream pt-16 pb-8 border-t border-brand-gold/10 z-10 relative">
+    <footer className="pt-16 pb-8 border-t border-brand-borderlight/10 z-10 relative">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* --- MAIN FOOTER GRID --- */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
@@ -30,27 +30,27 @@ export default function Footer() {
             </div>
 
             {/* Replace the old paragraph with your new tagline */}
-            <p className="text-brand-cream/80 text-sm leading-relaxed max-w-xs">
+            <p className="text-brand-ivory/90 font-display italic text-lg leading-relaxed max-w-xs">
               Timeless Elegance in Every Thread.
             </p>
             <div className="flex items-center gap-5 mt-2">
               <a
                 href="#"
-                className="text-brand-cream/70 hover:text-brand-gold transition-colors"
+                className="text-brand-ivory/70 hover:text-brand-rose transition-colors"
               >
-                <Instagram size={20} strokeWidth={1.5} />
+                <Instagram size={20} strokeWidth={1} />
               </a>
               <a
                 href="#"
-                className="text-brand-cream/70 hover:text-brand-gold transition-colors"
+                className="text-brand-ivory/70 hover:text-brand-rose transition-colors"
               >
-                <Facebook size={20} strokeWidth={1.5} />
+                <Facebook size={20} strokeWidth={1} />
               </a>
               <a
                 href="#"
-                className="text-brand-cream/70 hover:text-brand-gold transition-colors"
+                className="text-brand-ivory/70 hover:text-brand-rose transition-colors"
               >
-                <Twitter size={20} strokeWidth={1.5} />
+                <Twitter size={20} strokeWidth={1} />
               </a>
             </div>
           </div>
@@ -180,7 +180,7 @@ export default function Footer() {
         {/* --- BOTTOM COPYRIGHT BAR --- */}
         <div className="border-t border-brand-cream/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-light text-brand-cream/50">
           <p>
-            © {new Date().getFullYear()} VREYA Handlooms. All rights reserved.
+            © {new Date().getFullYear()} VREYA. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link

@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,15 +10,24 @@ export default {
     extend: {
       colors: {
         brand: {
-          maroon: "#8B2F4A",
-          gold: "#F2D27A",
-          cream: "#FFFEFA",
-          light: "#FAF7F1",
-          text: "#2B2F36",
+          bgprimary: "var(--color-bg-primary)",
+          bgsecondary: "var(--color-bg-secondary)",
+          bgdark: "var(--color-bg-dark)",
+          rose: "var(--color-brand-rose)",
+          sage: "var(--color-brand-sage)",
+          blue: "var(--color-brand-blue)",
+          ink: "var(--color-text-primary)",
+          gray: "var(--color-text-secondary)",
+          muted: "var(--color-text-muted)",
+          ivory: "var(--color-text-ivory)",
+          borderlight: "var(--color-border-light)",
+          borderrose: "var(--color-border-rose)"
         },
       },
       fontFamily: {
-        brand: ["var(--font-brand)"],
+        display: ["var(--font-display)", "var(--font-display-fallback)"],
+        body: ["var(--font-body)", "var(--font-body-fallback)"],
+        accent: ["var(--font-accent)", "var(--font-accent-fallback)"],
       },
     },
   },

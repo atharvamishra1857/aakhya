@@ -1,160 +1,61 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
 import Navbar from "@/components/navbar";
-import Image from "next/image";
-
-const CHAPTERS = [
-  {
-    id: 1,
-    subtitle: "CHAPTER I : THE GENESIS",
-    title: "Born in the Ghats",
-    text: "Before Vreya was a brand, it was a rhythm. The clacking of wooden looms echoing through the narrow, sunlit lanes of Varanasi. Our ancestors didn't just weave silk; they wove stories of royalty, prayers, and timeless devotion into every six yards of fabric.",
-    // REAL STOCK IMAGE of Varanasi/River
-    image:
-      "https://images.unsplash.com/reserve/bOvf94dPRxWu0u3QsPjF_tree.jpg?q=80&w=1176&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    id: 2,
-    subtitle: "CHAPTER II : THE CRAFT",
-    title: "The Art of Patience",
-    text: "True luxury cannot be rushed. A single authentic Banarasi saree takes three master artisans over 150 hours to complete. From dyeing the raw silk in rich, earthly tones to the meticulous threading of pure gold Zari, our process defies modern fast fashion.",
-    // REAL STOCK IMAGE of Golden Silk/Weaving
-    image:
-      "https://images.unsplash.com/photo-1454372182658-c712e4c5a1db?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    id: 3,
-    subtitle: "CHAPTER III : THE LEGACY",
-    title: "Weave Your Own",
-    text: "Today, Vreya bridges the gap between ancient royal courts and the modern connoisseur. We preserve the dying arts of handloom weaving so that when you wear our silk, you aren't just wearing a garment—you are carrying history forward.",
-    // REAL STOCK IMAGE of Silk Fabric
-    image:
-      "https://images.unsplash.com/photo-1619441207978-3d326c46e2c9?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-];
 
 export default function OurStory() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
-
-  // --- 1. BACKGROUND CROSSFADES ---
-  const bg1 = useTransform(scrollYProgress, [0, 0.28, 0.33], [1, 1, 0]);
-  const bg2 = useTransform(
-    scrollYProgress,
-    [0.28, 0.33, 0.61, 0.66],
-    [0, 1, 1, 0],
-  );
-  const bg3 = useTransform(scrollYProgress, [0.61, 0.66, 1], [0, 1, 1]);
-  const bgs = [bg1, bg2, bg3];
-
-  // --- 2. HEADINGS TIMELINE (Fades out FASTER) ---
-  const h1O = useTransform(
-    scrollYProgress,
-    [0.0, 0.05, 0.1, 0.13],
-    [0, 1, 1, 0],
-  );
-  const h2O = useTransform(
-    scrollYProgress,
-    [0.33, 0.36, 0.42, 0.45],
-    [0, 1, 1, 0],
-  );
-  const h3O = useTransform(
-    scrollYProgress,
-    [0.66, 0.69, 0.75, 0.78],
-    [0, 1, 1, 0],
-  );
-
-  const h1Y = useTransform(scrollYProgress, [0.0, 0.13], [30, -30]);
-  const h2Y = useTransform(scrollYProgress, [0.33, 0.45], [30, -30]);
-  const h3Y = useTransform(scrollYProgress, [0.66, 0.78], [30, -30]);
-
-  const headingsOpacity = [h1O, h2O, h3O];
-  const headingsY = [h1Y, h2Y, h3Y];
-
-  // --- 3. STORY TEXT TIMELINE (Fades in LATER) ---
-  // Notice the gap! Heading 1 dies at 0.13. Text 1 doesn't start until 0.16. Total silence in between.
-  const p1O = useTransform(
-    scrollYProgress,
-    [0.16, 0.19, 0.26, 0.3],
-    [0, 1, 1, 0],
-  );
-  const p2O = useTransform(
-    scrollYProgress,
-    [0.48, 0.51, 0.58, 0.62],
-    [0, 1, 1, 0],
-  );
-  const p3O = useTransform(
-    scrollYProgress,
-    [0.81, 0.84, 0.95, 1.0],
-    [0, 1, 1, 0],
-  );
-
-  const p1Y = useTransform(scrollYProgress, [0.16, 0.3], [30, -30]);
-  const p2Y = useTransform(scrollYProgress, [0.48, 0.62], [30, -30]);
-  const p3Y = useTransform(scrollYProgress, [0.81, 1.0], [30, -30]);
-
-  const textsOpacity = [p1O, p2O, p3O];
-  const textsY = [p1Y, p2Y, p3Y];
-
   return (
-    <>
+    <div className="bg-brand-bgsecondary text-brand-ink flex flex-col min-h-screen">
       <Navbar />
-      <div ref={containerRef} className="relative h-[600vh] bg-black">
-        <div className="sticky top-0 h-screen w-full overflow-hidden bg-black">
-          {/* Backgrounds */}
-          {CHAPTERS.map((chapter, i) => (
-            <motion.div
-              key={`bg-${chapter.id}`}
-              style={{ opacity: bgs[i] }}
-              className="absolute inset-0"
-            >
-              <Image
-                src={chapter.image}
-                alt={chapter.title}
-                fill
-                className="object-cover"
-                sizes="100vw"
-                priority={i === 0}
-              />
-              <div className="absolute inset-0 bg-black/50"></div>
-            </motion.div>
-          ))}
 
-          {/* Content */}
-          {CHAPTERS.map((chapter, i) => (
-            <div
-              key={`content-${chapter.id}`}
-              className="absolute inset-0 pointer-events-none z-10 flex flex-col items-center justify-center px-4 sm:px-6"
-            >
-              <motion.div
-                style={{ opacity: headingsOpacity[i], y: headingsY[i] }}
-                className="absolute text-center will-change-transform"
-              >
-                <h3 className="text-brand-gold text-sm md:text-base font-bold tracking-[0.4em] uppercase mb-4 drop-shadow-lg">
-                  {chapter.subtitle}
-                </h3>
-                <h2 className="text-6xl md:text-8xl font-serif font-bold text-white leading-tight drop-shadow-2xl">
-                  {chapter.title}
-                </h2>
-              </motion.div>
+      <main className="flex-grow pt-[100px]">
+        {/* --- Hero Section --- */}
+        <section className="px-6 md:px-16 py-24 md:py-32 flex flex-col items-center justify-center text-center">
+          <p className="font-body text-xs tracking-[0.3em] text-brand-sage uppercase mb-6">— Our Story</p>
+          <h1 className="font-display italic text-5xl md:text-7xl mb-8 max-w-4xl text-brand-ink">
+            Crafted slowly, worn forever.
+          </h1>
+          <p className="font-body text-base md:text-lg text-brand-gray max-w-2xl leading-relaxed">
+            Every thread woven into a Vreya piece holds a history of Indian craftsmanship. We believe in quiet luxury, intentional drops, and timeless elegance.
+          </p>
+        </section>
 
-              <motion.div
-                style={{ opacity: textsOpacity[i], y: textsY[i] }}
-                className="absolute max-w-2xl bg-black/40 backdrop-blur-md border border-white/10 p-8 md:p-12 rounded-2xl shadow-2xl text-center will-change-transform"
-              >
-                <p className="text-lg md:text-2xl text-gray-100 leading-relaxed font-light">
-                  {chapter.text}
-                </p>
-              </motion.div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </>
+        {/* --- Block 1 --- */}
+        <section className="w-full flex flex-col md:flex-row items-center bg-brand-bgprimary">
+          <div className="w-full md:w-1/2 p-12 md:p-24 flex flex-col justify-center space-y-6">
+            <h2 className="font-display text-4xl text-brand-ink">Born in the Ateliers</h2>
+            <p className="font-body text-brand-gray leading-[1.8] text-[15px]">
+              Before Vreya was a brand, it was a vision. The quiet hum of our ateliers echoing through the sunlit lanes of Lucknow and Jaipur. Our artisans didn't just embroider; they stitched stories of modern elegance and timeless devotion into every piece.
+            </p>
+          </div>
+          <div className="w-full md:w-1/2 h-[50vh] md:h-[80vh] relative">
+             <img src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=1920" alt="Fabric flatlay" className="w-full h-full object-cover" />
+          </div>
+        </section>
+
+        {/* --- Block 2 --- */}
+        <section className="w-full flex flex-col md:flex-row-reverse items-center bg-brand-bgsecondary">
+          <div className="w-full md:w-1/2 p-12 md:p-24 flex flex-col justify-center space-y-6">
+            <h2 className="font-display text-4xl text-brand-ink">The Art of Patience</h2>
+            <p className="font-body text-brand-gray leading-[1.8] text-[15px]">
+              True luxury cannot be rushed. A single piece takes three master artisans over 200 hours to complete. From sketching the silhouettes to the meticulous hand embroidery of zardozi and chikankari, our process defies modern fast fashion.
+            </p>
+          </div>
+          <div className="w-full md:w-1/2 h-[50vh] md:h-[80vh] relative">
+             <img src="https://images.unsplash.com/photo-1556909211-3698d532d7dc?q=80&w=1920" alt="Designer at work" className="w-full h-full object-cover" />
+          </div>
+        </section>
+
+        {/* --- Block 3 --- */}
+        <section className="w-full py-24 md:py-32 bg-brand-bgprimary text-center px-6">
+           <h2 className="font-display italic text-4xl md:text-5xl text-brand-ink mb-6">Carry It Forward</h2>
+           <p className="font-body text-brand-gray max-w-2xl leading-relaxed text-[15px] mb-16 mx-auto">
+             Today, Vreya bridges the gap between heritage craft and the modern connoisseur. We celebrate the intricate arts of hand embroidery so that when you wear our pieces, you aren't just wearing a garment—you are carrying history forward.
+           </p>
+           <div className="w-full h-[60vh] md:h-[80vh] relative max-w-6xl mx-auto overflow-hidden rounded-2xl">
+             <img src="https://images.unsplash.com/photo-1619441207978-3d326c46e2c9?q=80&w=1920" alt="Legacy craft" className="w-full h-full object-cover" />
+           </div>
+        </section>
+      </main>
+    </div>
   );
 }
