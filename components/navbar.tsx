@@ -6,36 +6,93 @@ import { ShoppingBag, User, Search, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/cartcontext";
 import { usePathname } from "next/navigation";
+import { nav } from "framer-motion/client";
+
+// Add this above the Navbar function, alongside NavLink
+const NavIcon = ({
+  children,
+  onClick,
+  href,
+  className = "",
+  ariaLabel,
+  baseColor,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  href?: string;
+  className?: string;
+  ariaLabel: string;
+  baseColor?: string;
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const goldColor = "#C9A96E";
+  const style = { color: isHovered ? goldColor : baseColor };
+  const shared = {
+    onMouseEnter: () => setIsHovered(true),
+    onMouseLeave: () => setIsHovered(false),
+    style,
+    "aria-label": ariaLabel,
+    className: `flex items-center justify-center transition-colors duration-300 min-w-[44px] min-h-[44px] ${className}`,
+  };
+
+  if (href)
+    return (
+      <Link href={href} {...shared}>
+        {children}
+      </Link>
+    );
+  return (
+    <button onClick={onClick} {...shared}>
+      {children}
+    </button>
+  );
+};
 
 // Reusable Navigation Link Component to enforce consistent UI states
-const NavLink = ({ 
-  href, 
-  children, 
-  isActive, 
-  textColorClass, 
-  isScrolled 
-}: { 
-  href: string; 
-  children: React.ReactNode; 
-  isActive: boolean; 
-  textColorClass: string; 
-  isScrolled: boolean; 
+const NavLink = ({
+  href,
+  children,
+  isActive,
+  textColorClass,
+  isScrolled,
+}: {
+  href: string;
+  children: React.ReactNode;
+  isActive: boolean;
+  textColorClass: string;
+  isScrolled: boolean;
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const goldColor = "#C9A96E"; // hardcoded — bypasses Tailwind purge issues entirely
+
+  const textColor = isHovered
+    ? goldColor
+    : isScrolled
+      ? "#2C2520" // brand-ink
+      : textColorClass.includes("white") || textColorClass.includes("ivory")
+        ? "#FDFAF5" // brand-white/ivory for hero
+        : "#2C2520"; // brand-ink fallback
+
   return (
     <Link
       href={href}
-      className={`group relative inline-flex items-center justify-center text-[12px] font-body tracking-[0.16em] uppercase transition-colors duration-500 hover:text-brand-gold ${textColorClass} ${isScrolled ? "text-brand-ink" : ""} py-1`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{ color: textColor }}
+      className="group relative inline-flex items-center justify-center text-[12px] font-body tracking-[0.16em] uppercase transition-colors duration-300 pb-1"
     >
       {children}
       <span
-        className={`absolute bottom-0 left-0 w-full h-[1px] bg-brand-gold origin-left transition-transform duration-300 ${
-          isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
-        }`}
+        style={{
+          backgroundColor: goldColor,
+          width: isActive || isHovered ? "100%" : "0%",
+        }}
+        className="absolute bottom-0 left-0 h-[2px] transition-all duration-300 ease-out"
       />
     </Link>
   );
 };
-
 export default function Navbar({ isHome = false }: { isHome?: boolean }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isPastHero, setIsPastHero] = useState(false);
@@ -71,7 +128,17 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
 
   // Text colors flip when scrolling past hero image
   const textColorClass =
-    isHome && !isPastHero && !isScrolled ? "text-brand-white" : "text-brand-ink";
+    isHome && !isPastHero && !isScrolled
+      ? "text-brand-white"
+      : "text-brand-ink";
+
+  const iconColor = isMobileMenuOpen 
+    ? "#F5F0E8" 
+    : isScrolled 
+      ? "#2C2520" 
+      : (textColorClass.includes("white") || textColorClass.includes("ivory")) 
+        ? "#FFFFFF" 
+        : "#2C2520";
 
   return (
     <>
@@ -82,11 +149,33 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
       >
         {/* --- LEFT: LOGO --- */}
         <div className="flex items-center gap-2 z-[110]">
-          <Link href="/" className="group relative block">
+          <Link
+            href="/"
+            className="relative block"
+            onMouseEnter={(e) =>
+              ((e.currentTarget.querySelector(
+                "span",
+              ) as HTMLElement)!.style.color = "#C9A96E")
+            }
+            onMouseLeave={(e) => {
+              const span = e.currentTarget.querySelector("span") as HTMLElement;
+              span.style.color = isMobileMenuOpen
+                ? "#F5F0E8"
+                : isScrolled
+                  ? "#2C2520"
+                  : "#FFFFFF"; // white when on hero
+            }}
+          >
             <span
-              className={`text-2xl font-display uppercase tracking-[0.1em] block transition-colors duration-500 scale-y-110 font-medium ${
-                isMobileMenuOpen ? "text-brand-cream" : textColorClass
-              } ${isScrolled && !isMobileMenuOpen ? "text-brand-ink" : ""}`}
+              style={{
+                color: isMobileMenuOpen
+                  ? "#F5F0E8" // cream in mobile menu
+                  : isScrolled
+                    ? "#2C2520" // brand-ink when scrolled
+                    : "#FFFFFF", // pure white on hero
+                transition: "color 0.3s",
+              }}
+              className="text-2xl font-display font-bold uppercase tracking-[0.1em] block scale-y-110"
             >
               VREY<span className="small-caps">A</span>
             </span>
@@ -99,7 +188,7 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
             { name: "Home", href: "/" },
             { name: "Collection", href: "/collection" },
             { name: "Our Story", href: "/our-story" },
-            { name: "Support", href: "/support" }
+            { name: "Support", href: "/support" },
           ].map((item) => (
             <NavLink
               key={item.name}
@@ -114,53 +203,38 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
         </div>
 
         {/* --- RIGHT: ICONS --- */}
-        <div className="flex items-center gap-6 md:gap-8 z-[110]">
-          <button
-            onClick={() => setIsSearchOpen(true)}
-            aria-label="Open search"
-            className={`hidden sm:flex transition-colors duration-500 hover:text-brand-gold items-center justify-center min-w-[44px] min-h-[44px] ${textColorClass} ${isScrolled ? "text-brand-ink" : ""}`}
-          >
+        <div className="flex items-center gap-2 md:gap-4 z-[110]">
+          <NavIcon ariaLabel="Open search" onClick={() => setIsSearchOpen(true)}
+            className="hidden sm:flex" baseColor={iconColor}>
             <Search size={22} strokeWidth={1} />
-          </button>
-          <Link
-            href="/account"
-            aria-label="User account"
-            className={`hidden sm:flex transition-colors duration-500 hover:text-brand-gold items-center justify-center min-w-[44px] min-h-[44px] ${textColorClass} ${isScrolled ? "text-brand-ink" : ""}`}
-          >
+          </NavIcon>
+
+          <NavIcon ariaLabel="User account" href="/account"
+            className="hidden sm:flex" baseColor={iconColor}>
             <User size={22} strokeWidth={1} />
-          </Link>
-          <button
-            aria-label="Open cart"
-            className={`relative flex items-center justify-center transition-colors duration-500 hover:text-brand-gold min-w-[44px] min-h-[44px] ${
-              isMobileMenuOpen ? "text-brand-cream" : textColorClass
-            } ${isScrolled && !isMobileMenuOpen ? "text-brand-ink" : ""}`}
-            onClick={openCart}
-          >
+          </NavIcon>
+
+          <NavIcon ariaLabel="Open cart" onClick={openCart}
+            className="relative" baseColor={iconColor}>
             <ShoppingBag size={22} strokeWidth={1} />
-            {cartCount > 0 && (
-              <motion.span 
-                initial={{ scale: 0.5, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                key={cartCount}
-                className="absolute top-[8px] right-[4px] bg-brand-rouge text-brand-white text-[10px] font-body font-medium h-[16px] w-[16px] rounded-full flex items-center justify-center pointer-events-none"
-              >
-                {cartCount}
-              </motion.span>
-            )}
-          </button>
-          <button
-            aria-label="Toggle mobile menu"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`md:hidden flex items-center justify-center transition-colors duration-500 min-w-[44px] min-h-[44px] hover:text-brand-gold ${
-              isMobileMenuOpen ? "text-brand-cream" : textColorClass
-            } ${isScrolled && !isMobileMenuOpen ? "text-brand-ink" : ""}`}
-          >
-            {isMobileMenuOpen ? (
-              <X size={26} strokeWidth={1} />
-            ) : (
-              <Menu size={26} strokeWidth={1} />
-            )}
-          </button>
+            <AnimatePresence>
+              {cartCount > 0 && (
+                <motion.span
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  className="absolute -top-1 -right-1 bg-[#C9A96E] text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-body"
+                >
+                  {cartCount}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </NavIcon>
+
+          <NavIcon ariaLabel="Toggle mobile menu" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden" baseColor={iconColor}>
+            {isMobileMenuOpen ? <X size={26} strokeWidth={1} /> : <Menu size={26} strokeWidth={1} />}
+          </NavIcon>
         </div>
       </nav>
 
@@ -179,13 +253,17 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
                 { name: "Home", href: "/" },
                 { name: "Collection", href: "/collection" },
                 { name: "Our Story", href: "/our-story" },
-                { name: "Support", href: "/support" }
+                { name: "Support", href: "/support" },
               ].map((item, i) => (
                 <motion.div
                   key={item.name}
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + i * 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{
+                    delay: 0.1 + i * 0.1,
+                    duration: 0.6,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
                 >
                   <Link
                     href={item.href}
@@ -209,7 +287,9 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
                   style={{ minHeight: "44px" }}
                 >
                   <Search size={22} strokeWidth={1} />
-                  <span className="uppercase tracking-[0.2em] text-xs">Search</span>
+                  <span className="uppercase tracking-[0.2em] text-xs">
+                    Search
+                  </span>
                 </button>
                 <Link
                   href="/account"
@@ -218,7 +298,9 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <User size={22} strokeWidth={1} />
-                  <span className="uppercase tracking-[0.2em] text-xs">Account</span>
+                  <span className="uppercase tracking-[0.2em] text-xs">
+                    Account
+                  </span>
                 </Link>
               </div>
             </div>
@@ -248,7 +330,11 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                transition={{
+                  delay: 0.2,
+                  duration: 0.6,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
                 className="relative"
               >
                 <input
@@ -261,14 +347,23 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                transition={{
+                  delay: 0.3,
+                  duration: 0.6,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
                 className="flex flex-col items-center gap-6"
               >
                 <span className="text-[11px] font-body tracking-[0.2em] uppercase text-brand-gold/80">
                   Popular Searches
                 </span>
                 <div className="flex flex-wrap justify-center gap-6 md:gap-10">
-                  {["Hand Embroidered", "Bridal Edit", "Occasion Wear", "Co-ords & Sets"].map((term) => (
+                  {[
+                    "Hand Embroidered",
+                    "Bridal Edit",
+                    "Occasion Wear",
+                    "Co-ords & Sets",
+                  ].map((term) => (
                     <button
                       key={term}
                       onClick={() => setIsSearchOpen(false)}

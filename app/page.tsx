@@ -190,7 +190,7 @@ export default function Home() {
       <section className="flex flex-col md:flex-row w-full bg-brand-bgprimary">
         <div className="md:w-[40%] h-[60vh] md:h-auto relative reveal">
           <img
-            src="https://images.unsplash.com/photo-1584273143981-41c073dfe8f8?q=80&w=1000"
+            src="/vreya4.jpg"
             className="w-full h-full object-cover"
             alt="Sage green vest styling"
           />
@@ -289,19 +289,15 @@ export default function Home() {
           {[
             {
               title: "Morning light",
-              img: "https://images.unsplash.com/photo-1596455607563-ad6193f76b17?q=80&w=600",
+              img: "/vreya1.jpg",
             },
             {
               title: "Studio sessions",
-              img: "https://images.unsplash.com/photo-1605389657022-de5003319087?q=80&w=600",
+              img: "/vreya2.jpg",
             },
             {
               title: "Weekend brunch",
-              img: "https://images.unsplash.com/photo-1584273143981-41c073dfe8f8?q=80&w=600",
-            },
-            {
-              title: "Evening out",
-              img: "https://images.unsplash.com/photo-1454372182658-c712e4c5a1db?q=80&w=600",
+              img: "/vreya3.jpg",
             },
           ].map((item, i) => (
             <div
@@ -327,7 +323,7 @@ export default function Home() {
       <section className="flex flex-col md:flex-row w-full bg-brand-bgdark text-brand-ivory reveal">
         <div className="md:w-[50%] h-[60vh] md:h-auto relative">
           <img
-            src="https://images.unsplash.com/photo-1556909211-3698d532d7dc?q=80&w=1000"
+            src="/vreya-5.png"
             className="w-full h-full object-cover opacity-80 mix-blend-luminosity brightness-75 hover:mix-blend-normal hover:brightness-100 transition-all duration-700"
             alt="Designer sketching"
           />
