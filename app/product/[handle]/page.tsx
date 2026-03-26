@@ -6,6 +6,7 @@ import { ShieldCheck, Check } from "lucide-react";
 import Navbar from "@/components/navbar";
 import { useCart } from "@/context/cartcontext";
 import { getProduct, ShopifyProduct } from "@/lib/shopify";
+import Image from "next/image";
 
 export default function ProductPage({ params }: { params: { handle: string } }) {
   const [product, setProduct] = useState<ShopifyProduct | null>(null);
@@ -77,7 +78,7 @@ export default function ProductPage({ params }: { params: { handle: string } }) 
                       : "border-transparent opacity-60 hover:opacity-100"
                   }`}
                 >
-                  <img
+                  <Image
                     src={img}
                     alt={`Thumbnail ${i + 1}`}
                     loading="lazy"
@@ -98,7 +99,7 @@ export default function ProductPage({ params }: { params: { handle: string } }) 
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                   className="absolute inset-0"
                 >
-                  <img
+                  <Image
                     src={mainImage}
                     alt={product.title}
                     className="w-full h-full object-cover object-center"
@@ -119,7 +120,7 @@ export default function ProductPage({ params }: { params: { handle: string } }) 
                       : "border-transparent opacity-60 hover:opacity-100"
                   }`}
                 >
-                  <img src={img} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
+                  <Image src={img} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
@@ -250,7 +251,7 @@ export default function ProductPage({ params }: { params: { handle: string } }) 
               </div>
               <div className="md:w-1/2">
                  <div className="aspect-[4/3] bg-brand-bgprimary rounded-xl overflow-hidden border border-brand-borderlight">
-                    <img src="https://images.unsplash.com/photo-1454372182658-c712e4c5a1db?q=80&w=1000" alt="Artisan details" className="w-full h-full object-cover" />
+                    <Image src="https://images.unsplash.com/photo-1454372182658-c712e4c5a1db?q=80&w=1000" alt="Artisan details" className="w-full h-full object-cover" />
                  </div>
               </div>
            </div>
@@ -263,7 +264,7 @@ export default function ProductPage({ params }: { params: { handle: string } }) 
               {[1,2,3].map(i => (
                 <div key={i} className="flex-none w-[80vw] md:w-[25vw] snap-center group">
                   <div className="aspect-[3/4] bg-brand-bgsecondary rounded-xl overflow-hidden mb-4 border border-brand-borderlight cursor-pointer">
-                    <img src="https://images.unsplash.com/photo-1596455607563-ad6193f76b17" alt="styled" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <Image src="https://images.unsplash.com/photo-1596455607563-ad6193f76b17" alt="styled" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   </div>
                   <h4 className="font-display text-lg">Linen Trouser - Cream</h4>
                   <p className="font-body text-sm text-brand-gray mt-1">₹1,950</p>

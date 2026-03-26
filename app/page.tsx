@@ -12,6 +12,7 @@ import Navbar from "@/components/navbar";
 import { useCart } from "@/context/cartcontext";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -81,7 +82,7 @@ export default function Home() {
 
       {/* ---------------- SECTION 1: HERO ---------------- */}
       <section className="relative h-[90vh] flex items-center px-6 md:px-16">
-        <img
+        <Image
           src="/hero-bg.jpg"
           alt="Rose pink vest"
           className="absolute inset-0 w-full h-full object-cover"
@@ -150,7 +151,7 @@ export default function Home() {
                   <div className="absolute top-3 right-3 z-10 bg-[rgba(201,125,125,0.12)] text-brand-rose border border-[rgba(201,125,125,0.3)] text-[11px] px-[8px] py-[2px] rounded-full font-body">
                     Limited
                   </div>
-                  <img
+                  <Image
                     src={
                       item.node.images.edges[0]?.node.url ||
                       "https://images.unsplash.com/photo-1596455607563-ad6193f76b17?q=80&w=800"
@@ -189,7 +190,7 @@ export default function Home() {
       {/* ---------------- SECTION 3: LATEST ARRIVALS ---------------- */}
       <section className="flex flex-col md:flex-row w-full bg-brand-bgprimary">
         <div className="md:w-[40%] h-[60vh] md:h-auto relative reveal">
-          <img
+          <Image
             src="/vreya4.jpg"
             className="w-full h-full object-cover"
             alt="Sage green vest styling"
@@ -289,15 +290,15 @@ export default function Home() {
           {[
             {
               title: "Morning light",
-              img: "/vreya1.jpg",
+              Image: "/vreya1.jpg",
             },
             {
               title: "Studio sessions",
-              img: "/vreya2.jpg",
+              Image: "/vreya2.jpg",
             },
             {
               title: "Weekend brunch",
-              img: "/vreya3.jpg",
+              Image: "/vreya3.jpg",
             },
           ].map((item, i) => (
             <div
@@ -305,8 +306,8 @@ export default function Home() {
               className="flex-none w-[80vw] md:w-[28vw] snap-center group"
             >
               <div className="aspect-[4/5] bg-brand-bgsecondary rounded-xl overflow-hidden mb-4 border border-brand-borderlight">
-                <img
-                  src={item.img}
+                <Image
+                  src={item.Image}
                   alt={item.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
@@ -322,7 +323,7 @@ export default function Home() {
       {/* ---------------- SECTION 6: THE ATELIER ---------------- */}
       <section className="flex flex-col md:flex-row w-full bg-brand-bgdark text-brand-ivory reveal">
         <div className="md:w-[50%] h-[60vh] md:h-auto relative">
-          <img
+          <Image
             src="/vreya-5.png"
             className="w-full h-full object-cover opacity-80 mix-blend-luminosity brightness-75 hover:mix-blend-normal hover:brightness-100 transition-all duration-700"
             alt="Designer sketching"

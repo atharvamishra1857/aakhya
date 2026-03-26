@@ -1,6 +1,7 @@
 "use client";
 
 import Navbar from "@/components/navbar";
+import Image from "next/image";
 
 export default function OurStory() {
   return (
@@ -28,7 +29,7 @@ export default function OurStory() {
             </p>
           </div>
           <div className="w-full md:w-1/2 h-[50vh] md:h-[80vh] relative">
-             <img src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=1920" alt="Fabric flatlay" className="w-full h-full object-cover" />
+             <Image src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=1920" alt="Fabric flatlay" width={800} height={1200} className="w-full h-full object-cover" />
           </div>
         </section>
 
@@ -41,7 +42,7 @@ export default function OurStory() {
             </p>
           </div>
           <div className="w-full md:w-1/2 h-[50vh] md:h-[80vh] relative">
-             <img src="https://images.unsplash.com/photo-1556909211-3698d532d7dc?q=80&w=1920" alt="Designer at work" className="w-full h-full object-cover" />
+             <Image src="https://images.unsplash.com/photo-1556909211-3698d532d7dc?q=80&w=1920" alt="Designer at work" width={800} height={1200} className="w-full h-full object-cover" />
           </div>
         </section>
 
@@ -52,7 +53,7 @@ export default function OurStory() {
              Today, Vreya bridges the gap between heritage craft and the modern connoisseur. We celebrate the intricate arts of hand embroidery so that when you wear our pieces, you aren't just wearing a garment—you are carrying history forward.
            </p>
            <div className="w-full h-[60vh] md:h-[80vh] relative max-w-6xl mx-auto overflow-hidden rounded-2xl">
-             <img src="https://images.unsplash.com/photo-1619441207978-3d326c46e2c9?q=80&w=1920" alt="Legacy craft" className="w-full h-full object-cover" />
+             <Image src="https://images.unsplash.com/photo-1619441207978-3d326c46e2c9?q=80&w=1920" alt="Legacy craft" width={1200} height={800} className="w-full h-full object-cover" />
            </div>
         </section>
       </main>

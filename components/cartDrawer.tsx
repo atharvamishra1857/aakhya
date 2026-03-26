@@ -6,6 +6,7 @@ import { X, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { useCart } from "@/context/cartcontext";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function CartDrawer() {
   const {
@@ -96,10 +97,12 @@ export default function CartDrawer() {
                             <li key={item.id} className="flex gap-5">
                               {/* Square image */}
                               <div className="relative h-[100px] w-[100px] flex-shrink-0 bg-brand-parchment/50 border border-brand-ink/5">
-                                <img 
+                                <Image 
                                   src={item.image} 
                                   alt={item.title} 
                                   loading="lazy"
+                                  width={100}
+                                  height={100}
                                   onError={(e) => { e.currentTarget.src='https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80&auto=format'; e.currentTarget.onerror=null; }}
                                   className="w-full h-full object-cover"
                                 />

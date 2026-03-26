@@ -6,6 +6,7 @@ import { SlidersHorizontal } from "lucide-react";
 import Navbar from "@/components/navbar";
 import { getProductsInCollection, ShopifyProductNode } from "@/lib/shopify";
 import { useCart } from "@/context/cartcontext";
+import Image from "next/image";
 
 export default function CollectionPage() {
   const [products, setProducts] = useState<ShopifyProductNode[]>([]);
@@ -32,7 +33,7 @@ export default function CollectionPage() {
 
       {/* Page Header Banner */}
       <div className="relative w-full h-[40vh] md:h-[50vh] flex flex-col items-center justify-center mb-12 overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1596455607563-ad6193f76b17?q=80&w=1920" alt="Collection Banner" className="absolute inset-0 w-full h-full object-cover" />
+        <Image src="https://images.unsplash.com/photo-1596455607563-ad6193f76b17?q=80&w=1920" alt="Collection Banner" width={1920} height={1080} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-brand-ink/40"></div>
         <div className="relative z-10 text-center text-brand-ivory px-6 mt-16">
           <p className="font-body text-xs tracking-[0.3em] uppercase mb-4 opacity-80">The Complete Edit</p>
@@ -100,10 +101,12 @@ export default function CollectionPage() {
                       <div className="absolute top-3 right-3 z-10 bg-[rgba(201,125,125,0.12)] text-brand-rose border border-[rgba(201,125,125,0.3)] text-[11px] px-[8px] py-[2px] rounded-full font-body backdrop-blur-sm">
                         Limited
                       </div>
-                      <img
+                      <Image
                         src={`${product.images.edges[0]?.node.url}&width=800&format=webp`}
                         alt={product.title}
                         loading="lazy"
+                        width={800}
+                        height={800}
                         onError={(e) => { e.currentTarget.src='https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80&auto=format'; e.currentTarget.onerror=null; }}
                         className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700"
                       />
