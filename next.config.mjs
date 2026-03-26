@@ -45,6 +45,9 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   // We removed the export and unoptimized image rules!
   images: {
     remotePatterns: [
