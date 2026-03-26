@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartProvider } from "@/context/cartcontext"; // Import Provider
 import CartDrawer from "@/components/cartDrawer"; // Import Component
 import Footer from "@/components/footer";
+
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
@@ -51,8 +52,11 @@ export default function RootLayout({
           <Footer />
           <CartDrawer />
         </CartProvider>
-        <div id="vreya-cursor-ring"></div>
-        <div id="vreya-cursor-dot"></div>
+        
+        {/* --- MOBILE FIX 1: Add Tailwind hidden class for mobile --- */}
+        <div id="vreya-cursor-ring" className="hidden md:block"></div>
+        <div id="vreya-cursor-dot" className="hidden md:block"></div>
+        
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -61,6 +65,13 @@ export default function RootLayout({
   const dot  = document.getElementById('vreya-cursor-dot');
   
   if (!ring || !dot) return;
+
+  // --- MOBILE FIX 2: Kill the script entirely if the device doesn't use a mouse ---
+  if (window.matchMedia("(hover: none)").matches || window.matchMedia("(pointer: coarse)").matches) {
+    ring.style.display = 'none';
+    dot.style.display = 'none';
+    return; 
+  }
   
   let mouseX = 0, mouseY = 0;
   

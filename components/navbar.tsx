@@ -268,7 +268,7 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
                   <Link
                     href={item.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-[48px] font-display text-brand-cream hover:text-brand-gold transition-colors block leading-[1.1]"
+                    className="text-[48px] font-display text-brand-ivory hover:text-brand-gold transition-colors block leading-[1.1]"
                   >
                     {item.name}
                   </Link>
