@@ -42,17 +42,16 @@ export default function Home() {
 
     const ctx = gsap.context(() => {
       gsap.utils.toArray(".reveal").forEach((el: any) => {
-        // Changed to fromTo to prevent React Strict Mode invisibility bugs
         gsap.fromTo(
           el,
-          { opacity: 0, y: 40 }, // Explicit Start State
+          { opacity: 0, y: 40 }, 
           {
             scrollTrigger: {
               trigger: el,
               start: "top 85%",
               toggleActions: "play none none none",
             },
-            opacity: 1, // Explicit End State
+            opacity: 1, 
             y: 0,
             duration: 0.7,
             ease: "power2.out",
@@ -61,7 +60,6 @@ export default function Home() {
       });
     });
 
-    // Clean up animations when component unmounts
     return () => ctx.revert();
   }, [isLoading]);
 
@@ -85,11 +83,13 @@ export default function Home() {
         <Image
           src="/hero-bg.jpg"
           alt="Rose pink vest"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 object-cover"
+          fill // Added fill instead of strict width/height
+          priority // Tells Next.js to load this immediately for better performance
         />
-        <div className="absolute inset-0 bg-gradient-to-l from-transparent to-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-l from-transparent to-black/40 z-[1]" />
 
-        <div className="relative max-w-2xl space-y-6 text-brand-ivory reveal">
+        <div className="relative max-w-2xl space-y-6 text-brand-ivory reveal z-10">
           <h1 className="text-5xl md:text-7xl font-display italic leading-[1.1]">
             Soft Statements.
             <br />
@@ -147,6 +147,7 @@ export default function Home() {
                 key={item.node.id}
                 className="group relative bg-brand-bgprimary border border-brand-borderlight rounded-xl overflow-hidden shadow-[0_2px_12px_rgba(44,37,32,0.06)] hover:-translate-y-1 transition-all duration-300"
               >
+                {/* Parent has 'relative' here, which is perfect for fill */}
                 <div className="aspect-square overflow-hidden relative">
                   <div className="absolute top-3 right-3 z-10 bg-[rgba(201,125,125,0.12)] text-brand-rose border border-[rgba(201,125,125,0.3)] text-[11px] px-[8px] py-[2px] rounded-full font-body">
                     Limited
@@ -157,7 +158,8 @@ export default function Home() {
                       "https://images.unsplash.com/photo-1596455607563-ad6193f76b17?q=80&w=800"
                     }
                     alt={item.node.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    fill // Added fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
                 <div className="p-6 text-center space-y-3">
@@ -192,7 +194,8 @@ export default function Home() {
         <div className="md:w-[40%] h-[60vh] md:h-auto relative reveal">
           <Image
             src="/vreya4.jpg"
-            className="w-full h-full object-cover"
+            fill // Added fill here to fix the crash
+            className="object-cover"
             alt="Sage green vest styling"
           />
         </div>
@@ -305,11 +308,13 @@ export default function Home() {
               key={i}
               className="flex-none w-[80vw] md:w-[28vw] snap-center group"
             >
-              <div className="aspect-[4/5] bg-brand-bgsecondary rounded-xl overflow-hidden mb-4 border border-brand-borderlight">
+              {/* Added 'relative' to this div so the image knows where to fill */}
+              <div className="aspect-[4/5] relative bg-brand-bgsecondary rounded-xl overflow-hidden mb-4 border border-brand-borderlight">
                 <Image
                   src={item.Image}
                   alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  fill // Added fill here
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
               </div>
               <p className="font-body text-sm text-brand-gray text-center">
@@ -325,7 +330,8 @@ export default function Home() {
         <div className="md:w-[50%] h-[60vh] md:h-auto relative">
           <Image
             src="/vreya-5.png"
-            className="w-full h-full object-cover opacity-80 mix-blend-luminosity brightness-75 hover:mix-blend-normal hover:brightness-100 transition-all duration-700"
+            fill // Added fill here
+            className="object-cover opacity-80 mix-blend-luminosity brightness-75 hover:mix-blend-normal hover:brightness-100 transition-all duration-700"
             alt="Designer sketching"
           />
         </div>
