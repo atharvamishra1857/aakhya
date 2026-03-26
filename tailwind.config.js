@@ -21,7 +21,10 @@ module.exports = {
           muted: "var(--color-text-muted)",
           ivory: "var(--color-text-ivory)",
           borderlight: "var(--color-border-light)",
-          borderrose: "var(--color-border-rose)"
+          borderrose: "var(--color-border-rose)",
+          parchment: "var(--color-brand-parchment)",
+          cream: "var(--color-brand-cream)",
+          gold: "var(--color-brand-gold)",
         },
       },
       fontFamily: {

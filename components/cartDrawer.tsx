@@ -34,7 +34,7 @@ export default function CartDrawer() {
           leaveTo="opacity-0"
         >
           {/* Backdrop */}
-          <div className="fixed inset-0 bg-[#1C1410]/50 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-brand-bgprimary/50 backdrop-blur-sm" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-hidden">
@@ -167,7 +167,7 @@ export default function CartDrawer() {
                         <p className="font-body text-xs text-brand-ink/50 mb-6 tracking-wide text-center">
                           Taxes and shipping calculated at checkout.
                         </p>
-                        <button className="shimmer-btn w-full bg-brand-burgundy text-brand-cream border border-brand-burgundy h-14 font-body tracking-[0.2em] text-sm uppercase flex items-center justify-center transition-all">
+                        <button className="shimmer-btn w-full bg-brand-parchment text-brand-ink border border-brand-parchment h-14 font-body font-medium tracking-[0.2em] text-sm uppercase flex items-center justify-center transition-all">
                           Checkout
                         </button>
                       </div>
