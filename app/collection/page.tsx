@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { SlidersHorizontal } from "lucide-react";
+// import { SlidersHorizontal } from "lucide-react";
 import Navbar from "@/components/navbar";
 import { getProductsInCollection, ShopifyProductNode } from "@/lib/shopify";
 import { useCart } from "@/context/cartcontext";
@@ -41,47 +41,7 @@ export default function CollectionPage() {
         </div>
       </div>
 
-      <main className="flex-grow max-w-[1600px] mx-auto px-6 py-6 md:py-12 w-full flex flex-col lg:flex-row gap-12">
-        {/* Sidebar */}
-        <aside className="w-full lg:w-64 shrink-0 border-b lg:border-b-0 lg:border-r border-brand-borderlight pb-8 lg:pb-0 lg:pr-8">
-           <div className="flex items-center gap-3 mb-8 lg:mb-12">
-             <SlidersHorizontal size={18} className="text-brand-ink" />
-             <span className="font-body text-sm tracking-widest uppercase">Filters</span>
-           </div>
-
-           <div className="space-y-8">
-             <div>
-               <h4 className="font-body text-xs tracking-widest uppercase mb-4 text-brand-gray">Hue</h4>
-               <ul className="space-y-3 font-body text-sm text-brand-ink/80">
-                 <li className="flex items-center gap-3 cursor-pointer group">
-                   <div className="w-4 h-4 rounded-full border border-brand-sage bg-brand-sage flex items-center justify-center">
-                     <span className="w-1.5 h-1.5 bg-brand-bgprimary rounded-full"></span>
-                   </div>
-                   <span className="group-hover:text-brand-sage transition-colors">Sage Green</span>
-                 </li>
-                 <li className="flex items-center gap-3 cursor-pointer group">
-                   <div className="w-4 h-4 rounded-full border border-brand-borderlight bg-transparent flex items-center justify-center"></div>
-                   <span className="group-hover:text-brand-rose transition-colors">Rose Pink</span>
-                 </li>
-                 <li className="flex items-center gap-3 cursor-pointer group">
-                   <div className="w-4 h-4 rounded-full border border-brand-borderlight bg-transparent flex items-center justify-center"></div>
-                   <span className="group-hover:text-brand-blue transition-colors">Powder Blue</span>
-                 </li>
-               </ul>
-             </div>
-             
-             <div>
-               <h4 className="font-body text-xs tracking-widest uppercase mb-4 text-brand-gray">Size</h4>
-               <div className="flex flex-wrap gap-2">
-                 {['XS', 'S', 'M', 'L', 'XL'].map(size => (
-                   <button key={size} className="w-10 h-10 border border-brand-borderlight rounded-full text-xs hover:border-brand-sage hover:text-brand-sage transition-colors">
-                     {size}
-                   </button>
-                 ))}
-               </div>
-             </div>
-           </div>
-        </aside>
+      <main className="flex-grow max-w-[1600px] mx-auto px-6 py-6 md:py-12 w-full">
 
         {/* Product Grid */}
         <div className="flex-1">

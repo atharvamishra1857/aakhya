@@ -51,7 +51,8 @@ export default function CartDrawer() {
                 leaveTo="translate-x-full"
               >
                 <Dialog.Panel className="pointer-events-auto w-screen max-w-[400px]">
-                  <div className="flex h-full flex-col bg-brand-cream shadow-2xl">
+                  {/* FIX 1: Forced a completely solid hex color background here */}
+                  <div className="flex h-full flex-col bg-[#FDFBF7] shadow-[0_0_40px_rgba(0,0,0,0.1)]">
                     {/* Header */}
                     <div className="flex items-center justify-between px-6 py-6 border-b border-brand-ink/10">
                       <Dialog.Title className="text-[32px] font-display text-brand-ink tracking-wide">
@@ -130,7 +131,7 @@ export default function CartDrawer() {
 
                                 <div className="flex justify-between items-end mt-auto">
                                   {/* Pill shaped quantity stepper */}
-                                  <div className="flex items-center bg-brand-parchment rounded-full h-[32px] px-1 border border-brand-ink/5 shadow-sm">
+                                  <div className="flex items-center bg-[#FDFBF7] rounded-full h-[32px] px-1 border border-brand-ink/10 shadow-sm">
                                     <button
                                       aria-label="Decrease quantity"
                                       onClick={() => {
@@ -162,7 +163,7 @@ export default function CartDrawer() {
 
                     {/* Footer */}
                     {cartItems.length > 0 && (
-                      <div className="px-6 py-8 border-t border-brand-ink/10 bg-brand-cream mt-auto z-10">
+                      <div className="px-6 py-8 border-t border-brand-ink/10 bg-[#FDFBF7] mt-auto z-10">
                         <div className="flex justify-between items-baseline mb-3">
                           <p className="font-body tracking-[0.15em] text-xs text-brand-ink/70 uppercase">Subtotal</p>
                           <p className="font-display italic text-4xl text-brand-ink">₹{cartTotal.toLocaleString()}</p>
@@ -170,7 +171,9 @@ export default function CartDrawer() {
                         <p className="font-body text-xs text-brand-ink/50 mb-6 tracking-wide text-center">
                           Taxes and shipping calculated at checkout.
                         </p>
-                        <button className="shimmer-btn w-full bg-brand-parchment text-brand-ink border border-brand-parchment h-14 font-body font-medium tracking-[0.2em] text-sm uppercase flex items-center justify-center transition-all">
+                        
+                        {/* FIX 2: Fancy, high-contrast Checkout Button */}
+                        <button className="w-full bg-brand-ink text-white hover:bg-[#C9A96E] hover:text-brand-ink h-14 rounded-full font-body font-medium tracking-[0.2em] text-sm uppercase flex items-center justify-center transition-all duration-500 shadow-lg hover:shadow-xl border border-transparent">
                           Checkout
                         </button>
                       </div>
