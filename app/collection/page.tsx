@@ -18,6 +18,17 @@ export default function CollectionPage() {
       try {
         const data = await getProductsInCollection();
         setProducts(data);
+        
+        const res = await fetch(`https://vreya-2.myshopify.com/api/2024-01/graphql.json`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Shopify-Storefront-Access-Token": process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN!,
+          },
+          body: JSON.stringify({ query: `{ shop { name } }` }),
+        });
+        const json = await res.json();
+        console.log(json);
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
