@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShieldCheck, Check, X, ChevronDown, Ruler } from "lucide-react";
 import Navbar from "@/components/navbar";
@@ -198,7 +198,8 @@ function SizeChartModal({ onClose }: { onClose: () => void }) {
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
-export default function ProductPage({ params }: { params: { handle: string } }) {
+export default function ProductPage({ params }: { params: Promise<{ handle: string }> }) {
+  const resolvedParams = use(params);
   const [product, setProduct] = useState<ShopifyProduct | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [cartState, setCartState] = useState<CartState>("idle");
@@ -212,14 +213,14 @@ export default function ProductPage({ params }: { params: { handle: string } }) 
 
   useEffect(() => {
     async function fetchProduct() {
-      const data = await getProduct(params.handle);
+      const data = await getProduct(resolvedParams.handle);
       setProduct(data);
       if (data && data.variants && data.variants.edges.length > 0) {
         setSelectedVariantId(data.variants.edges[0].node.id);
       }
     }
     fetchProduct();
-  }, [params.handle]);
+  }, [resolvedParams.handle]);
 
   if (!product) {
     return (

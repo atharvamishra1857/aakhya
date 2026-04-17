@@ -70,11 +70,11 @@ export default function CartDrawer() {
 
                     {/* Shipping Nudge */}
                     <div className="px-6 py-4 bg-brand-parchment/40 border-b border-brand-ink/5 relative overflow-hidden">
-                      <p className="text-center font-body text-[13px] text-brand-ink mb-3 tracking-wide">
+                      {/* <p className="text-center font-body text-[13px] text-brand-ink mb-3 tracking-wide">
                         {amountAway > 0 
                           ? `You're ₹${amountAway.toLocaleString()} away from free shipping`
                           : "You have unlocked free shipping!"}
-                      </p>
+                      </p> */}
                       <div className="h-[2px] w-full bg-brand-ink/10 rounded-full overflow-hidden">
                         <motion.div 
                           className="h-full bg-brand-gold"
