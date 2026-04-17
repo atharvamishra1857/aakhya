@@ -50,6 +50,7 @@ const nextConfig = {
   },
   // We removed the export and unoptimized image rules!
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
