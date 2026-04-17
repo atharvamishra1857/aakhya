@@ -2,6 +2,14 @@
 
 const domain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN!;
 const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN!;
+
+if (!process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN) {
+  throw new Error("NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN is not set");
+}
+if (!process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN) {
+  throw new Error("NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN is not set");
+}
+
 const endpoint = `https://${domain}/api/2024-01/graphql.json`;
 
 // ============================================================

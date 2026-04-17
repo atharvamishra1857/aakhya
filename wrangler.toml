@@ -1,7 +1,4 @@
 name = "vreya"
-compatibility_date = "2024-01-01"
+compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
-
-[vars]
-NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN = "vreya-2.myshopify.com"
-NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN = "074d0126a43ede70672676e7612ba106"
+pages_build_output_dir = ".open-next"
