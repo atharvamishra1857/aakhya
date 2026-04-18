@@ -51,7 +51,7 @@ function parseMetafield(metafield: any): string[] | null {
   }
 }
 
-// ─── Size chart data (Updated to just S, M, L) ────────────────────────────────
+// ─── Size chart data ──────────────────────────────────────────────────────────
 const SIZE_CHART = [
   { size: "S",  chest: "34–35", waist: "27–28", hip: "37–38", length: "24.5" },
   { size: "M",  chest: "36–37", waist: "29–30", hip: "39–40", length: "25" },
@@ -211,7 +211,7 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
       const productData = await getProduct(resolvedParams.handle);
       setProduct(productData);
 
-      // 2. Fetch Similar Products (limit to 5 to safely filter out the active one)
+      // 2. Fetch Similar Products
       const similarData = await getProductsInCollection(5);
       if (similarData) {
         const filtered = similarData.filter(p => p.node.handle !== resolvedParams.handle).slice(0, 3);
@@ -221,12 +221,24 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
     fetchProducts();
   }, [resolvedParams.handle]);
 
+  // ─── NEW: Auto-Detect Color Based on Shopify Product Title ────────────────
+  useEffect(() => {
+    if (product) {
+      const titleStr = product.title.toLowerCase();
+      if (titleStr.includes("sage") || titleStr.includes("green")) {
+        setSelectedColor(COLORS.find(c => c.value === "sage") || COLORS[0]);
+      } else if (titleStr.includes("sky") || titleStr.includes("blue")) {
+        setSelectedColor(COLORS.find(c => c.value === "blue") || COLORS[2]);
+      } else if (titleStr.includes("blush") || titleStr.includes("rose") || titleStr.includes("pink")) {
+        setSelectedColor(COLORS.find(c => c.value === "rose") || COLORS[1]);
+      }
+    }
+  }, [product]);
+
   // Update Active Variant ID when Size changes
   useEffect(() => {
     if (product && product.variants?.edges) {
-      // Look for a Shopify variant title that explicitly matches the selected size (e.g., "M" or "Sage / M")
       const matchedVariant = product.variants.edges.find(({ node }) => {
-        // Splits "Color / Size" into an array and strictly matches the size
         const variantParts = node.title.split('/').map(part => part.trim().toUpperCase());
         return variantParts.includes(selectedSize.toUpperCase());
       });
@@ -234,7 +246,6 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
       if (matchedVariant) {
         setSelectedVariantId(matchedVariant.node.id);
       } else {
-        // Fallback to first available if size match fails
         setSelectedVariantId(product.variants.edges[0].node.id);
       }
     }
@@ -268,7 +279,7 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
     setCartState("adding");
     addToCart({
       id: selectedVariantId,
-      title: `${product.title} - ${selectedSize}`, // Appends size to title for clarity in cart
+      title: `${product.title} - ${selectedSize}`,
       price: Number(price),
       image: mainImage,
       handle: product.handle,
@@ -307,21 +318,12 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
       key: "shipping",
       label: "Shipping & Returns",
       content: [
-        "Free shipping on orders above ₹2,500",
         "Dispatched within 3–5 business days",
         "Easy 14-day returns for unworn, tagged items",
         "Exchange available for size issues — no questions asked",
       ],
     },
   ];
-
-  // Dynamically assign background/border color for the image tag based on selected color
-  let badgeClass = "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
-  if (selectedColor.value === "sage") {
-    badgeClass = "bg-[rgba(143,168,130,0.12)] text-brand-sage border-[rgba(143,168,130,0.3)]";
-  } else if (selectedColor.value === "blue") {
-    badgeClass = "bg-[rgba(134,167,185,0.12)] text-brand-blue border-[rgba(134,167,185,0.3)]";
-  }
 
   return (
     <div className="min-h-screen bg-brand-bgprimary text-brand-ink font-body flex flex-col pt-24 text-left">
@@ -351,13 +353,6 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
             </div>
 
             <div className="relative w-full aspect-[4/5] md:h-[80vh] md:aspect-auto bg-brand-bgsecondary overflow-hidden rounded-xl border border-brand-borderlight">
-              <div className={`absolute top-4 left-4 z-10 flex items-center gap-2 border rounded-full px-3 py-1.5 ${badgeClass}`}>
-                <span className={`w-2.5 h-2.5 rounded-full ${selectedColor.bgClass}`} />
-                <span className="font-body text-[10px] tracking-widest uppercase opacity-80">
-                  {selectedColor.label}
-                </span>
-              </div>
-
               <AnimatePresence mode="wait">
                 <motion.div
                   key={`${selectedColor.value}-${safeIndex}`}
@@ -454,7 +449,6 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-2.5">
-                  {/* Updated to only show S, M, L */}
                   {["S", "M", "L"].map((s) => (
                     <button
                       key={s}

@@ -52,62 +52,10 @@ export default function RootLayout({
           <Footer />
           <CartDrawer />
         </CartProvider>
-        
+
         {/* --- MOBILE FIX 1: Add Tailwind hidden class for mobile --- */}
         <div id="vreya-cursor-ring" className="hidden md:block"></div>
         <div id="vreya-cursor-dot" className="hidden md:block"></div>
-        
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-(function() {
-  const ring = document.getElementById('vreya-cursor-ring');
-  const dot  = document.getElementById('vreya-cursor-dot');
-  
-  if (!ring || !dot) return;
-
-  // --- MOBILE FIX 2: Kill the script entirely if the device doesn't use a mouse ---
-  if (window.matchMedia("(hover: none)").matches || window.matchMedia("(pointer: coarse)").matches) {
-    ring.style.display = 'none';
-    dot.style.display = 'none';
-    return; 
-  }
-  
-  let mouseX = 0, mouseY = 0;
-  
-  document.addEventListener('mousemove', function(e) {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    ring.style.transform = 'translate(' + (mouseX - 15) + 'px, ' + (mouseY - 15) + 'px)';
-    dot.style.transform  = 'translate(' + (mouseX - 2.5) + 'px, ' + (mouseY - 2.5) + 'px)';
-    ring.style.opacity = '1';
-    dot.style.opacity  = '1';
-  });
-  
-  document.addEventListener('mouseleave', function() {
-    ring.style.opacity = '0';
-    dot.style.opacity  = '0';
-  });
-  
-  document.addEventListener('mouseenter', function() {
-    ring.style.opacity = '1';
-    dot.style.opacity  = '1';
-  });
-  
-  // Scale on interactive elements
-  document.addEventListener('mouseover', function(e) {
-    if (e.target.closest('a, button, [data-hover]')) {
-      ring.style.width  = '52px';
-      ring.style.height = '52px';
-    } else {
-      ring.style.width  = '30px';
-      ring.style.height = '30px';
-    }
-  });
-})();
-`
-          }}
-        />
       </body>
     </html>
   );

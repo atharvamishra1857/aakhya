@@ -25,7 +25,7 @@ export default function Footer() {
                 src="/logo.png"
                 alt="VREYA Logo"
                 fill
-                className="object-contain object-left"
+                className="object-contain object-left rounded-full"
               />
             </div>
 
