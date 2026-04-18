@@ -1,14 +1,13 @@
 "use client";
 
-
-
 import { useState, useEffect, use } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShieldCheck, Check, X, ChevronDown, Ruler } from "lucide-react";
+import { Check, X, ChevronDown, Ruler } from "lucide-react";
 import Navbar from "@/components/navbar";
 import { useCart } from "@/context/cartcontext";
-import { getProduct, ShopifyProduct } from "@/lib/shopify";
+import { getProduct, getProductsInCollection, ShopifyProduct, ShopifyProductNode } from "@/lib/shopify";
 import Image from "next/image";
+import Link from "next/link";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type CartState = "idle" | "adding" | "success";
@@ -18,19 +17,15 @@ type AccordionKey = "fabric" | "care" | "shipping";
 function parseMetafield(metafield: any): string[] | null {
   if (!metafield) return null;
 
-  // 1. Check if Shopify returned expanded Metaobject references
   if (metafield.references?.edges?.length > 0) {
     return metafield.references.edges.map((edge: any) => {
       const node = edge.node;
-      
-      // Look for a "name" or "label" field
       if (node.fields) {
         const nameField = node.fields.find((f: any) => f.key === "name" || f.key === "label");
         if (nameField && nameField.value) {
-          return nameField.value.replace(/^"|"$/g, ''); // Remove extra quotes
+          return nameField.value.replace(/^"|"$/g, '');
         }
       }
-      // Fallback: format the handle (e.g., "dry-clean-only" -> "Dry Clean Only")
       if (node.handle) {
         return node.handle
           .split('-')
@@ -41,7 +36,6 @@ function parseMetafield(metafield: any): string[] | null {
     }).filter(Boolean);
   }
 
-  // 2. Fallback to standard text parsing
   if (!metafield.value) return null;
   try {
     const parsed = JSON.parse(metafield.value);
@@ -57,13 +51,11 @@ function parseMetafield(metafield: any): string[] | null {
   }
 }
 
-// ─── Size chart data ──────────────────────────────────────────────────────────
+// ─── Size chart data (Updated to just S, M, L) ────────────────────────────────
 const SIZE_CHART = [
-  { size: "XS", chest: "32–33", waist: "25–26", hip: "35–36", length: "24" },
   { size: "S",  chest: "34–35", waist: "27–28", hip: "37–38", length: "24.5" },
   { size: "M",  chest: "36–37", waist: "29–30", hip: "39–40", length: "25" },
   { size: "L",  chest: "38–40", waist: "31–33", hip: "41–43", length: "25.5" },
-  { size: "XL", chest: "41–43", waist: "34–36", hip: "44–46", length: "26" },
 ];
 
 // ─── Color config ─────────────────────────────────────────────────────────────
@@ -143,7 +135,6 @@ function SizeChartModal({ onClose }: { onClose: () => void }) {
           className="bg-brand-bgprimary rounded-2xl border border-brand-borderlight shadow-2xl w-full max-w-lg p-8 relative"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <Ruler size={16} className="text-brand-sage" strokeWidth={1.5} />
@@ -161,7 +152,6 @@ function SizeChartModal({ onClose }: { onClose: () => void }) {
             All measurements in inches. When between sizes, size up for a relaxed fit.
           </p>
 
-          {/* Table */}
           <div className="overflow-x-auto rounded-xl border border-brand-borderlight">
             <table className="w-full text-left font-body text-[13px]">
               <thead>
@@ -203,6 +193,7 @@ function SizeChartModal({ onClose }: { onClose: () => void }) {
 export default function ProductPage({ params }: { params: Promise<{ handle: string }> }) {
   const resolvedParams = use(params);
   const [product, setProduct] = useState<ShopifyProduct | null>(null);
+  const [similarProducts, setSimilarProducts] = useState<ShopifyProductNode[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [cartState, setCartState] = useState<CartState>("idle");
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
@@ -213,16 +204,41 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
 
   const { addToCart } = useCart();
 
+  // Fetch Current Product AND Similar Products
   useEffect(() => {
-    async function fetchProduct() {
-      const data = await getProduct(resolvedParams.handle);
-      setProduct(data);
-      if (data && data.variants && data.variants.edges.length > 0) {
-        setSelectedVariantId(data.variants.edges[0].node.id);
+    async function fetchProducts() {
+      // 1. Fetch Main Product
+      const productData = await getProduct(resolvedParams.handle);
+      setProduct(productData);
+
+      // 2. Fetch Similar Products (limit to 5 to safely filter out the active one)
+      const similarData = await getProductsInCollection(5);
+      if (similarData) {
+        const filtered = similarData.filter(p => p.node.handle !== resolvedParams.handle).slice(0, 3);
+        setSimilarProducts(filtered);
       }
     }
-    fetchProduct();
+    fetchProducts();
   }, [resolvedParams.handle]);
+
+  // Update Active Variant ID when Size changes
+  useEffect(() => {
+    if (product && product.variants?.edges) {
+      // Look for a Shopify variant title that explicitly matches the selected size (e.g., "M" or "Sage / M")
+      const matchedVariant = product.variants.edges.find(({ node }) => {
+        // Splits "Color / Size" into an array and strictly matches the size
+        const variantParts = node.title.split('/').map(part => part.trim().toUpperCase());
+        return variantParts.includes(selectedSize.toUpperCase());
+      });
+
+      if (matchedVariant) {
+        setSelectedVariantId(matchedVariant.node.id);
+      } else {
+        // Fallback to first available if size match fails
+        setSelectedVariantId(product.variants.edges[0].node.id);
+      }
+    }
+  }, [selectedSize, product]);
 
   if (!product) {
     return (
@@ -232,7 +248,7 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
     );
   }
 
-  // Filter images by selected color keyword (falls back to all images)
+  // Filter images by selected color keyword
   const allImages = product.images.edges.map((e) => e.node.url);
   const filteredImages = allImages.filter((url) =>
     url.toLowerCase().includes(selectedColor.value)
@@ -244,7 +260,7 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
 
   const handleColorSelect = (color: typeof COLORS[0]) => {
     setSelectedColor(color);
-    setActiveIndex(0); // reset to first image of new color
+    setActiveIndex(0); 
   };
 
   const handleAddToCart = () => {
@@ -252,7 +268,7 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
     setCartState("adding");
     addToCart({
       id: selectedVariantId,
-      title: product.title,
+      title: `${product.title} - ${selectedSize}`, // Appends size to title for clarity in cart
       price: Number(price),
       image: mainImage,
       handle: product.handle,
@@ -264,8 +280,6 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
   const toggleAccordion = (key: AccordionKey) =>
     setOpenAccordion((prev) => (prev === key ? null : key));
 
-  // ─── Dynamic Accordion Data Binding ─────────────────────────────────────────
-  // We pass the entire Metafield object into the parser so it can read the expanded references
   const fabricData = parseMetafield(product.fabricCustom) || parseMetafield(product.fabricShopify);
   const careData = parseMetafield(product.careCustom) || parseMetafield(product.careShopify);
 
@@ -301,6 +315,14 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
     },
   ];
 
+  // Dynamically assign background/border color for the image tag based on selected color
+  let badgeClass = "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
+  if (selectedColor.value === "sage") {
+    badgeClass = "bg-[rgba(143,168,130,0.12)] text-brand-sage border-[rgba(143,168,130,0.3)]";
+  } else if (selectedColor.value === "blue") {
+    badgeClass = "bg-[rgba(134,167,185,0.12)] text-brand-blue border-[rgba(134,167,185,0.3)]";
+  }
+
   return (
     <div className="min-h-screen bg-brand-bgprimary text-brand-ink font-body flex flex-col pt-24 text-left">
       <Navbar />
@@ -312,7 +334,6 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
 
           {/* ── LEFT: Image Gallery ─────────────────────────────────────── */}
           <div className="w-full lg:w-[60%] flex flex-col md:flex-row gap-4 p-6 lg:p-12">
-            {/* Desktop thumbnails */}
             <div className="hidden md:flex flex-col gap-3 overflow-y-auto max-h-[80vh] hide-scrollbar pb-2 pr-2">
               {images.map((img, i) => (
                 <button
@@ -329,11 +350,10 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
               ))}
             </div>
 
-            {/* Main image */}
             <div className="relative w-full aspect-[4/5] md:h-[80vh] md:aspect-auto bg-brand-bgsecondary overflow-hidden rounded-xl border border-brand-borderlight">
-              <div className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-brand-bgprimary/80 backdrop-blur-sm border border-brand-borderlight rounded-full px-3 py-1.5">
+              <div className={`absolute top-4 left-4 z-10 flex items-center gap-2 border rounded-full px-3 py-1.5 ${badgeClass}`}>
                 <span className={`w-2.5 h-2.5 rounded-full ${selectedColor.bgClass}`} />
-                <span className="font-body text-[10px] tracking-widest uppercase text-brand-gray">
+                <span className="font-body text-[10px] tracking-widest uppercase opacity-80">
                   {selectedColor.label}
                 </span>
               </div>
@@ -357,7 +377,6 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
               </AnimatePresence>
             </div>
 
-            {/* Mobile thumbnails */}
             <div className="flex md:hidden gap-3 mt-2 overflow-x-auto hide-scrollbar pb-2">
               {images.map((img, i) => (
                 <button
@@ -379,13 +398,6 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
           <div className="w-full lg:w-[40%] px-6 pb-24 lg:py-12 lg:pr-12 text-left">
             <div className="lg:sticky lg:top-[120px] max-w-lg mx-auto lg:mx-0">
 
-              <div className="flex items-center gap-3 bg-[rgba(143,168,130,0.1)] text-brand-sage border border-brand-sage/20 mb-6 w-fit px-3 py-1 rounded-full">
-                <ShieldCheck size={14} strokeWidth={1.5} />
-                <span className="font-body text-[10px] tracking-widest uppercase font-medium">
-                  Atelier Authenticity Mark
-                </span>
-              </div>
-
               <h1 className="font-display text-[32px] md:text-[40px] font-medium leading-[1.1] mb-2 text-brand-ink">
                 {product.title}
               </h1>
@@ -396,7 +408,6 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
                 </span>
               </div>
 
-              {/* ── Dynamic HTML Description ───────────────────────────────── */}
               <div 
                 className="font-body text-brand-gray leading-[1.8] text-[15px] mb-10 [&>p]:mb-4 [&>strong]:font-medium [&>strong]:text-brand-ink"
                 dangerouslySetInnerHTML={{ 
@@ -404,7 +415,6 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
                 }} 
               />
 
-              {/* ── Color selector ─────────────────────────────────────── */}
               <div className="mb-8">
                 <div className="flex items-center gap-2 mb-3">
                   <p className="font-body text-[11px] tracking-widest uppercase text-brand-gray">
@@ -432,7 +442,6 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
                 </div>
               </div>
 
-              {/* ── Size selector ──────────────────────────────────────── */}
               <div className="mb-10">
                 <div className="flex justify-between items-end mb-3">
                   <p className="font-body text-[11px] tracking-widest uppercase text-brand-gray">Size</p>
@@ -445,7 +454,8 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-2.5">
-                  {["XS", "S", "M", "L", "XL"].map((s) => (
+                  {/* Updated to only show S, M, L */}
+                  {["S", "M", "L"].map((s) => (
                     <button
                       key={s}
                       onClick={() => setSelectedSize(s)}
@@ -461,7 +471,6 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
                 </div>
               </div>
 
-              {/* ── Add to cart ────────────────────────────────────────── */}
               <div className="mb-10">
                 <button
                   onClick={handleAddToCart}
@@ -494,7 +503,6 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
                 </button>
               </div>
 
-              {/* ── Accordion: Fabric / Care / Shipping ────────────────── */}
               <div className="border-t border-brand-borderlight">
                 {dynamicAccordionData.map(({ key, label, content }) => (
                   <AccordionItem
@@ -511,7 +519,6 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
           </div>
         </div>
 
-        {/* ── How It's Made ──────────────────────────────────────────────────── */}
         <section className="bg-brand-bgsecondary py-20 px-6 border-t border-brand-borderlight w-full">
           <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-12 justify-between">
             <div className="md:w-1/2">
@@ -542,26 +549,41 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
           </div>
         </section>
 
-        {/* ── Complete the Look ──────────────────────────────────────────────── */}
-        <section className="py-24 px-6 md:px-16 w-full text-center border-t border-brand-bgprimary">
-          <h3 className="font-display text-4xl text-brand-ink mb-12">Complete the Look</h3>
-          <div className="flex overflow-x-auto gap-6 pb-8 snap-x justify-center" style={{ scrollSnapType: "x mandatory" }}>
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex-none w-[80vw] md:w-[25vw] snap-center group">
-                <div className="aspect-[3/4] bg-brand-bgsecondary rounded-xl overflow-hidden mb-4 border border-brand-borderlight cursor-pointer relative">
-                  <Image
-                    src="https://images.unsplash.com/photo-1596455607563-ad6193f76b17"
-                    alt="styled"
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                </div>
-                <h4 className="font-display text-lg">Linen Trouser — Cream</h4>
-                <p className="font-body text-sm text-brand-gray mt-1">₹1,950</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* ── Similar Products ──────────────────────────────────────────────── */}
+        {similarProducts.length > 0 && (
+          <section className="py-24 px-6 md:px-16 w-full text-center border-t border-brand-bgprimary">
+            <h3 className="font-display text-4xl text-brand-ink mb-12">Complete the Look</h3>
+            <div className="flex overflow-x-auto gap-6 pb-8 snap-x justify-center" style={{ scrollSnapType: "x mandatory" }}>
+              {similarProducts.map((item) => {
+                const titleStr = item.node.title.toLowerCase();
+                let productCardBadge = "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
+                if (titleStr.includes("sage") || titleStr.includes("green")) {
+                  productCardBadge = "bg-[rgba(143,168,130,0.12)] text-brand-sage border-[rgba(143,168,130,0.3)]";
+                } else if (titleStr.includes("sky") || titleStr.includes("blue")) {
+                  productCardBadge = "bg-[rgba(134,167,185,0.12)] text-brand-blue border-[rgba(134,167,185,0.3)]";
+                }
+
+                return (
+                  <Link href={`/product/${item.node.handle}`} key={item.node.id} className="flex-none w-[80vw] md:w-[25vw] snap-center group">
+                    <div className="aspect-[3/4] bg-brand-bgprimary rounded-xl overflow-hidden mb-4 border border-brand-borderlight cursor-pointer relative shadow-[0_2px_12px_rgba(44,37,32,0.06)] group-hover:-translate-y-1 transition-all duration-300">
+                      <div className={`absolute top-3 right-3 z-10 border text-[11px] px-[8px] py-[2px] rounded-full font-body ${productCardBadge}`}>
+                        Limited
+                      </div>
+                      <Image
+                        src={item.node.images.edges[0]?.node.url || "https://images.unsplash.com/photo-1596455607563-ad6193f76b17"}
+                        alt={item.node.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                    </div>
+                    <h4 className="font-display text-lg text-brand-ink transition-colors">{item.node.title}</h4>
+                    <p className="font-body text-sm text-brand-gray mt-1">₹{item.node.priceRange.minVariantPrice.amount}</p>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );

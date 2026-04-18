@@ -97,7 +97,7 @@ export default function Home() {
           </h1>
 
           <p className="font-body text-base font-light text-brand-ivory opacity-90 max-w-md">
-            Limited edition embroidered vests for everyday luxury
+            Limited edition embroidered clothes for everyday luxury
           </p>
 
           <div className="pt-2">
@@ -143,15 +143,28 @@ export default function Home() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {products.slice(0, 3).map((item) => (
+              <Link href={`/product/${item.node.handle}`} key={item.node.id}>
               <div
-                key={item.node.id}
                 className="group relative bg-brand-bgprimary border border-brand-borderlight rounded-xl overflow-hidden shadow-[0_2px_12px_rgba(44,37,32,0.06)] hover:-translate-y-1 transition-all duration-300"
               >
                 {/* Parent has 'relative' here, which is perfect for fill */}
                 <div className="aspect-square overflow-hidden relative">
-                  <div className="absolute top-3 right-3 z-10 bg-[rgba(201,125,125,0.12)] text-brand-rose border border-[rgba(201,125,125,0.3)] text-[11px] px-[8px] py-[2px] rounded-full font-body">
-                    Limited
-                  </div>
+                  {(() => {
+                    const titleStr = item.node.title.toLowerCase();
+                    let colorClass = "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
+                    if (titleStr.includes("sage") || titleStr.includes("green")) {
+                      colorClass = "bg-[rgba(143,168,130,0.12)] text-brand-sage border-[rgba(143,168,130,0.3)]";
+                    } else if (titleStr.includes("sky") || titleStr.includes("blue")) {
+                      colorClass = "bg-[rgba(134,167,185,0.12)] text-brand-blue border-[rgba(134,167,185,0.3)]";
+                    } else if (titleStr.includes("blush") || titleStr.includes("rose") || titleStr.includes("pink")) {
+                      colorClass = "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
+                    }
+                    return (
+                      <div className={`absolute top-3 right-3 z-10 border text-[11px] px-[8px] py-[2px] rounded-full font-body ${colorClass}`}>
+                        Limited
+                      </div>
+                    );
+                  })()}
                   <Image
                     src={
                       item.node.images.edges[0]?.node.url ||
@@ -184,6 +197,7 @@ export default function Home() {
                   </button>
                 </div>
               </div>
+              </Link>
             ))}
           </div>
         </section>
@@ -212,7 +226,7 @@ export default function Home() {
           </p>
           <div className="flex gap-6 py-4">
             <Link
-              href="/collection/sage"
+              href="/collection"
               className="flex flex-col items-center gap-2 cursor-pointer group"
             >
               <div className="w-[28px] h-[28px] rounded-full bg-brand-sage group-hover:scale-110 transition-transform shadow-sm"></div>
@@ -221,7 +235,7 @@ export default function Home() {
               </span>
             </Link>
             <Link
-              href="/collection/blush"
+              href="/collection"
               className="flex flex-col items-center gap-2 cursor-pointer group"
             >
               <div className="w-[28px] h-[28px] rounded-full bg-brand-rose group-hover:scale-110 transition-transform shadow-sm"></div>
@@ -230,7 +244,7 @@ export default function Home() {
               </span>
             </Link>
             <Link
-              href="/collection/sky"
+              href="/collection"
               className="flex flex-col items-center gap-2 cursor-pointer group"
             >
               <div className="w-[28px] h-[28px] rounded-full bg-brand-blue group-hover:scale-110 transition-transform shadow-sm"></div>
@@ -292,16 +306,16 @@ export default function Home() {
         >
           {[
             {
-              title: "Morning light",
-              Image: "/vreya1.jpg",
+              title: "Studio Sessions",
+              Image: "/vreya-mainpage-bottom-edited(2).png",
             },
             {
-              title: "Studio sessions",
-              Image: "/vreya2.jpg",
+              title: "Weekend Brunch",
+              Image: "/vreya-mainpage-bottom-edited1.png",
             },
             {
-              title: "Weekend brunch",
-              Image: "/vreya3.jpg",
+              title: "Morning Light",
+              Image: "/vreya-mainpage-bottom2.png",
             },
           ].map((item, i) => (
             <div

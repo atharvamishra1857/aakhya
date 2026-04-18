@@ -44,11 +44,11 @@ export default function CollectionPage() {
 
       {/* Page Header Banner */}
       <div className="relative w-full h-[40vh] md:h-[50vh] flex flex-col items-center justify-center mb-12 overflow-hidden">
-        <Image src="https://images.unsplash.com/photo-1596455607563-ad6193f76b17?q=80&w=1920" alt="Collection Banner" width={1920} height={1080} className="absolute inset-0 w-full h-full object-cover" />
+        <Image src="/collection-top.png" alt="Collection Banner" width={1920} height={1080} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-brand-ink/40"></div>
         <div className="relative z-10 text-center text-brand-ivory px-6 mt-16">
-          <p className="font-body text-xs tracking-[0.3em] uppercase mb-4 opacity-80">The Complete Edit</p>
-          <h1 className="text-5xl md:text-7xl font-display italic">Linen Vests</h1>
+          <p className="font-display underline text-4xl italic tracking-[0.3em] mb-4 opacity-80">The Complete Edit</p>
+          
         </div>
       </div>
 

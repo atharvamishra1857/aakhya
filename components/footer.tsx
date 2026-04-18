@@ -34,24 +34,27 @@ export default function Footer() {
               Timeless Elegance in Every Thread.
             </p>
             <div className="flex items-center gap-5 mt-2">
-              <a
-                href="#"
+              <Link
+                href="https://instagram.com"
+                target="_blank"
                 className="text-brand-ivory/70 hover:text-brand-rose transition-colors"
               >
                 <Instagram size={20} strokeWidth={1} />
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="https://facebook.com"
+                target="_blank"
                 className="text-brand-ivory/70 hover:text-brand-rose transition-colors"
               >
                 <Facebook size={20} strokeWidth={1} />
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="https://twitter.com"
+                target="_blank"
                 className="text-brand-ivory/70 hover:text-brand-rose transition-colors"
               >
                 <Twitter size={20} strokeWidth={1} />
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -63,42 +66,26 @@ export default function Footer() {
             <ul className="flex flex-col gap-4 text-sm font-light text-brand-cream/80">
               <li>
                 <Link
-                  href="/collection/banarasi"
+                  href="/collection"
                   className="hover:text-brand-gold transition-colors"
                 >
-                  Banarasi Silk
+                  Vasara - Powder Blue
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/collection/kanjivaram"
+                  href="/collection"
                   className="hover:text-brand-gold transition-colors"
                 >
-                  Kanjivaram
+                  Vasara - Sage Green
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/collection/cotton"
+                  href="/collection"
                   className="hover:text-brand-gold transition-colors"
                 >
-                  Cotton Handloom
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/collection/bridal"
-                  className="hover:text-brand-gold transition-colors"
-                >
-                  Bridal Edit
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/collection/new"
-                  className="hover:text-brand-gold transition-colors"
-                >
-                  New Arrivals
+                  Vasara - Blush Pink
                 </Link>
               </li>
             </ul>
@@ -120,7 +107,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/support"
+                  href="/faq"
                   className="hover:text-brand-gold transition-colors"
                 >
                   Shipping & Returns
@@ -136,7 +123,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/support"
+                  href="/faq"
                   className="hover:text-brand-gold transition-colors"
                 >
                   Care Instructions
@@ -144,7 +131,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/support"
+                  href="/faq"
                   className="hover:text-brand-gold transition-colors"
                 >
                   FAQs
@@ -161,14 +148,9 @@ export default function Footer() {
             <ul className="flex flex-col gap-6 text-sm font-light text-brand-cream/80">
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="text-brand-gold shrink-0 mt-0.5" />
-                <span>
-                  Pune, Maharashtra 411013, India
-                </span>
+                <span>Pune, Maharashtra 411013, India</span>
               </li>
-              <li className="flex items-center gap-3">
-                <Phone size={18} className="text-brand-gold shrink-0" />
-                <span>+91 XXXXX XXXXX</span>
-              </li>
+
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-brand-gold shrink-0" />
                 <span>[EMAIL_ADDRESS]</span>
@@ -179,18 +161,16 @@ export default function Footer() {
 
         {/* --- BOTTOM COPYRIGHT BAR --- */}
         <div className="border-t border-brand-cream/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-light text-brand-cream/50">
-          <p>
-            © {new Date().getFullYear()} VREYA. All rights reserved.
-          </p>
+          <p>© {new Date().getFullYear()} VREYA. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <Link
-              href="/support"
+              href="/privacy-policy"
               className="hover:text-brand-gold transition-colors"
             >
               Privacy Policy
             </Link>
             <Link
-              href="/support"
+              href="/terms-of-service"
               className="hover:text-brand-gold transition-colors"
             >
               Terms of Service
@@ -201,4 +181,3 @@ export default function Footer() {
     </footer>
   );
 }
-

@@ -125,8 +125,20 @@ export default function CartDrawer() {
                                   </button>
                                 </div>
 
-                                <p className="font-body text-brand-ink/60 text-xs tracking-wider uppercase mt-1">
-                                  {item.handle.includes('jacket') ? 'Hand Embroidered' : 'Atelier Crafted'}
+                                <p className="font-body text-brand-ink/60 text-xs tracking-wider uppercase mt-1 flex items-center gap-2">
+                                  {(() => {
+                                    const titleStr = (item.title + ' ' + item.handle).toLowerCase();
+                                    let colorBg = "bg-brand-rose";
+                                    if (titleStr.includes("sage") || titleStr.includes("green")) {
+                                      colorBg = "bg-brand-sage";
+                                    } else if (titleStr.includes("powder blue") || titleStr.includes("powder blue")) {
+                                      colorBg = "bg-brand-powderblue";
+                                    } else if (titleStr.includes("blush pink") || titleStr.includes("blush pink")) {
+                                      colorBg = "bg-brand-blushpink";
+                                    }
+                                    return <span className={`w-2 h-2 rounded-full ${colorBg}`} />;
+                                  })()}
+                                  {item.handle.includes('vasara') ? 'Vasara - Powder Blue' : ''}
                                 </p>
 
                                 <div className="flex justify-between items-end mt-auto">
@@ -173,9 +185,9 @@ export default function CartDrawer() {
                         </p>
                         
                         {/* FIX 2: Fancy, high-contrast Checkout Button */}
-                        <button className="w-full bg-brand-ink text-white hover:bg-[#C9A96E] hover:text-brand-ink h-14 rounded-full font-body font-medium tracking-[0.2em] text-sm uppercase flex items-center justify-center transition-all duration-500 shadow-lg hover:shadow-xl border border-transparent">
+                        <Link href="/checkout" onClick={closeCart} className="w-full bg-brand-ink text-white hover:bg-[#C9A96E] hover:text-brand-ink h-14 rounded-full font-body font-medium tracking-[0.2em] text-sm uppercase flex items-center justify-center transition-all duration-500 shadow-lg hover:shadow-xl border border-transparent hover:opacity-90">
                           Checkout
-                        </button>
+                        </Link>
                       </div>
                     )}
                   </div>

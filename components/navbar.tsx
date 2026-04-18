@@ -364,13 +364,14 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
                     "Occasion Wear",
                     "Co-ords & Sets",
                   ].map((term) => (
-                    <button
+                    <Link
+                      href="/collection"
                       key={term}
                       onClick={() => setIsSearchOpen(false)}
                       className="text-brand-ink/70 hover:text-brand-ink transition-colors font-body text-sm md:text-base border-b border-transparent hover:border-brand-gold pb-1 min-h-[44px] tracking-wide"
                     >
                       {term}
-                    </button>
+                    </Link>
                   ))}
                 </div>
               </motion.div>
