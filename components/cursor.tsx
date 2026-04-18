@@ -6,20 +6,21 @@ export default function Cursor() {
   const [isMounted, setIsMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
+  // STEP 1: Wait for the component to safely mount
   useEffect(() => {
-    // 1. Tell React the component has safely mounted in the browser
     setIsMounted(true);
+    setIsMobile(window.matchMedia("(hover: none)").matches || window.matchMedia("(pointer: coarse)").matches);
+  }, []);
 
-    // 2. Check if it's a touch device
-    const checkMobile = window.matchMedia("(hover: none)").matches || window.matchMedia("(pointer: coarse)").matches;
-    setIsMobile(checkMobile);
+  // STEP 2: Only run the mouse tracking AFTER isMounted becomes true
+  useEffect(() => {
+    // If it's not mounted yet, or it's a mobile device, do nothing.
+    if (!isMounted || isMobile) return;
 
-    // 3. If it's mobile, kill the script so it doesn't run
-    if (checkMobile) return;
-
-    // 4. Safely grab the elements now that they exist
+    // Because isMounted is true, React has definitely rendered these elements!
     const ring = document.getElementById("vreya-cursor-ring");
     const dot = document.getElementById("vreya-cursor-dot");
+    
     if (!ring || !dot) return;
 
     let mouseX = 0, mouseY = 0;
@@ -59,17 +60,14 @@ export default function Cursor() {
     document.addEventListener("mouseenter", onMouseEnter);
     document.addEventListener("mouseover", onMouseOver);
 
-    // Cleanup event listeners when component unmounts
     return () => {
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseleave", onMouseLeave);
       document.removeEventListener("mouseenter", onMouseEnter);
       document.removeEventListener("mouseover", onMouseOver);
     };
-  }, []);
+  }, [isMounted, isMobile]); // <--- This array tells React to run this again once it mounts!
 
-  // If the component hasn't mounted yet, OR if it's a mobile device, render NOTHING.
-  // This completely solves the Hydration Mismatch!
   if (!isMounted || isMobile) return null;
 
   return (
