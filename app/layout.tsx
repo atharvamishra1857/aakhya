@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartProvider } from "@/context/cartcontext"; // Import Provider
 import CartDrawer from "@/components/cartDrawer"; // Import Component
 import Footer from "@/components/footer";
+import CustomCursor from "@/components/customCursor";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -51,6 +52,7 @@ export default function RootLayout({
 
           <Footer />
           <CartDrawer />
+          <CustomCursor />
         </CartProvider>
 
         {/* --- MOBILE FIX 1: Add Tailwind hidden class for mobile --- */}
