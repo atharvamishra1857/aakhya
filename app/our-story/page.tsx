@@ -40,7 +40,7 @@ export default function OurStory() {
           </div>
           <div className="w-full md:w-1/2 h-[50vh] md:h-[80vh] relative">
             <Image
-              src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=1920"
+              src="/vreya-collection1.jpeg"
               alt="Fabric flatlay"
               width={800}
               height={1200}
@@ -64,7 +64,7 @@ export default function OurStory() {
           </div>
           <div className="w-full md:w-1/2 h-[50vh] md:h-[80vh] relative">
             <Image
-              src="https://images.unsplash.com/photo-1556909211-3698d532d7dc?q=80&w=1920"
+              src="/vreya-5.png"
               alt="Designer at work"
               width={800}
               height={1200}
@@ -87,7 +87,7 @@ export default function OurStory() {
           </p>
           <div className="w-full h-[60vh] md:h-[80vh] relative max-w-6xl mx-auto overflow-hidden rounded-2xl">
             <Image
-              src="https://images.unsplash.com/photo-1619441207978-3d326c46e2c9?q=80&w=1920"
+              src="/hero-bg.jpg"
               alt="Legacy craft"
               width={1200}
               height={800}

@@ -25,7 +25,7 @@ export default function Footer() {
                 src="/logo.png"
                 alt="VREYA Logo"
                 fill
-                className="object-contain object-left rounded-full"
+                className="object-contain object-left"
               />
             </div>
 
@@ -35,7 +35,7 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-5 mt-2">
               <Link
-                href="https://instagram.com"
+                href="https://instagram.com/vreya.in"
                 target="_blank"
                 className="text-brand-ivory/70 hover:text-brand-rose transition-colors"
               >
@@ -107,31 +107,15 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/faq"
+                  href="/support"
                   className="hover:text-brand-gold transition-colors"
                 >
                   Shipping & Returns
                 </Link>
               </li>
-              <li>
+               <li>
                 <Link
-                  href="/account"
-                  className="hover:text-brand-gold transition-colors"
-                >
-                  Track Your Order
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/faq"
-                  className="hover:text-brand-gold transition-colors"
-                >
-                  Care Instructions
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/faq"
+                  href="/support"
                   className="hover:text-brand-gold transition-colors"
                 >
                   FAQs
@@ -148,12 +132,12 @@ export default function Footer() {
             <ul className="flex flex-col gap-6 text-sm font-light text-brand-cream/80">
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="text-brand-gold shrink-0 mt-0.5" />
-                <span>Pune, Maharashtra 411013, India</span>
+                <span>DM us on Instagram at "@vreya.in"</span>
               </li>
 
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-brand-gold shrink-0" />
-                <span>[EMAIL_ADDRESS]</span>
+                <span>support@vreyaofficial.com</span>
               </li>
             </ul>
           </div>

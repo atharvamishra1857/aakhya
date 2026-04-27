@@ -40,7 +40,7 @@ function parseMetafield(metafield: any): string[] | null {
   try {
     const parsed = JSON.parse(metafield.value);
     if (Array.isArray(parsed)) {
-      const cleanArray = parsed.filter(item => typeof item === 'string' && !item.includes("gid://"));
+      const cleanArray = parsed.filter((item: any) => typeof item === 'string' && !item.includes("gid://"));
       return cleanArray.length > 0 ? cleanArray : null;
     }
     if (typeof parsed === 'string' && parsed.includes("gid://")) return null;
@@ -207,11 +207,9 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
   // Fetch Current Product AND Similar Products
   useEffect(() => {
     async function fetchProducts() {
-      // 1. Fetch Main Product
       const productData = await getProduct(resolvedParams.handle);
       setProduct(productData);
 
-      // 2. Fetch Similar Products
       const similarData = await getProductsInCollection(5);
       if (similarData) {
         const filtered = similarData.filter(p => p.node.handle !== resolvedParams.handle).slice(0, 3);
@@ -221,7 +219,7 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
     fetchProducts();
   }, [resolvedParams.handle]);
 
-  // ─── NEW: Auto-Detect Color Based on Shopify Product Title ────────────────
+  // Auto-Detect Color Based on Shopify Product Title
   useEffect(() => {
     if (product) {
       const titleStr = product.title.toLowerCase();
@@ -235,21 +233,47 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
     }
   }, [product]);
 
-  // Update Active Variant ID when Size changes
+  // ─── FIX: Update Active Variant ID matching BOTH Size and Color ──────────────
   useEffect(() => {
     if (product && product.variants?.edges) {
       const matchedVariant = product.variants.edges.find(({ node }) => {
+        // 1. Check using Shopify's structured 'selectedOptions' if available
+        if (node.selectedOptions) {
+          const hasSize = node.selectedOptions.some((o: any) => 
+            o.name.toLowerCase() === "size" && o.value.toUpperCase() === selectedSize.toUpperCase()
+          );
+          const hasColor = node.selectedOptions.some((o: any) => 
+            o.name.toLowerCase() === "color" && (o.value.toLowerCase().includes(selectedColor.label.toLowerCase()) || o.value.toLowerCase().includes(selectedColor.value))
+          );
+          
+          // If the product uses color variants, require both
+          if (node.selectedOptions.some((o:any) => o.name.toLowerCase() === "color")) {
+            return hasSize && hasColor;
+          }
+          return hasSize;
+        }
+
+        // 2. Fallback: Parse the title manually (e.g., "M / Blush" or "Sage / M")
         const variantParts = node.title.split('/').map(part => part.trim().toUpperCase());
-        return variantParts.includes(selectedSize.toUpperCase());
+        const matchesSize = variantParts.includes(selectedSize.toUpperCase());
+        
+        const titleLower = node.title.toLowerCase();
+        const matchesColor = titleLower.includes(selectedColor.label.toLowerCase()) || titleLower.includes(selectedColor.value);
+
+        return matchesSize && matchesColor;
       });
 
       if (matchedVariant) {
         setSelectedVariantId(matchedVariant.node.id);
       } else {
-        setSelectedVariantId(product.variants.edges[0].node.id);
+        // Ultimate fallback: Just grab the matching size if the color check fails
+        const sizeFallback = product.variants.edges.find(({ node }) => {
+          return node.title.split('/').map(part => part.trim().toUpperCase()).includes(selectedSize.toUpperCase());
+        });
+        setSelectedVariantId(sizeFallback ? sizeFallback.node.id : product.variants.edges[0].node.id);
       }
     }
-  }, [selectedSize, product]);
+  }, [selectedSize, selectedColor, product]);
 
   if (!product) {
     return (
@@ -274,15 +298,16 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
     setActiveIndex(0); 
   };
 
+  // ─── FIX: Send exact size/color mapping to the Cart ──────────────────────────
   const handleAddToCart = () => {
     if (cartState !== "idle" || !selectedVariantId) return;
     setCartState("adding");
     addToCart({
       id: selectedVariantId,
-      title: `${product.title} - ${selectedSize}`,
+      title: `${product.title} - ${selectedSize} (${selectedColor.label})`,
       price: Number(price),
       image: mainImage,
-      handle: product.handle,
+      handle: product.handle
     });
     setTimeout(() => setCartState("success"), 1200);
     setTimeout(() => setCartState("idle"), 3000);

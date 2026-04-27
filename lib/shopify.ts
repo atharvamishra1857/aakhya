@@ -40,6 +40,7 @@ export type ShopifyProduct = {
         title: string;
         availableForSale: boolean;
         price: { amount: string; currencyCode: string };
+        selectedOptions: { name: string; value: string }[];
       };
     }[];
   };
@@ -114,6 +115,7 @@ export async function getProductsInCollection(first = 20): Promise<ShopifyProduc
               edges {
                 node {
                   id title availableForSale
+                  selectedOptions { name value }
                   price { amount currencyCode }
                 }
               }
@@ -148,6 +150,7 @@ export async function getProduct(handle: string): Promise<ShopifyProduct | null>
           edges {
             node {
               id title availableForSale
+              selectedOptions { name value }
               price { amount currencyCode }
             }
           }

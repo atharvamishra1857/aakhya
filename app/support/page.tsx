@@ -14,18 +14,13 @@ const faqs = [
   {
     question: "What is your return and exchange policy?",
     answer:
-      "We offer a 7-day return policy for unworn pieces in their original folding and packaging. Custom-stitched items and limited edition drops are non-refundable unless defective.",
+      "We offer a 7-day return policy on the damaged products only that might have been damaged either in the shipping or by us. Because we are a mew brand we will be needing a unboxing video to confirm the same. Hope you'll understand and give us the leverage.",
   },
   {
     question: "Do you ship internationally?",
     answer:
-      "Yes, we ship our handcrafted pieces worldwide. International shipping typically takes 7-14 business days. Customs duties and taxes are calculated at checkout.",
-  },
-  {
-    question: "How can I verify the authenticity of my linen vest?",
-    answer:
-      "Every Vreya Hand Embroidered garment comes with an Atelier Authenticity Mark guaranteeing 100% artisanal craft and linen source.",
-  },
+      "No, we don't ship internationally as of now. But if you keep giving us the love we might start soon.",
+  }
 ];
 
 export default function SupportPage() {
@@ -101,17 +96,8 @@ export default function SupportPage() {
                 </h3>
                 <div className="flex items-center gap-3 text-sm font-light text-brand-ink">
                   <Mail size={16} className="text-brand-sage" />
-                  <span>concierge@vreya.com</span>
+                  <span>support@vreyaofficial.com</span>
                 </div>
-              </div>
-              <div>
-                 <h3 className="font-body uppercase tracking-widest text-[11px] text-brand-sage mb-4 underline">
-                   Visit Our Studio
-                 </h3>
-                 <div className="flex items-start gap-3 text-sm font-light text-brand-ink">
-                   <MapPin size={16} className="text-brand-sage shrink-0 mt-0.5" />
-                   <span>Pune, Maharashtra 411013, India</span>
-                 </div>
               </div>
             </div>
           </motion.div>
