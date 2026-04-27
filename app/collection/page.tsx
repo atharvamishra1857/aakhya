@@ -44,7 +44,7 @@ export default function CollectionPage() {
 
       {/* Page Header Banner */}
       <div className="relative w-full h-[40vh] md:h-[50vh] flex flex-col items-center justify-center mb-12 overflow-hidden">
-        <Image src="/collection-top.png" alt="Collection Banner" width={1920} height={1080} className="absolute inset-0 w-full h-full object-cover" />
+        <Image src="/Collection-top.png" alt="Collection Banner" width={1920} height={1080} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-brand-ink/40"></div>
         <div className="relative z-10 text-center text-brand-ivory px-6 mt-16">
           <p className="font-display underline text-4xl italic tracking-[0.3em] mb-4 opacity-80">The Complete Edit</p>
