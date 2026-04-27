@@ -333,10 +333,7 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
       key: "care",
       label: "Care Instructions",
       content: careData || [
-        "Hand wash cold or delicate machine cycle",
-        "Use mild, pH-neutral detergent",
-        "Lay flat to dry — do not tumble dry",
-        "Cool iron on reverse; no steam on embroidery",
+        "Dry clean recommended",
       ],
     },
     {
@@ -344,8 +341,6 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
       label: "Shipping & Returns",
       content: [
         "Dispatched within 3–5 business days",
-        "Easy 14-day returns for unworn, tagged items",
-        "Exchange available for size issues — no questions asked",
       ],
     },
   ];
@@ -538,7 +533,7 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
           </div>
         </div>
 
-        <section className="bg-brand-bgsecondary py-20 px-6 border-t border-brand-borderlight w-full">
+        {/* <section className="bg-brand-bgsecondary py-20 px-6 border-t border-brand-borderlight w-full">
           <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-12 justify-between">
             <div className="md:w-1/2">
               <h3 className="font-display text-2xl text-brand-ink mb-6">How It&apos;s Made</h3>
@@ -566,7 +561,7 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* ── Similar Products ──────────────────────────────────────────────── */}
         {similarProducts.length > 0 && (
