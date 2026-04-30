@@ -25,6 +25,7 @@ export type ShopifyProduct = {
   handle: string;
   description: string;
   descriptionHtml: string;
+  updatedAt: string;
   fabricCustom?: any;
   fabricShopify?: any;
   careCustom?: any;
@@ -98,7 +99,7 @@ export async function getProductsInCollection(first = 20): Promise<ShopifyProduc
       products(first: $first) {
         edges {
           node {
-            id title handle description descriptionHtml
+            id title handle description descriptionHtml updatedAt
             fabricCustom: metafield(namespace: "custom", key: "fabric") { value }
             fabricShopify: metafield(namespace: "shopify", key: "fabric") { 
               value 
@@ -133,7 +134,7 @@ export async function getProduct(handle: string): Promise<ShopifyProduct | null>
   const data = await shopifyFetch<any>(`
     query Product($handle: String!) {
       product(handle: $handle) {
-        id title handle description descriptionHtml
+        id title handle description descriptionHtml updatedAt
         fabricCustom: metafield(namespace: "custom", key: "fabric") { value }
         fabricShopify: metafield(namespace: "shopify", key: "fabric") { 
           value 

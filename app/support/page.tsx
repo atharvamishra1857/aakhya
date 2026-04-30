@@ -20,11 +20,37 @@ const faqs = [
     question: "Do you ship internationally?",
     answer:
       "No, we don't ship internationally as of now. But if you keep giving us the love we might start soon.",
-  }
+  },
 ];
 
 export default function SupportPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [result, setResult] = useState("");
+
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    // 1. Grab the form element to use later for resetting
+    const form = event.target as HTMLFormElement;
+    const formData = new FormData(form);
+
+    formData.append("access_key", "669de8d3-6564-4c3f-95c4-913e563532be");
+
+    const response = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      setResult("Success!");
+      // 2. Reset the form fields automatically on success
+      form.reset();
+    } else {
+      setResult("Error");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-brand-bgprimary text-brand-ink flex flex-col pt-24 font-body">
@@ -57,36 +83,45 @@ export default function SupportPage() {
             className="flex flex-col gap-10"
           >
             {/* The Form */}
-            <form
-              className="flex flex-col gap-6"
-              onSubmit={(e) => e.preventDefault()}
-            >
+            <form className="flex flex-col gap-6" onSubmit={onSubmit}>
               <h2 className="text-2xl font-display mb-2">Send a Message</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                 <input
                   type="text"
+                  name="first_name" // Added name attribute
                   placeholder="First Name"
                   className="w-full bg-brand-bgsecondary border-b border-brand-borderlight py-4 px-3 text-brand-ink placeholder:text-brand-gray/60 focus:outline-none focus:border-brand-rose transition-colors text-sm"
                 />
                 <input
                   type="text"
+                  name="last_name" // Added name attribute
                   placeholder="Last Name"
                   className="w-full bg-brand-bgsecondary border-b border-brand-borderlight py-4 px-3 text-brand-ink placeholder:text-brand-gray/60 focus:outline-none focus:border-brand-rose transition-colors text-sm"
                 />
               </div>
               <input
                 type="email"
+                name="email" // Added name attribute
+                required // Added required validation
                 placeholder="Email Address"
                 className="w-full bg-brand-bgsecondary border-b border-brand-borderlight py-4 px-3 text-brand-ink placeholder:text-brand-gray/60 focus:outline-none focus:border-brand-rose transition-colors text-sm"
               />
               <textarea
+                name="message" // Added name attribute
+                required // Added required validation
                 placeholder="How can we help you?"
                 rows={4}
                 className="w-full bg-brand-bgsecondary border-b border-brand-borderlight py-4 px-3 text-brand-ink placeholder:text-brand-gray/60 focus:outline-none focus:border-brand-rose transition-colors resize-none text-sm"
               ></textarea>
-              <button className="bg-brand-rose text-brand-ivory py-4 px-8 tracking-widest uppercase text-xs hover:bg-opacity-90 transition-colors w-fit mt-4 rounded-full">
+              <button
+                type="submit"
+                className="bg-brand-rose text-brand-ivory py-4 px-8 tracking-widest uppercase text-xs hover:bg-opacity-90 transition-colors w-fit mt-4 rounded-full"
+              >
                 Submit Request
               </button>
+
+              {/* Optional: Show the result message to the user */}
+              {result && <p className="text-sm mt-2">{result}</p>}
             </form>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-8">
@@ -133,15 +168,15 @@ export default function SupportPage() {
                   <AnimatePresence>
                     {openFaq === i && (
                       <motion.div
-                         initial={{ height: 0, opacity: 0 }}
-                         animate={{ height: "auto", opacity: 1 }}
-                         exit={{ height: 0, opacity: 0 }}
-                         transition={{ duration: 0.3, ease: "easeInOut" }}
-                         className="overflow-hidden"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        className="overflow-hidden"
                       >
-                         <p className="pb-6 text-brand-gray text-sm font-light leading-relaxed">
-                             {faq.answer}
-                         </p>
+                        <p className="pb-6 text-brand-gray text-sm font-light leading-relaxed">
+                          {faq.answer}
+                        </p>
                       </motion.div>
                     )}
                   </AnimatePresence>
