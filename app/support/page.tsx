@@ -14,7 +14,7 @@ const faqs = [
   {
     question: "What is your return and exchange policy?",
     answer:
-      "We offer a 7-day return policy on the damaged products only that might have been damaged either in the shipping or by us. Because we are a mew brand we will be needing a unboxing video to confirm the same. Hope you'll understand and give us the leverage.",
+      "We offer a 7-day return policy on the damaged products only that might have been damaged either in the shipping or by us. Because we are a new brand we will be needing an unboxing video to confirm the same. Hope you'll understand and give us the leverage.",
   },
   {
     question: "Do you ship internationally?",
