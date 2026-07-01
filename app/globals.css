@@ -3,21 +3,21 @@
 @tailwind utilities;
 
 :root {
-  --color-bg-primary: #FAF8F4;
-  --color-bg-secondary: #F0EBE3;
-  --color-bg-dark: #2C2520;
+  --color-bg-primary: #faf8f4;
+  --color-bg-secondary: #f0ebe3;
+  --color-bg-dark: #2c2520;
 
-  --color-brand-rose: #C97D7D;
-  --color-brand-sage: #8FA882;
-  --color-brand-blue: #A4B8C4;
+  --color-brand-rose: #c97d7d;
+  --color-brand-sage: #8fa882;
+  --color-brand-blue: #a4b8c4;
 
-  --color-text-primary: #2C2520;
-  --color-text-secondary: #7A6E64;
-  --color-text-muted: #9B8B7A;
-  --color-text-ivory: #FAF8F4;
+  --color-text-primary: #2c2520;
+  --color-text-secondary: #7a6e64;
+  --color-text-muted: #9b8b7a;
+  --color-text-ivory: #faf8f4;
 
-  --color-border-light: #D6C9B0;
-  --color-border-rose: #C97D7D;
+  --color-border-light: #d6c9b0;
+  --color-border-rose: #c97d7d;
 
   /* Font fallbacks in case CSS vars from next/font don't load instantly */
   --font-display-fallback: Georgia, serif;
@@ -43,16 +43,25 @@
     color: var(--color-text-primary);
   }
 
-  button, .btn {
+  button,
+  .btn {
     border-radius: 100px !important;
   }
 
   /* Universal transition rule for common interactive elements */
-  a, button {
+  a,
+  button {
     transition: all 0.2s ease;
   }
 
-  html, body, a, button, input, [role="button"], textarea, label {
+  html,
+  body,
+  a,
+  button,
+  input,
+  [role="button"],
+  textarea,
+  label {
     cursor: none !important;
   }
 
@@ -60,10 +69,10 @@
     display: block;
     max-width: 100%;
   }
-  
+
   /* If an image fails and fallback also fails */
   img::after {
-    content: '';
+    content: "";
     display: block;
     background: var(--parchment);
     width: 100%;
@@ -82,20 +91,18 @@
 }
 
 @layer utilities {
-
-
   footer,
   #footer,
   .site-footer,
   .footer-wrap {
-    background-color: #1E1A17 !important; /* warm near-black */
+    background-color: #1e1a17 !important; /* warm near-black */
     color: var(--color-text-ivory) !important;
   }
-  
+
   footer * {
     color: rgba(250, 248, 244, 0.8); /* Default all text to readable ivory */
   }
-  
+
   /* Section headings in footer */
   footer .footer-col-title,
   footer h3,
@@ -107,7 +114,7 @@
     text-transform: uppercase;
     margin-bottom: 20px;
   }
-  
+
   /* Links */
   footer a {
     color: rgba(245, 239, 228, 0.72) !important;
@@ -116,17 +123,17 @@
     line-height: 2;
     transition: color 250ms ease;
   }
-  
+
   footer a:hover {
-    color: #D4B97A !important;
+    color: #d4b97a !important;
   }
-  
+
   /* Icons */
   footer svg {
-    stroke: #BFA06A;
+    stroke: #bfa06a;
     fill: none;
   }
-  
+
   /* Bottom bar */
   .footer-bottom {
     border-top: 1px solid rgba(191, 160, 106, 0.18);
@@ -135,31 +142,34 @@
     color: rgba(245, 239, 228, 0.45) !important;
     font-size: 12px;
   }
-  
+
   /* Cursor fix CSS inside head/global */
-  #vreya-cursor-ring {
+  #aakhya-cursor-ring {
     position: fixed;
     top: 0;
     left: 0;
     width: 30px;
     height: 30px;
-    border: 1.5px solid #BFA06A;
+    border: 1.5px solid #bfa06a;
     border-radius: 50%;
     pointer-events: none;
     z-index: 2147483647; /* Maximum z-index */
     transform: translate(-50%, -50%);
-    transition: width 250ms ease, height 250ms ease, opacity 200ms ease;
+    transition:
+      width 250ms ease,
+      height 250ms ease,
+      opacity 200ms ease;
     will-change: transform;
     opacity: 0;
   }
-  
-  #vreya-cursor-dot {
+
+  #aakhya-cursor-dot {
     position: fixed;
     top: 0;
     left: 0;
     width: 5px;
     height: 5px;
-    background: #BFA06A;
+    background: #bfa06a;
     border-radius: 50%;
     pointer-events: none;
     z-index: 2147483647;
@@ -172,18 +182,24 @@
   .reveal {
     opacity: 0;
     transform: translateY(32px);
-    transition: opacity 700ms ease, transform 700ms ease;
+    transition:
+      opacity 700ms ease,
+      transform 700ms ease;
   }
   .reveal.in-view {
     opacity: 1;
     transform: translateY(0);
   }
 
-  .product-card .img-wrap { overflow: hidden; }
-  .product-card img, .product-card__img {
+  .product-card .img-wrap {
+    overflow: hidden;
+  }
+  .product-card img,
+  .product-card__img {
     transition: transform 600ms ease;
   }
-  .product-card:hover img, .product-card:hover .product-card__img {
+  .product-card:hover img,
+  .product-card:hover .product-card__img {
     transform: scale(1.06);
   }
 
@@ -193,7 +209,7 @@
     object-fit: cover;
     object-position: top center;
   }
-  
+
   .craft-story__img {
     width: 100%;
     height: 100%;
@@ -207,10 +223,15 @@
     overflow: hidden;
   }
   .btn-primary::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.18) 50%, transparent 60%);
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      rgba(255, 255, 255, 0.18) 50%,
+      transparent 60%
+    );
     transform: translateX(-100%);
     transition: transform 500ms ease;
   }
@@ -219,8 +240,8 @@
   }
 
   /* nav links removed — logic moved strictly to React NavLink component */
-  
-  /* The VREYA logo box */
+
+  /* The aakhya logo box */
   .nav-logo {
     background: var(--burgundy);
     color: var(--cream);
@@ -237,10 +258,15 @@
     overflow: hidden;
   }
   .shimmer-btn::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.18) 50%, transparent 60%);
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      rgba(255, 255, 255, 0.18) 50%,
+      transparent 60%
+    );
     transform: translateX(-100%);
     transition: transform 400ms ease;
   }
@@ -253,10 +279,15 @@
     overflow: hidden;
   }
   .shimmer-btn-gold::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(105deg, transparent 40%, rgba(191, 160, 106, 0.4) 50%, transparent 60%);
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      rgba(191, 160, 106, 0.4) 50%,
+      transparent 60%
+    );
     transform: translateX(-100%);
     transition: transform 400ms ease;
   }
@@ -266,8 +297,12 @@
 
   /* Keyframes for the grid skeleton */
   @keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
   }
 
   /* ------------------------------------------------------------------
@@ -281,16 +316,16 @@
     min-height: 600px;
     overflow: hidden;
     display: flex;
-    align-items: center;     /* Fix 1: True vertical centering */
+    align-items: center; /* Fix 1: True vertical centering */
     justify-content: center; /* True horizontal centering */
   }
-  
+
   .hero__bg {
     position: absolute;
     inset: 0;
     z-index: 0;
   }
-  
+
   .hero__bg-img {
     width: 100%;
     height: 100%;
@@ -298,18 +333,18 @@
     object-position: center;
     display: block;
   }
-  
+
   .hero__overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(
       to top,
       rgba(20, 14, 10, 0.88) 0%,
-      rgba(20, 14, 10, 0.50) 45%,
+      rgba(20, 14, 10, 0.5) 45%,
       rgba(20, 14, 10, 0.15) 100%
     );
   }
-  
+
   .hero__content {
     position: relative;
     z-index: 2;
@@ -321,16 +356,16 @@
     align-items: center;
     gap: 24px; /* Fix 1: Consistent rhythmic spacing instead of random margins */
   }
-  
+
   .hero__eyebrow {
     font-family: var(--font-accent);
     font-size: 12px;
     letter-spacing: 0.3em;
     color: var(--gold-light);
     text-transform: uppercase;
-    opacity: 0; 
+    opacity: 0;
   }
-  
+
   .hero__h1 {
     font-family: var(--font-display);
     font-size: clamp(52px, 7vw, 96px);
@@ -338,9 +373,9 @@
     color: var(--cream);
     line-height: 1.05;
     letter-spacing: -0.02em;
-    opacity: 0; 
+    opacity: 0;
   }
-  
+
   .hero__italic {
     font-family: var(--font-display);
     font-size: clamp(40px, 5.5vw, 72px);
@@ -351,7 +386,7 @@
     margin-top: -16px; /* Tighten heading gap specifically */
     opacity: 0;
   }
-  
+
   .hero__sub {
     font-family: var(--font-body);
     font-size: 16px;
@@ -362,7 +397,7 @@
     margin-top: 8px; /* Slight separation from heading block */
     opacity: 0;
   }
-  
+
   .btn-hero {
     display: inline-block;
     border: 1px solid rgba(253, 250, 245, 0.8);
@@ -376,11 +411,14 @@
     letter-spacing: 0.24em;
     text-transform: uppercase;
     text-decoration: none;
-    transition: background 320ms ease, color 320ms ease, border-color 320ms ease;
+    transition:
+      background 320ms ease,
+      color 320ms ease,
+      border-color 320ms ease;
     opacity: 0;
     cursor: none;
   }
-  
+
   .btn-hero:hover {
     background: var(--cream);
     color: var(--ink);
@@ -390,9 +428,17 @@
   /* BUG 2: PHILOSOPHY STRIP */
   .philosophy-strip {
     background-color: var(--ink);
-    background-image: 
-      radial-gradient(ellipse at 20% 50%, rgba(191,160,106,0.06) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 50%, rgba(201,137,122,0.04) 0%, transparent 60%);
+    background-image:
+      radial-gradient(
+        ellipse at 20% 50%,
+        rgba(191, 160, 106, 0.06) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse at 80% 50%,
+        rgba(201, 137, 122, 0.04) 0%,
+        transparent 60%
+      );
     padding: 96px 10%;
     display: grid;
     grid-template-columns: repeat(1, 1fr);
@@ -435,7 +481,7 @@
   }
   @media (min-width: 768px) {
     .philosophy-col:not(:last-child) {
-      border-right: 1px solid rgba(191,160,106,0.2);
+      border-right: 1px solid rgba(191, 160, 106, 0.2);
     }
   }
 
@@ -487,8 +533,6 @@
     }
   }
 
-
-
   .craft-story__text > * {
     position: relative;
     z-index: 1;
@@ -523,7 +567,7 @@
     color: var(--blush);
     margin-top: 40px;
     padding-top: 24px;
-    border-top: 1px solid rgba(201,137,122,0.3);
+    border-top: 1px solid rgba(201, 137, 122, 0.3);
   }
 
   /* BUG 4: TESTIMONIALS */
@@ -536,7 +580,7 @@
   }
 
   .testimonials::before {
-    content: '\201C';
+    content: "\201C";
     font-family: var(--font-display);
     font-size: 280px;
     line-height: 1;
@@ -593,10 +637,12 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: rgba(191,160,106,0.3);
+    background: rgba(191, 160, 106, 0.3);
     border: none;
     cursor: pointer;
-    transition: background 300ms ease, transform 300ms ease;
+    transition:
+      background 300ms ease,
+      transform 300ms ease;
     padding: 0;
   }
 
@@ -634,9 +680,15 @@
 
   .product-card__overlay {
     position: absolute;
-    bottom: 0; left: 0; right: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
     padding: 32px 20px 20px;
-    background: linear-gradient(to top, rgba(28,20,16,0.75) 0%, transparent 100%);
+    background: linear-gradient(
+      to top,
+      rgba(28, 20, 16, 0.75) 0%,
+      transparent 100%
+    );
     transform: translateY(100%);
     transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;

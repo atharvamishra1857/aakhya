@@ -38,7 +38,7 @@ type CartContextType = {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 // 🔑 session-based storage key
-const CART_STORAGE_KEY = "vreya_cart";
+const CART_STORAGE_KEY = "aakhya_cart";
 
 // ================= PROVIDER =================
 
@@ -66,7 +66,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const existingItem = prevItems.find((item) => item.id === newItem.id);
       if (existingItem) {
         return prevItems.map((item) =>
-          item.id === newItem.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === newItem.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item,
         );
       }
       return [...prevItems, { ...newItem, quantity: 1 }];
@@ -83,7 +85,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           return { ...item, quantity: Math.max(1, newQuantity) };
         }
         return item;
-      })
+      }),
     );
   }, []);
 
@@ -103,17 +105,39 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [cartItems]);
 
   // ================= DERIVED VALUES =================
-  const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const cartTotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0,
+  );
   const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
-  const contextValue = useMemo(() => ({
-    isOpen, openCart, closeCart, cartItems, addToCart, updateQuantity, removeFromCart, cartTotal, cartCount
-  }), [isOpen, openCart, closeCart, cartItems, addToCart, updateQuantity, removeFromCart, cartTotal, cartCount]);
+  const contextValue = useMemo(
+    () => ({
+      isOpen,
+      openCart,
+      closeCart,
+      cartItems,
+      addToCart,
+      updateQuantity,
+      removeFromCart,
+      cartTotal,
+      cartCount,
+    }),
+    [
+      isOpen,
+      openCart,
+      closeCart,
+      cartItems,
+      addToCart,
+      updateQuantity,
+      removeFromCart,
+      cartTotal,
+      cartCount,
+    ],
+  );
 
   return (
-    <CartContext.Provider value={contextValue}>
-      {children}
-    </CartContext.Provider>
+    <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>
   );
 }
 

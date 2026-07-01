@@ -9,19 +9,23 @@ export default function Cursor() {
   // STEP 1: Wait for the component to safely mount
   useEffect(() => {
     setIsMounted(true);
-    setIsMobile(window.matchMedia("(hover: none)").matches || window.matchMedia("(pointer: coarse)").matches);
+    setIsMobile(
+      window.matchMedia("(hover: none)").matches ||
+        window.matchMedia("(pointer: coarse)").matches,
+    );
   }, []);
 
   // STEP 2: Only run the mouse tracking AFTER it mounts
   useEffect(() => {
     if (!isMounted || isMobile) return;
 
-    const ring = document.getElementById("vreya-cursor-ring");
-    const dot = document.getElementById("vreya-cursor-dot");
-    
+    const ring = document.getElementById("aakhya-cursor-ring");
+    const dot = document.getElementById("aakhya-cursor-dot");
+
     if (!ring || !dot) return;
 
-    let mouseX = 0, mouseY = 0;
+    let mouseX = 0,
+      mouseY = 0;
 
     const onMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;
@@ -64,14 +68,20 @@ export default function Cursor() {
       document.removeEventListener("mouseenter", onMouseEnter);
       document.removeEventListener("mouseover", onMouseOver);
     };
-  }, [isMounted, isMobile]); 
+  }, [isMounted, isMobile]);
 
   if (!isMounted || isMobile) return null;
 
   return (
     <>
-      <div id="vreya-cursor-ring" className="hidden md:block fixed pointer-events-none z-[9999] w-[30px] h-[30px] border border-brand-ink rounded-full transition-[width,height] duration-200 ease-out" />
-      <div id="vreya-cursor-dot" className="hidden md:block fixed pointer-events-none z-[9999] w-[5px] h-[5px] bg-brand-ink rounded-full" />
+      <div
+        id="aakhya-cursor-ring"
+        className="hidden md:block fixed pointer-events-none z-[9999] w-[30px] h-[30px] border border-brand-ink rounded-full transition-[width,height] duration-200 ease-out"
+      />
+      <div
+        id="aakhya-cursor-dot"
+        className="hidden md:block fixed pointer-events-none z-[9999] w-[5px] h-[5px] bg-brand-ink rounded-full"
+      />
     </>
   );
 }

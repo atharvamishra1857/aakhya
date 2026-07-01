@@ -44,18 +44,18 @@ export default function Home() {
       gsap.utils.toArray(".reveal").forEach((el: any) => {
         gsap.fromTo(
           el,
-          { opacity: 0, y: 40 }, 
+          { opacity: 0, y: 40 },
           {
             scrollTrigger: {
               trigger: el,
               start: "top 85%",
               toggleActions: "play none none none",
             },
-            opacity: 1, 
+            opacity: 1,
             y: 0,
             duration: 0.7,
             ease: "power2.out",
-          }
+          },
         );
       });
     });
@@ -136,7 +136,7 @@ export default function Home() {
               Collection Highlight
             </h2>
             <p className="font-display italic text-brand-muted max-w-2xl mx-auto text-lg leading-relaxed">
-              "Crafted, not mass produced. At Vreya, every piece is designed to
+              "Crafted, not mass produced. At aakhya, every piece is designed to
               feel soft, intentional, and timeless."
             </p>
           </div>
@@ -144,59 +144,73 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8">
             {products.slice(0, 3).map((item) => (
               <Link href={`/product/${item.node.handle}`} key={item.node.id}>
-              <div
-                className="group relative bg-brand-bgprimary border border-brand-borderlight rounded-xl overflow-hidden shadow-[0_2px_12px_rgba(44,37,32,0.06)] hover:-translate-y-1 transition-all duration-300"
-              >
-                {/* Parent has 'relative' here, which is perfect for fill */}
-                <div className="aspect-square overflow-hidden relative">
-                  {(() => {
-                    const titleStr = item.node.title.toLowerCase();
-                    let colorClass = "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
-                    if (titleStr.includes("sage") || titleStr.includes("green")) {
-                      colorClass = "bg-[rgba(143,168,130,0.12)] text-brand-sage border-[rgba(143,168,130,0.3)]";
-                    } else if (titleStr.includes("sky") || titleStr.includes("blue")) {
-                      colorClass = "bg-[rgba(134,167,185,0.12)] text-brand-blue border-[rgba(134,167,185,0.3)]";
-                    } else if (titleStr.includes("blush") || titleStr.includes("rose") || titleStr.includes("pink")) {
-                      colorClass = "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
-                    }
-                    return (
-                      <div className={`absolute top-3 right-3 z-10 border text-[11px] px-[8px] py-[2px] rounded-full font-body ${colorClass}`}>
-                        Limited
-                      </div>
-                    );
-                  })()}
-                  <Image
-                    src={
-                      item.node.images.edges[0]?.node.url ||
-                      "https://images.unsplash.com/photo-1596455607563-ad6193f76b17?q=80&w=800"
-                    }
-                    alt={item.node.title}
-                    fill // Added fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-                <div className="p-6 text-center space-y-3">
-                  <h3 className="font-display text-xl text-brand-ink">
-                    {item.node.title}
-                  </h3>
-                  <p className="font-body text-sm text-brand-gray">
-                    ₹{item.node.priceRange.minVariantPrice.amount}
-                  </p>
+                <div className="group relative bg-brand-bgprimary border border-brand-borderlight rounded-xl overflow-hidden shadow-[0_2px_12px_rgba(44,37,32,0.06)] hover:-translate-y-1 transition-all duration-300">
+                  {/* Parent has 'relative' here, which is perfect for fill */}
+                  <div className="aspect-square overflow-hidden relative">
+                    {(() => {
+                      const titleStr = item.node.title.toLowerCase();
+                      let colorClass =
+                        "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
+                      if (
+                        titleStr.includes("sage") ||
+                        titleStr.includes("green")
+                      ) {
+                        colorClass =
+                          "bg-[rgba(143,168,130,0.12)] text-brand-sage border-[rgba(143,168,130,0.3)]";
+                      } else if (
+                        titleStr.includes("sky") ||
+                        titleStr.includes("blue")
+                      ) {
+                        colorClass =
+                          "bg-[rgba(134,167,185,0.12)] text-brand-blue border-[rgba(134,167,185,0.3)]";
+                      } else if (
+                        titleStr.includes("blush") ||
+                        titleStr.includes("rose") ||
+                        titleStr.includes("pink")
+                      ) {
+                        colorClass =
+                          "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
+                      }
+                      return (
+                        <div
+                          className={`absolute top-3 right-3 z-10 border text-[11px] px-[8px] py-[2px] rounded-full font-body ${colorClass}`}
+                        >
+                          Limited
+                        </div>
+                      );
+                    })()}
+                    <Image
+                      src={
+                        item.node.images.edges[0]?.node.url ||
+                        "https://images.unsplash.com/photo-1596455607563-ad6193f76b17?q=80&w=800"
+                      }
+                      alt={item.node.title}
+                      fill // Added fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="p-6 text-center space-y-3">
+                    <h3 className="font-display text-xl text-brand-ink">
+                      {item.node.title}
+                    </h3>
+                    <p className="font-body text-sm text-brand-gray">
+                      ₹{item.node.priceRange.minVariantPrice.amount}
+                    </p>
 
-                  <button
-                    onClick={(e) =>
-                      handleQuickAdd(
-                        e,
-                        item.node.variants.edges[0].node.id,
-                        item.node
-                      )
-                    }
-                    className="text-xs font-body tracking-wider uppercase text-brand-rose border-b border-brand-rose/30 hover:border-brand-rose pb-1 mt-2 inline-block transition-colors"
-                  >
-                    Add to Cart
-                  </button>
+                    <button
+                      onClick={(e) =>
+                        handleQuickAdd(
+                          e,
+                          item.node.variants.edges[0].node.id,
+                          item.node,
+                        )
+                      }
+                      className="text-xs font-body tracking-wider uppercase text-brand-rose border-b border-brand-rose/30 hover:border-brand-rose pb-1 mt-2 inline-block transition-colors"
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
                 </div>
-              </div>
               </Link>
             ))}
           </div>
@@ -207,7 +221,7 @@ export default function Home() {
       <section className="flex flex-col md:flex-row w-full bg-brand-bgprimary">
         <div className="md:w-[40%] h-[60vh] md:h-auto relative reveal">
           <Image
-            src="/vreya4.jpg"
+            src="/aakhya4.jpg"
             fill // Added fill here to fix the crash
             className="object-cover"
             alt="Sage green vest styling"
@@ -262,7 +276,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------------- SECTION 4: WHY VREYA ---------------- */}
+      {/* ---------------- SECTION 4: WHY aakhya ---------------- */}
       <section className="py-24 px-6 md:px-16 bg-brand-bgsecondary grid md:grid-cols-3 gap-16 md:gap-12 text-center reveal">
         <div className="flex flex-col items-center space-y-4">
           <Scissors className="w-6 h-6 text-brand-rose mb-2" strokeWidth={1} />
@@ -307,15 +321,15 @@ export default function Home() {
           {[
             {
               title: "Studio Sessions",
-              Image: "/vreya-mainpage-bottom-edited(2).png",
+              Image: "/aakhya-mainpage-bottom-edited(2).png",
             },
             {
               title: "Weekend Brunch",
-              Image: "/vreya-mainpage-bottom-edited1.png",
+              Image: "/aakhya-mainpage-bottom-edited1.png",
             },
             {
               title: "Morning Light",
-              Image: "/vreya-mainpage-bottom2.png",
+              Image: "/aakhya-mainpage-bottom2.png",
             },
           ].map((item, i) => (
             <div
@@ -343,7 +357,7 @@ export default function Home() {
       <section className="flex flex-col md:flex-row w-full bg-brand-bgdark text-brand-ivory reveal">
         <div className="md:w-[50%] h-[60vh] md:h-auto relative">
           <Image
-            src="/vreya-5.png"
+            src="/aakhya-5.png"
             fill // Added fill here
             className="object-cover opacity-80 mix-blend-luminosity brightness-75 hover:mix-blend-normal hover:brightness-100 transition-all duration-700"
             alt="Designer sketching"

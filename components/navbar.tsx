@@ -177,7 +177,7 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
               }}
               className="text-2xl font-display font-bold uppercase tracking-[0.1em] block scale-y-110"
             >
-              VREY<span className="small-caps">A</span>
+            AAKHY<span className="small-caps">A</span>
             </span>
           </Link>
         </div>

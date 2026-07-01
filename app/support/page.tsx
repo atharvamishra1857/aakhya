@@ -9,7 +9,7 @@ const faqs = [
   {
     question: "How do I care for my Embroidered Linen Vest?",
     answer:
-      "Our pieces must strictly be dry-cleaned. Never hand-wash or machine-wash your Vreya garments. Store them wrapped in a pure cotton cloth in a cool, dry place, and unfold them every few months to let the fabric breathe.",
+      "Our pieces must strictly be dry-cleaned. Never hand-wash or machine-wash your aakhya garments. Store them wrapped in a pure cotton cloth in a cool, dry place, and unfold them every few months to let the fabric breathe.",
   },
   {
     question: "What is your return and exchange policy?",
@@ -131,7 +131,7 @@ export default function SupportPage() {
                 </h3>
                 <div className="flex items-center gap-3 text-sm font-light text-brand-ink">
                   <Mail size={16} className="text-brand-sage" />
-                  <span>support@vreyaofficial.com</span>
+                  <span>support@aakhyaofficial.com</span>
                 </div>
               </div>
             </div>

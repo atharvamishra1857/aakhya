@@ -23,7 +23,7 @@ export default function Footer() {
               {/* Adjust width/height as needed */}
               <Image
                 src="/logo.png"
-                alt="VREYA Logo"
+                alt="aakhya Logo"
                 fill
                 className="object-contain object-left"
               />
@@ -35,7 +35,7 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-5 mt-2">
               <Link
-                href="https://instagram.com/vreya.in"
+                href="https://instagram.com/aakhya.in"
                 target="_blank"
                 className="text-brand-ivory/70 hover:text-brand-rose transition-colors"
               >
@@ -113,7 +113,7 @@ export default function Footer() {
                   Shipping & Returns
                 </Link>
               </li>
-               <li>
+              <li>
                 <Link
                   href="/support"
                   className="hover:text-brand-gold transition-colors"
@@ -132,12 +132,12 @@ export default function Footer() {
             <ul className="flex flex-col gap-6 text-sm font-light text-brand-cream/80">
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="text-brand-gold shrink-0 mt-0.5" />
-                <span>DM us on Instagram at "@vreya.in"</span>
+                <span>DM us on Instagram at "@aakhya.in"</span>
               </li>
 
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-brand-gold shrink-0" />
-                <span>support@vreyaofficial.com</span>
+                <span>support@aakhyaofficial.com</span>
               </li>
             </ul>
           </div>
@@ -145,7 +145,7 @@ export default function Footer() {
 
         {/* --- BOTTOM COPYRIGHT BAR --- */}
         <div className="border-t border-brand-cream/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-light text-brand-cream/50">
-          <p>© {new Date().getFullYear()} VREYA. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} aakhya. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <Link
               href="/privacy-policy"

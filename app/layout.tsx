@@ -29,7 +29,7 @@ const imFell = IM_Fell_English_SC({
 });
 
 export const metadata: Metadata = {
-  title: "Vreya | Modern Occasion Wear",
+  title: "aakhya | Modern Occasion Wear",
   description: "Premium Modern Indian Womenswear",
 };
 
@@ -56,8 +56,8 @@ export default function RootLayout({
         </CartProvider>
 
         {/* --- MOBILE FIX 1: Add Tailwind hidden class for mobile --- */}
-        <div id="vreya-cursor-ring" className="hidden md:block"></div>
-        <div id="vreya-cursor-dot" className="hidden md:block"></div>
+        <div id="aakhya-cursor-ring" className="hidden md:block"></div>
+        <div id="aakhya-cursor-dot" className="hidden md:block"></div>
       </body>
     </html>
   );

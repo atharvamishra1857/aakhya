@@ -28,7 +28,7 @@ export default function OurStory() {
         <section className="w-full flex flex-col md:flex-row items-center bg-brand-bgprimary">
           <div className="w-full md:w-1/2 p-12 md:p-24 flex flex-col justify-center space-y-6">
             <h2 className="font-display text-4xl text-brand-ink">
-              Vreya was never meant to be loud.
+              Aakhya was never meant to be loud.
             </h2>
             <p className="font-body text-brand-gray leading-[1.8] text-[15px]">
               The delicate florals are not just embroidery — they are small,
@@ -40,7 +40,7 @@ export default function OurStory() {
           </div>
           <div className="w-full md:w-1/2 h-[50vh] md:h-[80vh] relative">
             <Image
-              src="/vreya-collection1.jpeg"
+              src="/aakhya-collection1.jpeg"
               alt="Fabric flatlay"
               width={800}
               height={1200}
@@ -53,7 +53,7 @@ export default function OurStory() {
         <section className="w-full flex flex-col md:flex-row-reverse items-center bg-brand-bgsecondary">
           <div className="w-full md:w-1/2 p-12 md:p-24 flex flex-col justify-center space-y-6">
             <h2 className="font-display text-4xl text-brand-ink">
-              Vreya is for days when you want to feel light, but grounded.
+              Aakhya is for days when you want to feel light, but grounded.
             </h2>
             <p className="font-body text-brand-gray leading-[1.8] text-[15px]">
               It was born in the in-between moments — soft mornings, unhurried
@@ -64,7 +64,7 @@ export default function OurStory() {
           </div>
           <div className="w-full md:w-1/2 h-[50vh] md:h-[80vh] relative">
             <Image
-              src="/vreya-5.png"
+              src="/aakhya-5.png"
               alt="Designer at work"
               width={800}
               height={1200}
@@ -79,11 +79,11 @@ export default function OurStory() {
             For the version of you that exists beyond trends.
           </h2>
           <p className="font-body text-brand-gray max-w-2xl leading-relaxed text-[15px] mb-16 mx-auto">
-            For moments when you want comfort, without losing elegance. 
-            You can wear it to the sea, to a quiet café, to a gathering, or simply at
-            home — and it will belong, just as you do.
-            Because Vreya isn’t about dressing up. It’s about coming closer to yourself. <br />
-            — Vreya
+            For moments when you want comfort, without losing elegance. You can
+            wear it to the sea, to a quiet café, to a gathering, or simply at
+            home — and it will belong, just as you do. Because aakhya isn’t
+            about dressing up. It’s about coming closer to yourself. <br />—
+            aakhya
           </p>
           <div className="w-full h-[60vh] md:h-[80vh] relative max-w-6xl mx-auto overflow-hidden rounded-2xl">
             <Image
