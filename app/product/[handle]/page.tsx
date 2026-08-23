@@ -64,13 +64,150 @@ function parseMetafield(metafield: any): string[] | null {
 }
 
 // ─── Size chart data ──────────────────────────────────────────────────────────
-const SIZE_CHART = [
+const DEFAULT_SIZE_CHART = [
   { size: "S", chest: "34–35", waist: "27–28", hip: "37–38", length: "24.5" },
   { size: "M", chest: "36–37", waist: "29–30", hip: "39–40", length: "25" },
   { size: "L", chest: "38–40", waist: "31–33", hip: "41–43", length: "25.5" },
 ];
 
+const CALYX_DETAILED_CHART = [
+  { id: "A", name: "HPS Length", S: "39.5", M: "40", L: "40.5", XL: "41", tol: "0.5" },
+  { id: "B", name: "Chest Circumference", S: "36.5", M: "37", L: "38.5", XL: "39.5", tol: "0.75" },
+  { id: "C", name: "Neckline Depth", S: "5.75", M: "6.25", L: "6", XL: "6.5", tol: "0.5" },
+  { id: "D", name: "Armhole Circumference", S: "18", M: "19", L: "17", XL: "20", tol: "1" },
+  { id: "E", name: "Shoulder Width", S: "13.5", M: "13", L: "14", XL: "14.5", tol: "0.5" },
+  { id: "F", name: "Waist Circumference", S: "33.5", M: "32", L: "31.5", XL: "34.5", tol: "0.5" },
+  { id: "G", name: "Hip Circumference", S: "43", M: "41", L: "42", XL: "44", tol: "1" },
+  { id: "H", name: "Length for Right Side", S: "44.5", M: "44", L: "43.5", XL: "45", tol: "0.5" },
+  { id: "I", name: "Back Shoulder Depth", S: "8.75", M: "9.75", L: "9.5", XL: "10", tol: "0.75" },
+  { id: "J", name: "Side Pocket Opening", S: "6.5", M: "6.5", L: "6.5", XL: "6.5", tol: "0" },
+  { id: "K", name: "Pocket Depth", S: "5", M: "5", L: "5", XL: "5", tol: "0" },
+  { id: "L", name: "Neckline to Slit Opening", S: "17", M: "17", L: "17", XL: "17", tol: "0" },
+  { id: "M", name: "Bottom Opening Circ.", S: "35", M: "36", L: "34", XL: "37", tol: "1" },
+];
+
 // ─── Sub-components ───────────────────────────────────────────────────────────
+function SizeChartModal({ onClose, productHandle }: { onClose: () => void, productHandle: string }) {
+  const isCalyx = productHandle === "calyx";
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-brand-ink/40 backdrop-blur-sm px-4 py-8"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 24, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 24, scale: 0.97 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          // Notice we make the modal wider (max-w-3xl) if it's Calyx to fit the columns!
+          className={`bg-brand-bgprimary rounded-2xl border border-brand-borderlight shadow-2xl w-full flex flex-col ${
+            isCalyx ? "max-w-3xl max-h-[90vh]" : "max-w-lg"
+          } p-6 md:p-8 relative`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between mb-4 shrink-0">
+            <div className="flex items-center gap-2">
+              <Ruler size={16} className="text-brand-sage" strokeWidth={1.5} />
+              <h3 className="font-display text-xl text-brand-ink">
+                Size Guide {isCalyx && "— Calyx"}
+              </h3>
+            </div>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-brand-bgsecondary transition-colors cursor-pointer"
+            >
+              <X size={15} className="text-brand-gray" />
+            </button>
+          </div>
+
+          <p className="font-body text-[12px] text-brand-gray tracking-wide mb-5 shrink-0">
+            {isCalyx 
+              ? "Detailed garment measurements in inches." 
+              : "All measurements in inches. When between sizes, size up for a relaxed fit."}
+          </p>
+
+          <div className="overflow-auto rounded-xl border border-brand-borderlight flex-grow hide-scrollbar">
+            {isCalyx ? (
+              <table className="w-full text-left font-body text-[12px] whitespace-nowrap">
+                <thead>
+                  <tr className="bg-brand-bgsecondary sticky top-0 z-10 shadow-sm">
+                    {["Code", "Measurement (Inches)", "S", "M", "L", "XL", "Tol +/-"].map((h) => (
+                      <th
+                        key={h}
+                        className="px-4 py-3 text-[10px] tracking-widest uppercase text-brand-gray font-normal"
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {CALYX_DETAILED_CHART.map((row, i) => (
+                    <tr
+                      key={row.id}
+                      className={`border-t border-brand-borderlight hover:bg-brand-bgsecondary/30 transition-colors ${
+                        i % 2 === 0 ? "" : "bg-brand-bgsecondary/10"
+                      }`}
+                    >
+                      <td className="px-4 py-2.5 text-brand-sage font-medium">{row.id}</td>
+                      <td className="px-4 py-2.5 text-brand-ink">{row.name}</td>
+                      <td className="px-4 py-2.5 text-brand-ink">{row.S}</td>
+                      <td className="px-4 py-2.5 text-brand-ink">{row.M}</td>
+                      <td className="px-4 py-2.5 text-brand-ink">{row.L}</td>
+                      <td className="px-4 py-2.5 text-brand-ink">{row.XL}</td>
+                      <td className="px-4 py-2.5 text-brand-gray">{row.tol}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <table className="w-full text-left font-body text-[13px]">
+                <thead>
+                  <tr className="bg-brand-bgsecondary">
+                    {["Size", "Chest", "Waist", "Hip", "Length"].map((h) => (
+                      <th
+                        key={h}
+                        className="px-4 py-3 text-[10px] tracking-widest uppercase text-brand-gray font-normal"
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {DEFAULT_SIZE_CHART.map((row, i) => (
+                    <tr
+                      key={row.size}
+                      className={`border-t border-brand-borderlight ${i % 2 === 0 ? "" : "bg-brand-bgsecondary/40"}`}
+                    >
+                      <td className="px-4 py-3 text-brand-sage font-medium">{row.size}</td>
+                      <td className="px-4 py-3 text-brand-ink">{row.chest}</td>
+                      <td className="px-4 py-3 text-brand-ink">{row.waist}</td>
+                      <td className="px-4 py-3 text-brand-ink">{row.hip}</td>
+                      <td className="px-4 py-3 text-brand-ink">{row.length}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          <p className="font-body text-[11px] text-brand-gray/70 mt-5 text-center shrink-0">
+            {isCalyx 
+              ? "Please refer to the tech pack drawing for measurement points A through M."
+              : "Model is 5′8″ wearing size S. Measurements may vary ±0.5″."}
+          </p>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 function AccordionItem({
   label,
   content,
@@ -127,86 +264,6 @@ function AccordionItem({
   );
 }
 
-function SizeChartModal({ onClose }: { onClose: () => void }) {
-  return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-brand-ink/40 backdrop-blur-sm px-4"
-        onClick={onClose}
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 24, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 24, scale: 0.97 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          className="bg-brand-bgprimary rounded-2xl border border-brand-borderlight shadow-2xl w-full max-w-lg p-8 relative"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <Ruler size={16} className="text-brand-sage" strokeWidth={1.5} />
-              <h3 className="font-display text-xl text-brand-ink">
-                Size Guide
-              </h3>
-            </div>
-            <button
-              onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-brand-bgsecondary transition-colors cursor-pointer"
-            >
-              <X size={15} className="text-brand-gray" />
-            </button>
-          </div>
-
-          <p className="font-body text-[12px] text-brand-gray tracking-wide mb-5">
-            All measurements in inches. When between sizes, size up for a
-            relaxed fit.
-          </p>
-
-          <div className="overflow-x-auto rounded-xl border border-brand-borderlight">
-            <table className="w-full text-left font-body text-[13px]">
-              <thead>
-                <tr className="bg-brand-bgsecondary">
-                  {["Size", "Chest", "Waist", "Hip", "Length"].map((h) => (
-                    <th
-                      key={h}
-                      className="px-4 py-3 text-[10px] tracking-widest uppercase text-brand-gray font-normal"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {SIZE_CHART.map((row, i) => (
-                  <tr
-                    key={row.size}
-                    className={`border-t border-brand-borderlight ${i % 2 === 0 ? "" : "bg-brand-bgsecondary/40"}`}
-                  >
-                    <td className="px-4 py-3 text-brand-sage font-medium">
-                      {row.size}
-                    </td>
-                    <td className="px-4 py-3 text-brand-ink">{row.chest}</td>
-                    <td className="px-4 py-3 text-brand-ink">{row.waist}</td>
-                    <td className="px-4 py-3 text-brand-ink">{row.hip}</td>
-                    <td className="px-4 py-3 text-brand-ink">{row.length}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <p className="font-body text-[11px] text-brand-gray/70 mt-5 text-center">
-            Model is 5′8″ wearing size S. Measurements may vary ±0.5″.
-          </p>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  );
-}
-
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function ProductPage({
   params,
@@ -250,7 +307,7 @@ export default function ProductPage({
       let comboHandleToFetch = null;
 
       if (resolvedParams.handle === "calyx") {
-        comboHandleToFetch = "rubal"; 
+        comboHandleToFetch = "rubal-necklace"; 
       } 
 
       if (comboHandleToFetch) {
@@ -369,7 +426,6 @@ export default function ProductPage({
     const label = selectedColor.label.toLowerCase();
     const val = selectedColor.value.toLowerCase();
 
-    // Expand search terms to catch common name differences
     const searchTerms = [label, val];
     if (
       val.includes("sage") ||
@@ -385,19 +441,16 @@ export default function ProductPage({
 
     const matchedImages = allImages.filter((img) => {
       const urlText = img.url.toLowerCase();
-      // Return true if ANY of our search terms are found in the Alt Text or URL
       return searchTerms.some(
         (term) => img.alt.includes(term) || urlText.includes(term),
       );
     });
 
-    // Only show matches! If length is 0, it falls back to all images
     if (matchedImages.length > 0) {
       images = matchedImages;
     }
   }
 
-  // Ensure index is safe even if image count drops drastically
   const safeIndex = Math.min(activeIndex, Math.max(0, images.length - 1));
   const mainImage =
     images[safeIndex]?.url ??
@@ -509,14 +562,16 @@ export default function ProductPage({
       <Navbar />
 
       {sizeChartOpen && (
-        <SizeChartModal onClose={() => setSizeChartOpen(false)} />
+        <SizeChartModal
+          onClose={() => setSizeChartOpen(false)}
+          productHandle={resolvedParams.handle}
+        />
       )}
 
       <main className="flex-grow w-full">
         <div className="max-w-[1600px] mx-auto w-full flex flex-col lg:flex-row min-h-[85vh]">
           {/* ── LEFT: Image Gallery ─────────────────────────────────────── */}
           <div className="w-full lg:w-[60%] flex flex-col md:flex-row gap-4 p-6 lg:p-12">
-            {/* Desktop Thumbnails */}
             <div className="hidden md:flex flex-col gap-3 overflow-y-auto max-h-[85vh] hide-scrollbar pb-2 pr-2">
               {images.map((img, i) => (
                 <button
@@ -539,7 +594,6 @@ export default function ProductPage({
               ))}
             </div>
 
-            {/* Main Image */}
             <div className="relative w-full aspect-[3/4] bg-brand-bgsecondary overflow-hidden rounded-xl border border-brand-borderlight shadow-sm">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -561,7 +615,6 @@ export default function ProductPage({
               </AnimatePresence>
             </div>
 
-            {/* Mobile Thumbnails */}
             <div className="flex md:hidden gap-3 mt-2 overflow-x-auto hide-scrollbar pb-2">
               {images.map((img, i) => (
                 <button
@@ -617,7 +670,6 @@ export default function ProductPage({
                 }}
               />
 
-              {/* DYNAMIC COLORS (Only shows if product has color variants) */}
               {availableColors.length > 0 && (
                 <div className="mb-8">
                   <div className="flex items-center gap-2 mb-3">
@@ -680,7 +732,6 @@ export default function ProductPage({
                 </div>
               )}
 
-              {/* DYNAMIC SIZES (Only shows if product has size variants) */}
               {availableSizes.length > 0 && (
                 <div className="mb-10">
                   <div className="flex justify-between items-end mb-3">
@@ -774,7 +825,6 @@ export default function ProductPage({
                 ))}
               </div>
               
-              {/* ── EXACT PLACEMENT FOR COMBO OFFER ── */}
               {comboProduct && (
                 <ComboOffer mainProduct={product} comboProduct={comboProduct} />
               )}
@@ -782,7 +832,6 @@ export default function ProductPage({
           </div>
         </div>
 
-        {/* ── Similar Products ──────────────────────────────────────────────── */}
         {similarProducts.length > 0 && (
           <section className="py-24 px-6 md:px-16 w-full text-center border-t border-brand-bgprimary">
             <h3 className="font-display text-4xl text-brand-ink mb-12">
