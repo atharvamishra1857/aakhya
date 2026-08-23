@@ -3,12 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-  "dev": "next dev",
-  "build": "opennextjs-cloudflare build",
-  "build:next": "next build",
-  "start": "next start",
-  "lint": "eslint"
-},
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
     "@opennextjs/cloudflare": "^1.19.1",
