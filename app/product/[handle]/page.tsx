@@ -5,7 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, ChevronDown, Ruler } from "lucide-react";
 import Navbar from "@/components/navbar";
 import { useCart } from "@/context/cartcontext";
-import { getProduct, getProductsInCollection, ShopifyProduct, ShopifyProductNode } from "@/lib/shopify";
+import ComboOffer from "@/components/comboOffer";
+import {
+  getProduct,
+  getProductsInCollection,
+  ShopifyProduct,
+  ShopifyProductNode,
+} from "@/lib/shopify";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -18,32 +24,38 @@ function parseMetafield(metafield: any): string[] | null {
   if (!metafield) return null;
 
   if (metafield.references?.edges?.length > 0) {
-    return metafield.references.edges.map((edge: any) => {
-      const node = edge.node;
-      if (node.fields) {
-        const nameField = node.fields.find((f: any) => f.key === "name" || f.key === "label");
-        if (nameField && nameField.value) {
-          return nameField.value.replace(/^"|"$/g, '');
+    return metafield.references.edges
+      .map((edge: any) => {
+        const node = edge.node;
+        if (node.fields) {
+          const nameField = node.fields.find(
+            (f: any) => f.key === "name" || f.key === "label",
+          );
+          if (nameField && nameField.value) {
+            return nameField.value.replace(/^"|"$/g, "");
+          }
         }
-      }
-      if (node.handle) {
-        return node.handle
-          .split('-')
-          .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ');
-      }
-      return null;
-    }).filter(Boolean);
+        if (node.handle) {
+          return node.handle
+            .split("-")
+            .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+        }
+        return null;
+      })
+      .filter(Boolean);
   }
 
   if (!metafield.value) return null;
   try {
     const parsed = JSON.parse(metafield.value);
     if (Array.isArray(parsed)) {
-      const cleanArray = parsed.filter((item: any) => typeof item === 'string' && !item.includes("gid://"));
+      const cleanArray = parsed.filter(
+        (item: any) => typeof item === "string" && !item.includes("gid://"),
+      );
       return cleanArray.length > 0 ? cleanArray : null;
     }
-    if (typeof parsed === 'string' && parsed.includes("gid://")) return null;
+    if (typeof parsed === "string" && parsed.includes("gid://")) return null;
     return [parsed.toString()];
   } catch {
     if (metafield.value.includes("gid://")) return null;
@@ -53,20 +65,12 @@ function parseMetafield(metafield: any): string[] | null {
 
 // ─── Size chart data ──────────────────────────────────────────────────────────
 const SIZE_CHART = [
-  { size: "S",  chest: "34–35", waist: "27–28", hip: "37–38", length: "24.5" },
-  { size: "M",  chest: "36–37", waist: "29–30", hip: "39–40", length: "25" },
-  { size: "L",  chest: "38–40", waist: "31–33", hip: "41–43", length: "25.5" },
-];
-
-// ─── Color config ─────────────────────────────────────────────────────────────
-const COLORS = [
-  { label: "Sage",  value: "sage",  bgClass: "bg-brand-sage",  ring: "ring-brand-sage"  },
-  { label: "Blush", value: "rose",  bgClass: "bg-brand-rose",  ring: "ring-brand-rose"  },
-  { label: "Sky",   value: "blue",  bgClass: "bg-brand-blue",  ring: "ring-brand-blue"  },
+  { size: "S", chest: "34–35", waist: "27–28", hip: "37–38", length: "24.5" },
+  { size: "M", chest: "36–37", waist: "29–30", hip: "39–40", length: "25" },
+  { size: "L", chest: "38–40", waist: "31–33", hip: "41–43", length: "25.5" },
 ];
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
-
 function AccordionItem({
   label,
   content,
@@ -87,7 +91,10 @@ function AccordionItem({
         <span className="font-body text-[11px] tracking-widest uppercase text-brand-gray group-hover:text-brand-ink transition-colors">
           {label}
         </span>
-        <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.25 }}>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.25 }}
+        >
           <ChevronDown size={14} className="text-brand-gray" />
         </motion.div>
       </button>
@@ -104,7 +111,10 @@ function AccordionItem({
           >
             <ul className="space-y-2.5 pb-5">
               {content.map((line, i) => (
-                <li key={i} className="flex items-start gap-3 font-body text-[14px] text-brand-gray leading-relaxed">
+                <li
+                  key={i}
+                  className="flex items-start gap-3 font-body text-[14px] text-brand-gray leading-relaxed"
+                >
                   <span className="w-1 h-1 rounded-full bg-brand-sage mt-[7px] shrink-0" />
                   {line}
                 </li>
@@ -138,7 +148,9 @@ function SizeChartModal({ onClose }: { onClose: () => void }) {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <Ruler size={16} className="text-brand-sage" strokeWidth={1.5} />
-              <h3 className="font-display text-xl text-brand-ink">Size Guide</h3>
+              <h3 className="font-display text-xl text-brand-ink">
+                Size Guide
+              </h3>
             </div>
             <button
               onClick={onClose}
@@ -149,7 +161,8 @@ function SizeChartModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <p className="font-body text-[12px] text-brand-gray tracking-wide mb-5">
-            All measurements in inches. When between sizes, size up for a relaxed fit.
+            All measurements in inches. When between sizes, size up for a
+            relaxed fit.
           </p>
 
           <div className="overflow-x-auto rounded-xl border border-brand-borderlight">
@@ -157,7 +170,10 @@ function SizeChartModal({ onClose }: { onClose: () => void }) {
               <thead>
                 <tr className="bg-brand-bgsecondary">
                   {["Size", "Chest", "Waist", "Hip", "Length"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-[10px] tracking-widest uppercase text-brand-gray font-normal">
+                    <th
+                      key={h}
+                      className="px-4 py-3 text-[10px] tracking-widest uppercase text-brand-gray font-normal"
+                    >
                       {h}
                     </th>
                   ))}
@@ -169,7 +185,9 @@ function SizeChartModal({ onClose }: { onClose: () => void }) {
                     key={row.size}
                     className={`border-t border-brand-borderlight ${i % 2 === 0 ? "" : "bg-brand-bgsecondary/40"}`}
                   >
-                    <td className="px-4 py-3 text-brand-sage font-medium">{row.size}</td>
+                    <td className="px-4 py-3 text-brand-sage font-medium">
+                      {row.size}
+                    </td>
                     <td className="px-4 py-3 text-brand-ink">{row.chest}</td>
                     <td className="px-4 py-3 text-brand-ink">{row.waist}</td>
                     <td className="px-4 py-3 text-brand-ink">{row.hip}</td>
@@ -190,17 +208,35 @@ function SizeChartModal({ onClose }: { onClose: () => void }) {
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
-export default function ProductPage({ params }: { params: Promise<{ handle: string }> }) {
+export default function ProductPage({
+  params,
+}: {
+  params: Promise<{ handle: string }>;
+}) {
   const resolvedParams = use(params);
   const [product, setProduct] = useState<ShopifyProduct | null>(null);
-  const [similarProducts, setSimilarProducts] = useState<ShopifyProductNode[]>([]);
+  const [similarProducts, setSimilarProducts] = useState<ShopifyProductNode[]>(
+    [],
+  );
+  const [comboProduct, setComboProduct] = useState<ShopifyProduct | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [cartState, setCartState] = useState<CartState>("idle");
-  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
-  const [selectedSize, setSelectedSize] = useState("M");
-  const [selectedColor, setSelectedColor] = useState(COLORS[0]);
   const [openAccordion, setOpenAccordion] = useState<AccordionKey | null>(null);
   const [sizeChartOpen, setSizeChartOpen] = useState(false);
+
+  // ─── DYNAMIC INVENTORY STATES ───
+  const [availableSizes, setAvailableSizes] = useState<string[]>([]);
+  const [availableColors, setAvailableColors] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [selectedSize, setSelectedSize] = useState<string>("");
+  const [selectedColor, setSelectedColor] = useState<{
+    label: string;
+    value: string;
+  } | null>(null);
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
+    null,
+  );
 
   const { addToCart } = useCart();
 
@@ -210,70 +246,108 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
       const productData = await getProduct(resolvedParams.handle);
       setProduct(productData);
 
+      // ─── COMBO OFFER WIRING ───
+      let comboHandleToFetch = null;
+
+      if (resolvedParams.handle === "calyx") {
+        comboHandleToFetch = "rubal"; 
+      } 
+
+      if (comboHandleToFetch) {
+        const comboData = await getProduct(comboHandleToFetch);
+        setComboProduct(comboData);
+      }
+
       const similarData = await getProductsInCollection(5);
       if (similarData) {
-        const filtered = similarData.filter(p => p.node.handle !== resolvedParams.handle).slice(0, 3);
+        const filtered = similarData
+          .filter((p) => p.node.handle !== resolvedParams.handle)
+          .slice(0, 3);
         setSimilarProducts(filtered);
       }
     }
     fetchProducts();
   }, [resolvedParams.handle]);
 
-  // Auto-Detect Color Based on Shopify Product Title
+  // Extract Exact Sizes and Colors from Shopify Variants
   useEffect(() => {
-    if (product) {
-      const titleStr = product.title.toLowerCase();
-      if (titleStr.includes("sage") || titleStr.includes("green")) {
-        setSelectedColor(COLORS.find(c => c.value === "sage") || COLORS[0]);
-      } else if (titleStr.includes("sky") || titleStr.includes("blue")) {
-        setSelectedColor(COLORS.find(c => c.value === "blue") || COLORS[2]);
-      } else if (titleStr.includes("blush") || titleStr.includes("rose") || titleStr.includes("pink")) {
-        setSelectedColor(COLORS.find(c => c.value === "rose") || COLORS[1]);
-      }
+    if (product && product.variants?.edges) {
+      // 1. Find all unique sizes
+      const extractedSizes = Array.from(
+        new Set(
+          product.variants.edges
+            .map(
+              ({ node }) =>
+                node.selectedOptions?.find(
+                  (o: any) => o.name.toLowerCase() === "size",
+                )?.value,
+            )
+            .filter(Boolean) as string[],
+        ),
+      );
+      setAvailableSizes(extractedSizes);
+      if (extractedSizes.length > 0) setSelectedSize(extractedSizes[0]);
+
+      // 2. Find all unique colors
+      const extractedColors = Array.from(
+        new Set(
+          product.variants.edges
+            .map(
+              ({ node }) =>
+                node.selectedOptions?.find(
+                  (o: any) => o.name.toLowerCase() === "color",
+                )?.value,
+            )
+            .filter(Boolean) as string[],
+        ),
+      ).map((color) => ({
+        label: color,
+        value: color.toLowerCase(),
+      }));
+
+      setAvailableColors(extractedColors);
+      if (extractedColors.length > 0) setSelectedColor(extractedColors[0]);
     }
   }, [product]);
 
-  // ─── FIX: Update Active Variant ID matching BOTH Size and Color ──────────────
+  // Match the Active Variant ID when User Changes Size or Color
   useEffect(() => {
     if (product && product.variants?.edges) {
       const matchedVariant = product.variants.edges.find(({ node }) => {
-        // 1. Check using Shopify's structured 'selectedOptions' if available
-        if (node.selectedOptions) {
-          const hasSize = node.selectedOptions.some((o: any) => 
-            o.name.toLowerCase() === "size" && o.value.toUpperCase() === selectedSize.toUpperCase()
-          );
-          const hasColor = node.selectedOptions.some((o: any) => 
-            o.name.toLowerCase() === "color" && (o.value.toLowerCase().includes(selectedColor.label.toLowerCase()) || o.value.toLowerCase().includes(selectedColor.value))
-          );
-          
-          // If the product uses color variants, require both
-          if (node.selectedOptions.some((o:any) => o.name.toLowerCase() === "color")) {
-            return hasSize && hasColor;
-          }
-          return hasSize;
-        }
+        if (!node.selectedOptions) return false;
 
-        // 2. Fallback: Parse the title manually (e.g., "M / Blush" or "Sage / M")
-        const variantParts = node.title.split('/').map(part => part.trim().toUpperCase());
-        const matchesSize = variantParts.includes(selectedSize.toUpperCase());
-        
-        const titleLower = node.title.toLowerCase();
-        const matchesColor = titleLower.includes(selectedColor.label.toLowerCase()) || titleLower.includes(selectedColor.value);
+        const sizeMatch =
+          availableSizes.length === 0 ||
+          node.selectedOptions.some(
+            (o: any) =>
+              o.name.toLowerCase() === "size" &&
+              o.value.toUpperCase() === selectedSize.toUpperCase(),
+          );
 
-        return matchesSize && matchesColor;
+        const colorMatch =
+          availableColors.length === 0 ||
+          node.selectedOptions.some(
+            (o: any) =>
+              o.name.toLowerCase() === "color" &&
+              o.value.toLowerCase() === selectedColor?.value,
+          );
+
+        return sizeMatch && colorMatch;
       });
 
       if (matchedVariant) {
         setSelectedVariantId(matchedVariant.node.id);
       } else {
-        // Ultimate fallback: Just grab the matching size if the color check fails
-        const sizeFallback = product.variants.edges.find(({ node }) => {
-          return node.title.split('/').map(part => part.trim().toUpperCase()).includes(selectedSize.toUpperCase());
-        });
-        setSelectedVariantId(sizeFallback ? sizeFallback.node.id : product.variants.edges[0].node.id);
+        setSelectedVariantId(product.variants.edges[0]?.node?.id || null);
       }
     }
-  }, [selectedSize, selectedColor, product]);
+  }, [
+    selectedSize,
+    selectedColor,
+    product,
+    availableSizes.length,
+    availableColors.length,
+  ]);
 
   if (!product) {
     return (
@@ -283,32 +357,85 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
     );
   }
 
-  // Filter images by selected color keyword
-  const allImages = product.images.edges.map((e) => e.node.url);
-  const filteredImages = allImages.filter((url) =>
-    url.toLowerCase().includes(selectedColor.value)
-  );
-  const images = filteredImages.length > 0 ? filteredImages : allImages;
-  const safeIndex = Math.min(activeIndex, images.length - 1);
-  const mainImage = images[safeIndex] ?? "https://images.unsplash.com/photo-1596455607563-ad6193f76b17";
+  // ─── ROBUST SMART IMAGE FILTERING ───
+  const allImages = product.images.edges.map((e) => ({
+    url: e.node.url,
+    alt: (e.node.altText || "").toLowerCase(),
+  }));
+
+  let images = allImages;
+
+  if (selectedColor) {
+    const label = selectedColor.label.toLowerCase();
+    const val = selectedColor.value.toLowerCase();
+
+    // Expand search terms to catch common name differences
+    const searchTerms = [label, val];
+    if (
+      val.includes("sage") ||
+      label.includes("sage") ||
+      val.includes("green") ||
+      label.includes("green")
+    )
+      searchTerms.push("green", "sage");
+    if (val.includes("rose") || val.includes("blush") || label.includes("pink"))
+      searchTerms.push("pink", "rose", "blush");
+    if (val.includes("sky") || label.includes("sky") || label.includes("blue"))
+      searchTerms.push("blue", "sky");
+
+    const matchedImages = allImages.filter((img) => {
+      const urlText = img.url.toLowerCase();
+      // Return true if ANY of our search terms are found in the Alt Text or URL
+      return searchTerms.some(
+        (term) => img.alt.includes(term) || urlText.includes(term),
+      );
+    });
+
+    // Only show matches! If length is 0, it falls back to all images
+    if (matchedImages.length > 0) {
+      images = matchedImages;
+    }
+  }
+
+  // Ensure index is safe even if image count drops drastically
+  const safeIndex = Math.min(activeIndex, Math.max(0, images.length - 1));
+  const mainImage =
+    images[safeIndex]?.url ??
+    "https://images.unsplash.com/photo-1596455607563-ad6193f76b17";
   const price = product.priceRange.minVariantPrice.amount;
 
-  const handleColorSelect = (color: typeof COLORS[0]) => {
+  const handleColorSelect = (color: { label: string; value: string }) => {
     setSelectedColor(color);
-    setActiveIndex(0); 
+    setActiveIndex(0);
   };
 
-  // ─── FIX: Send exact size/color mapping to the Cart ──────────────────────────
   const handleAddToCart = () => {
     if (cartState !== "idle" || !selectedVariantId) return;
     setCartState("adding");
+
+    const matchedVariant = product.variants.edges.find(
+      ({ node }) => node.id === selectedVariantId,
+    )?.node;
+
     addToCart({
       id: selectedVariantId,
-      title: `${product.title} - ${selectedSize} (${selectedColor.label})`,
+      title: product.title,
       price: Number(price),
       image: mainImage,
-      handle: product.handle
+      handle: product.handle,
+      variantTitle:
+        matchedVariant?.title ||
+        `${selectedSize}${selectedColor ? ` / ${selectedColor.label}` : ""}`,
+      selectedOptions: matchedVariant?.selectedOptions || [],
+      availableVariants: product.variants.edges.map((e) => ({
+        id: e.node.id,
+        title: e.node.title,
+        availableForSale: (e.node as any).availableForSale ?? true,
+        price: e.node.price,
+        selectedOptions: e.node.selectedOptions,
+      })),
     });
+
     setTimeout(() => setCartState("success"), 1200);
     setTimeout(() => setCartState("idle"), 3000);
   };
@@ -316,66 +443,107 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
   const toggleAccordion = (key: AccordionKey) =>
     setOpenAccordion((prev) => (prev === key ? null : key));
 
-  const fabricData = parseMetafield(product.fabricCustom) || parseMetafield(product.fabricShopify);
-  const careData = parseMetafield(product.careCustom) || parseMetafield(product.careShopify);
+  // ─── CONTEXT-AWARE ACCORDION LOGIC ───
+  const productTitleLower = product.title.toLowerCase();
+  const isJewelry = productTitleLower.includes("necklace") || productTitleLower.includes("ring") || productTitleLower.includes("earring");
 
-  const dynamicAccordionData: { key: AccordionKey; label: string; content: string[] }[] = [
-    {
-      key: "fabric",
-      label: "Fabric & Material",
-      content: fabricData || [
+  const defaultFabric = isJewelry 
+    ? ["Premium UV resin coating", "Hand-placed detailing on a durable base"]
+    : [
         "100% fine European flax linen, OEKO-TEX certified",
         "Breathable, structured weave — softens with each wash",
         "Inner lining: 100% organic cotton voile",
-      ],
+      ];
+      
+  const defaultCare = isJewelry
+    ? ["Wipe gently with a soft, dry cloth", "Keep away from moisture, perfumes, and harsh chemicals", "Store in a dry pouch or box"]
+    : ["Dry clean recommended"];
+
+  const fabricData =
+    parseMetafield(product.fabricCustom) ||
+    parseMetafield(product.fabricShopify);
+  const careData =
+    parseMetafield(product.careCustom) || parseMetafield(product.careShopify);
+
+  const dynamicAccordionData: {
+    key: AccordionKey;
+    label: string;
+    content: string[];
+  }[] = [
+    {
+      key: "fabric",
+      label: isJewelry ? "Materials & Craft" : "Fabric & Material",
+      content: fabricData || defaultFabric,
     },
     {
       key: "care",
       label: "Care Instructions",
-      content: careData || [
-        "Dry clean recommended",
-      ],
+      content: careData || defaultCare,
     },
     {
       key: "shipping",
       label: "Shipping & Returns",
-      content: [
-        "Dispatched within 3–5 business days",
-      ],
+      content: ["Dispatched within 3–5 business days"],
     },
   ];
+
+  // ── SMART PRICING LOGIC ───
+  const activeVariant =
+    product.variants.edges.find(({ node }) => node.id === selectedVariantId)
+      ?.node || product.variants.edges[0].node;
+
+  const currentPrice = Number(activeVariant.price.amount);
+  const compareAtPrice = activeVariant.compareAtPrice
+    ? Number(activeVariant.compareAtPrice.amount)
+    : null;
+
+  let discountPercentage = 0;
+  if (compareAtPrice && compareAtPrice > currentPrice) {
+    discountPercentage = Math.round(
+      ((compareAtPrice - currentPrice) / compareAtPrice) * 100,
+    );
+  }
 
   return (
     <div className="min-h-screen bg-brand-bgprimary text-brand-ink font-body flex flex-col pt-24 text-left">
       <Navbar />
 
-      {sizeChartOpen && <SizeChartModal onClose={() => setSizeChartOpen(false)} />}
+      {sizeChartOpen && (
+        <SizeChartModal onClose={() => setSizeChartOpen(false)} />
+      )}
 
       <main className="flex-grow w-full">
         <div className="max-w-[1600px] mx-auto w-full flex flex-col lg:flex-row min-h-[85vh]">
-
           {/* ── LEFT: Image Gallery ─────────────────────────────────────── */}
           <div className="w-full lg:w-[60%] flex flex-col md:flex-row gap-4 p-6 lg:p-12">
-            <div className="hidden md:flex flex-col gap-3 overflow-y-auto max-h-[80vh] hide-scrollbar pb-2 pr-2">
+            {/* Desktop Thumbnails */}
+            <div className="hidden md:flex flex-col gap-3 overflow-y-auto max-h-[85vh] hide-scrollbar pb-2 pr-2">
               {images.map((img, i) => (
                 <button
                   key={i}
                   onMouseEnter={() => setActiveIndex(i)}
-                  className={`relative h-[120px] w-[90px] shrink-0 overflow-hidden rounded-lg border transition-all duration-300 cursor-pointer ${
+                  className={`relative w-[90px] aspect-[3/4] shrink-0 overflow-hidden rounded-lg border transition-all duration-300 cursor-pointer ${
                     i === safeIndex
-                      ? "border-brand-sage opacity-100"
+                      ? "border-brand-sage opacity-100 ring-1 ring-brand-sage"
                       : "border-transparent opacity-55 hover:opacity-100"
                   }`}
                 >
-                  <Image src={img} alt={`Thumbnail ${i + 1}`} fill loading="lazy" className="object-cover" />
+                  <Image
+                    src={img.url}
+                    alt={`Thumbnail ${i + 1}`}
+                    fill
+                    loading="lazy"
+                    className="object-cover object-center"
+                  />
                 </button>
               ))}
             </div>
 
-            <div className="relative w-full aspect-[4/5] md:h-[80vh] md:aspect-auto bg-brand-bgsecondary overflow-hidden rounded-xl border border-brand-borderlight">
+            {/* Main Image */}
+            <div className="relative w-full aspect-[3/4] bg-brand-bgsecondary overflow-hidden rounded-xl border border-brand-borderlight shadow-sm">
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={`${selectedColor.value}-${safeIndex}`}
+                  key={`${selectedColor?.value || "nocolor"}-${safeIndex}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -386,24 +554,31 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
                     src={mainImage}
                     alt={product.title}
                     fill
-                    className="object-cover object-center"
+                    priority
+                    className="object-contain object-center p-2"
                   />
                 </motion.div>
               </AnimatePresence>
             </div>
 
+            {/* Mobile Thumbnails */}
             <div className="flex md:hidden gap-3 mt-2 overflow-x-auto hide-scrollbar pb-2">
               {images.map((img, i) => (
                 <button
                   key={i}
                   onClick={() => setActiveIndex(i)}
-                  className={`relative h-[90px] w-[68px] shrink-0 overflow-hidden rounded-lg border transition-all duration-300 cursor-pointer ${
+                  className={`relative w-[72px] aspect-[3/4] shrink-0 overflow-hidden rounded-lg border transition-all duration-300 cursor-pointer ${
                     i === safeIndex
                       ? "border-brand-sage opacity-100"
                       : "border-transparent opacity-55 hover:opacity-100"
                   }`}
                 >
-                  <Image src={img} alt={`Thumbnail ${i + 1}`} fill className="object-cover" />
+                  <Image
+                    src={img.url}
+                    alt={`Thumbnail ${i + 1}`}
+                    fill
+                    className="object-cover object-center"
+                  />
                 </button>
               ))}
             </div>
@@ -412,78 +587,134 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
           {/* ── RIGHT: Product Details ──────────────────────────────────── */}
           <div className="w-full lg:w-[40%] px-6 pb-24 lg:py-12 lg:pr-12 text-left">
             <div className="lg:sticky lg:top-[120px] max-w-lg mx-auto lg:mx-0">
-
               <h1 className="font-display text-[32px] md:text-[40px] font-medium leading-[1.1] mb-2 text-brand-ink">
                 {product.title}
               </h1>
 
-              <div className="mb-6">
-                <span className="font-body text-xl tracking-wide text-brand-gray">
-                  ₹ {Number(price).toLocaleString()}
+              <div className="mb-6 flex items-center gap-3">
+                <span className="font-body text-xl tracking-wide text-brand-ink">
+                  ₹ {currentPrice.toLocaleString()}
                 </span>
+
+                {compareAtPrice && compareAtPrice > currentPrice && (
+                  <>
+                    <span className="font-body text-[15px] text-brand-gray line-through">
+                      ₹ {compareAtPrice.toLocaleString()}
+                    </span>
+                    <span className="font-body text-[11px] font-medium tracking-wider uppercase bg-brand-rose/10 text-brand-rose px-2.5 py-1 rounded-sm border border-brand-rose/20">
+                      {discountPercentage}% Off
+                    </span>
+                  </>
+                )}
               </div>
 
-              <div 
+              <div
                 className="font-body text-brand-gray leading-[1.8] text-[15px] mb-10 [&>p]:mb-4 [&>strong]:font-medium [&>strong]:text-brand-ink"
-                dangerouslySetInnerHTML={{ 
-                  __html: product.descriptionHtml || "<p>Limited edition embroidered vest for everyday luxury.</p>" 
-                }} 
+                dangerouslySetInnerHTML={{
+                  __html:
+                    product.descriptionHtml ||
+                    "<p>Limited edition embroidered clothes for everyday luxury.</p>",
+                }}
               />
 
-              <div className="mb-8">
-                <div className="flex items-center gap-2 mb-3">
-                  <p className="font-body text-[11px] tracking-widest uppercase text-brand-gray">
-                    Colorway
-                  </p>
-                  <span className="font-body text-[11px] text-brand-ink/60">— {selectedColor.label}</span>
-                </div>
-                <div className="flex gap-3">
-                  {COLORS.map((color) => {
-                    const isActive = selectedColor.value === color.value;
-                    return (
-                      <button
-                        key={color.value}
-                        onClick={() => handleColorSelect(color)}
-                        aria-label={color.label}
-                        title={color.label}
-                        className={`w-9 h-9 rounded-full ${color.bgClass} cursor-pointer transition-all duration-200 ${
-                          isActive
-                            ? `ring-2 ring-offset-2 ring-offset-brand-bgprimary ${color.ring} scale-110`
-                            : "opacity-50 hover:opacity-80 hover:scale-105"
-                        }`}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
+              {/* DYNAMIC COLORS (Only shows if product has color variants) */}
+              {availableColors.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex items-center gap-2 mb-3">
+                    <p className="font-body text-[11px] tracking-widest uppercase text-brand-gray">
+                      Colorway
+                    </p>
+                    <span className="font-body text-[11px] text-brand-ink/60">
+                      — {selectedColor?.label}
+                    </span>
+                  </div>
+                  <div className="flex gap-3">
+                    {availableColors.map((color) => {
+                      const isActive = selectedColor?.value === color.value;
 
-              <div className="mb-10">
-                <div className="flex justify-between items-end mb-3">
-                  <p className="font-body text-[11px] tracking-widest uppercase text-brand-gray">Size</p>
-                  <button
-                    onClick={() => setSizeChartOpen(true)}
-                    className="flex items-center gap-1.5 text-[11px] text-brand-rose font-body cursor-pointer group"
-                  >
-                    <Ruler size={12} className="group-hover:rotate-12 transition-transform duration-200" />
-                    Size Guide
-                  </button>
+                      const isGreenOrSage =
+                        color.value.includes("sage") ||
+                        color.value.includes("green");
+                      const isPinkOrRose =
+                        color.value.includes("rose") ||
+                        color.value.includes("blush") ||
+                        color.value.includes("pink");
+                      const isBlueOrSky =
+                        color.value.includes("sky") ||
+                        color.value.includes("blue");
+
+                      const brandBg = isGreenOrSage
+                        ? "bg-brand-sage"
+                        : isPinkOrRose
+                          ? "bg-brand-rose"
+                          : isBlueOrSky
+                            ? "bg-brand-blue"
+                            : "";
+
+                      const brandRing = isGreenOrSage
+                        ? "ring-brand-sage"
+                        : isPinkOrRose
+                          ? "ring-brand-rose"
+                          : isBlueOrSky
+                            ? "ring-brand-blue"
+                            : "ring-brand-borderlight";
+
+                      return (
+                        <button
+                          key={color.value}
+                          onClick={() => handleColorSelect(color)}
+                          aria-label={color.label}
+                          title={color.label}
+                          className={`w-9 h-9 rounded-full cursor-pointer transition-all duration-200 ${brandBg} ${
+                            isActive
+                              ? `ring-2 ring-offset-2 ring-offset-brand-bgprimary ${brandRing} scale-110`
+                              : "opacity-50 hover:opacity-80 hover:scale-105"
+                          }`}
+                          style={
+                            !brandBg ? { backgroundColor: color.value } : {}
+                          }
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-2.5">
-                  {["S", "M", "L"].map((s) => (
+              )}
+
+              {/* DYNAMIC SIZES (Only shows if product has size variants) */}
+              {availableSizes.length > 0 && (
+                <div className="mb-10">
+                  <div className="flex justify-between items-end mb-3">
+                    <p className="font-body text-[11px] tracking-widest uppercase text-brand-gray">
+                      Size
+                    </p>
                     <button
-                      key={s}
-                      onClick={() => setSelectedSize(s)}
-                      className={`h-10 px-5 rounded-full font-body text-xs border transition-colors cursor-pointer ${
-                        selectedSize === s
-                          ? "border-brand-sage bg-[rgba(143,168,130,0.1)] text-brand-sage"
-                          : "border-brand-borderlight text-brand-gray hover:border-brand-sage"
-                      }`}
+                      onClick={() => setSizeChartOpen(true)}
+                      className="flex items-center gap-1.5 text-[11px] text-brand-rose font-body cursor-pointer group"
                     >
-                      {s}
+                      <Ruler
+                        size={12}
+                        className="group-hover:rotate-12 transition-transform duration-200"
+                      />
+                      Size Guide
                     </button>
-                  ))}
+                  </div>
+                  <div className="flex flex-wrap gap-2.5">
+                    {availableSizes.map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => setSelectedSize(s)}
+                        className={`h-10 px-5 rounded-full font-body text-xs border transition-colors cursor-pointer ${
+                          selectedSize === s
+                            ? "border-brand-sage bg-[rgba(143,168,130,0.1)] text-brand-sage"
+                            : "border-brand-borderlight text-brand-gray hover:border-brand-sage"
+                        }`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="mb-10">
                 <button
@@ -493,12 +724,21 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
                 >
                   <AnimatePresence mode="wait">
                     {cartState === "idle" && (
-                      <motion.span key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                      <motion.span
+                        key="idle"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                      >
                         Add to Bag — ₹{Number(price).toLocaleString()}
                       </motion.span>
                     )}
                     {cartState === "adding" && (
-                      <motion.div key="adding" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
+                      <motion.div
+                        key="adding"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="flex items-center gap-2"
+                      >
                         {[0, 0.2, 0.4].map((delay, i) => (
                           <div
                             key={i}
@@ -509,7 +749,12 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
                       </motion.div>
                     )}
                     {cartState === "success" && (
-                      <motion.span key="success" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
+                      <motion.span
+                        key="success"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="flex items-center gap-2"
+                      >
                         Added <Check size={16} />
                       </motion.span>
                     )}
@@ -528,70 +773,68 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
                   />
                 ))}
               </div>
-
+              
+              {/* ── EXACT PLACEMENT FOR COMBO OFFER ── */}
+              {comboProduct && (
+                <ComboOffer mainProduct={product} comboProduct={comboProduct} />
+              )}
             </div>
           </div>
         </div>
 
-        {/* <section className="bg-brand-bgsecondary py-20 px-6 border-t border-brand-borderlight w-full">
-          <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-12 justify-between">
-            <div className="md:w-1/2">
-              <h3 className="font-display text-2xl text-brand-ink mb-6">How It&apos;s Made</h3>
-              <ul className="space-y-4 font-body text-[15px] text-brand-gray text-left">
-                {[
-                  "Hand embroidered botanical motifs by artisans in Pune, taking over 42 hours to complete.",
-                  "Cut from premium 100% fine European flax linen, ensuring breathability and structured softness.",
-                  "Finished with delicate handmade bow thread-ties instead of standard buttons.",
-                ].map((text, i) => (
-                  <li key={i} className="flex items-start gap-4">
-                    <span className="w-1.5 h-1.5 rounded-full bg-brand-sage mt-2 shrink-0" />
-                    <span>{text}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="md:w-1/2">
-              <div className="aspect-[4/3] bg-brand-bgprimary rounded-xl overflow-hidden border border-brand-borderlight relative">
-                <Image
-                  src="https://images.unsplash.com/photo-1454372182658-c712e4c5a1db?q=80&w=1000"
-                  alt="Artisan details"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </div>
-          </div>
-        </section> */}
-
         {/* ── Similar Products ──────────────────────────────────────────────── */}
         {similarProducts.length > 0 && (
           <section className="py-24 px-6 md:px-16 w-full text-center border-t border-brand-bgprimary">
-            <h3 className="font-display text-4xl text-brand-ink mb-12">Complete the Look</h3>
-            <div className="flex overflow-x-auto gap-6 pb-8 snap-x justify-center" style={{ scrollSnapType: "x mandatory" }}>
+            <h3 className="font-display text-4xl text-brand-ink mb-12">
+              Complete the Look
+            </h3>
+            <div
+              className="flex overflow-x-auto gap-6 pb-8 snap-x justify-center"
+              style={{ scrollSnapType: "x mandatory" }}
+            >
               {similarProducts.map((item) => {
                 const titleStr = item.node.title.toLowerCase();
-                let productCardBadge = "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
+                let productCardBadge =
+                  "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
                 if (titleStr.includes("sage") || titleStr.includes("green")) {
-                  productCardBadge = "bg-[rgba(143,168,130,0.12)] text-brand-sage border-[rgba(143,168,130,0.3)]";
-                } else if (titleStr.includes("sky") || titleStr.includes("blue")) {
-                  productCardBadge = "bg-[rgba(134,167,185,0.12)] text-brand-blue border-[rgba(134,167,185,0.3)]";
+                  productCardBadge =
+                    "bg-[rgba(143,168,130,0.12)] text-brand-sage border-[rgba(143,168,130,0.3)]";
+                } else if (
+                  titleStr.includes("sky") ||
+                  titleStr.includes("blue")
+                ) {
+                  productCardBadge =
+                    "bg-[rgba(134,167,185,0.12)] text-brand-blue border-[rgba(134,167,185,0.3)]";
                 }
 
                 return (
-                  <Link href={`/product/${item.node.handle}`} key={item.node.id} className="flex-none w-[80vw] md:w-[25vw] snap-center group">
+                  <Link
+                    href={`/product/${item.node.handle}`}
+                    key={item.node.id}
+                    className="flex-none w-[80vw] md:w-[25vw] snap-center group"
+                  >
                     <div className="aspect-[3/4] bg-brand-bgprimary rounded-xl overflow-hidden mb-4 border border-brand-borderlight cursor-pointer relative shadow-[0_2px_12px_rgba(44,37,32,0.06)] group-hover:-translate-y-1 transition-all duration-300">
-                      <div className={`absolute top-3 right-3 z-10 border text-[11px] px-[8px] py-[2px] rounded-full font-body ${productCardBadge}`}>
+                      <div
+                        className={`absolute top-3 right-3 z-10 border text-[11px] px-[8px] py-[2px] rounded-full font-body ${productCardBadge}`}
+                      >
                         Limited
                       </div>
                       <Image
-                        src={item.node.images.edges[0]?.node.url || "https://images.unsplash.com/photo-1596455607563-ad6193f76b17"}
+                        src={
+                          item.node.images.edges[0]?.node.url ||
+                          "https://images.unsplash.com/photo-1596455607563-ad6193f76b17"
+                        }
                         alt={item.node.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-700"
                       />
                     </div>
-                    <h4 className="font-display text-lg text-brand-ink transition-colors">{item.node.title}</h4>
-                    <p className="font-body text-sm text-brand-gray mt-1">₹{item.node.priceRange.minVariantPrice.amount}</p>
+                    <h4 className="font-display text-lg text-brand-ink transition-colors">
+                      {item.node.title}
+                    </h4>
+                    <p className="font-body text-sm text-brand-gray mt-1">
+                      ₹{item.node.priceRange.minVariantPrice.amount}
+                    </p>
                   </Link>
                 );
               })}

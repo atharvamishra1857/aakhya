@@ -3,13 +3,11 @@
 import {
   getProductsInCollection,
   ShopifyProductNode,
-  ShopifyProduct,
 } from "@/lib/shopify";
 import Link from "next/link";
 import { Scissors, Package, Shirt } from "lucide-react";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/navbar";
-import { useCart } from "@/context/cartcontext";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
@@ -19,7 +17,6 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Home() {
   const [products, setProducts] = useState<ShopifyProductNode[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { addToCart } = useCart();
 
   useEffect(() => {
     async function fetchData() {
@@ -35,6 +32,10 @@ export default function Home() {
     }
     fetchData();
   }, []);
+
+  useEffect(() => {
+  console.log("|" + process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN + "|");
+}, []);
 
   // --- THE FIXED GSAP LOGIC ---
   useEffect(() => {
@@ -63,16 +64,6 @@ export default function Home() {
     return () => ctx.revert();
   }, [isLoading]);
 
-  const handleQuickAdd = (e: any, variantId: string, item: ShopifyProduct) => {
-    e.preventDefault();
-    addToCart({
-      id: variantId,
-      title: item.title,
-      price: Number(item.priceRange.minVariantPrice.amount),
-      image: item.images.edges[0]?.node.url || "",
-      handle: item.handle,
-    });
-  };
 
   return (
     <div className="bg-brand-bgprimary text-brand-ink flex flex-col">
@@ -147,38 +138,9 @@ export default function Home() {
                 <div className="group relative bg-brand-bgprimary border border-brand-borderlight rounded-xl overflow-hidden shadow-[0_2px_12px_rgba(44,37,32,0.06)] hover:-translate-y-1 transition-all duration-300">
                   {/* Parent has 'relative' here, which is perfect for fill */}
                   <div className="aspect-square overflow-hidden relative">
-                    {(() => {
-                      const titleStr = item.node.title.toLowerCase();
-                      let colorClass =
-                        "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
-                      if (
-                        titleStr.includes("sage") ||
-                        titleStr.includes("green")
-                      ) {
-                        colorClass =
-                          "bg-[rgba(143,168,130,0.12)] text-brand-sage border-[rgba(143,168,130,0.3)]";
-                      } else if (
-                        titleStr.includes("sky") ||
-                        titleStr.includes("blue")
-                      ) {
-                        colorClass =
-                          "bg-[rgba(134,167,185,0.12)] text-brand-blue border-[rgba(134,167,185,0.3)]";
-                      } else if (
-                        titleStr.includes("blush") ||
-                        titleStr.includes("rose") ||
-                        titleStr.includes("pink")
-                      ) {
-                        colorClass =
-                          "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
-                      }
-                      return (
-                        <div
-                          className={`absolute top-3 right-3 z-10 border text-[11px] px-[8px] py-[2px] rounded-full font-body ${colorClass}`}
-                        >
-                          Limited
-                        </div>
-                      );
-                    })()}
+                    <div className="absolute top-3 right-3 z-10 border text-[11px] px-[8px] py-[2px] rounded-full font-body bg-brand-ink/5 text-brand-ink/60 border-brand-ink/10 backdrop-blur-sm">
+                      Limited
+                    </div>
                     <Image
                       src={
                         item.node.images.edges[0]?.node.url ||
@@ -197,18 +159,13 @@ export default function Home() {
                       ₹{item.node.priceRange.minVariantPrice.amount}
                     </p>
 
-                    <button
-                      onClick={(e) =>
-                        handleQuickAdd(
-                          e,
-                          item.node.variants.edges[0].node.id,
-                          item.node,
-                        )
-                      }
+                    <Link
+                      href={`/product/${item.node.handle}`}
                       className="text-xs font-body tracking-wider uppercase text-brand-rose border-b border-brand-rose/30 hover:border-brand-rose pb-1 mt-2 inline-block transition-colors"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      Add to Cart
-                    </button>
+                      View Product →
+                    </Link>
                   </div>
                 </div>
               </Link>
@@ -238,35 +195,21 @@ export default function Home() {
             Three colorways. One silhouette. Designed to wear every day and
             remember forever.
           </p>
-          <div className="flex gap-6 py-4">
-            <Link
-              href="/collection"
-              className="flex flex-col items-center gap-2 cursor-pointer group"
-            >
-              <div className="w-[28px] h-[28px] rounded-full bg-brand-sage group-hover:scale-110 transition-transform shadow-sm"></div>
-              <span className="text-xs text-brand-gray font-body mt-1">
-                Sage
-              </span>
-            </Link>
-            <Link
-              href="/collection"
-              className="flex flex-col items-center gap-2 cursor-pointer group"
-            >
-              <div className="w-[28px] h-[28px] rounded-full bg-brand-rose group-hover:scale-110 transition-transform shadow-sm"></div>
-              <span className="text-xs text-brand-gray font-body mt-1">
-                Blush
-              </span>
-            </Link>
-            <Link
-              href="/collection"
-              className="flex flex-col items-center gap-2 cursor-pointer group"
-            >
-              <div className="w-[28px] h-[28px] rounded-full bg-brand-blue group-hover:scale-110 transition-transform shadow-sm"></div>
-              <span className="text-xs text-brand-gray font-body mt-1">
-                Sky
-              </span>
-            </Link>
-          </div>
+          {products.length > 0 && (
+            <ul className="py-4 space-y-2">
+              {products.slice(0, 3).map((item) => (
+                <li key={item.node.id}>
+                  <Link
+                    href={`/product/${item.node.handle}`}
+                    className="font-body text-[13px] text-brand-gray hover:text-brand-ink transition-colors tracking-wide flex items-center gap-2 group"
+                  >
+                    <span className="w-1 h-1 rounded-full bg-brand-rose group-hover:scale-150 transition-transform" />
+                    {item.node.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
           <Link
             href="/collection"
             className="inline-block border border-brand-rose text-brand-rose px-8 py-3 rounded-full hover:bg-brand-rose hover:text-brand-ivory transition-all max-w-max mt-4 text-sm font-body cursor-pointer"
@@ -277,7 +220,7 @@ export default function Home() {
       </section>
 
       {/* ---------------- SECTION 4: WHY aakhya ---------------- */}
-      <section className="py-24 px-6 md:px-16 bg-brand-bgsecondary grid md:grid-cols-3 gap-16 md:gap-12 text-center reveal">
+      <section className="py-28 px-6 md:px-16 bg-brand-bgsecondary grid md:grid-cols-3 gap-16 md:gap-12 text-center reveal border-t border-brand-borderlight">
         <div className="flex flex-col items-center space-y-4">
           <Scissors className="w-6 h-6 text-brand-rose mb-2" strokeWidth={1} />
           <h3 className="font-display text-lg text-brand-ink">
@@ -304,52 +247,6 @@ export default function Home() {
           <p className="font-body text-[14px] text-brand-muted max-w-xs">
             Easy to style, wear with anything
           </p>
-        </div>
-      </section>
-
-      {/* ---------------- SECTION 5: ONE PIECE MULTIPLE MOODS ---------------- */}
-      <section className="py-24 bg-brand-bgprimary border-t border-brand-borderlight reveal">
-        <div className="px-6 md:px-16 mb-12">
-          <h2 className="font-display text-[40px] text-brand-ink text-left">
-            One piece. Multiple moods.
-          </h2>
-        </div>
-        <div
-          className="flex overflow-x-auto gap-6 px-6 md:px-16 pb-8 snap-x"
-          style={{ scrollSnapType: "x mandatory" }}
-        >
-          {[
-            {
-              title: "Studio Sessions",
-              Image: "/aakhya-mainpage-bottom-edited(2).png",
-            },
-            {
-              title: "Weekend Brunch",
-              Image: "/aakhya-mainpage-bottom-edited1.png",
-            },
-            {
-              title: "Morning Light",
-              Image: "/aakhya-mainpage-bottom2.png",
-            },
-          ].map((item, i) => (
-            <div
-              key={i}
-              className="flex-none w-[80vw] md:w-[28vw] snap-center group"
-            >
-              {/* Added 'relative' to this div so the image knows where to fill */}
-              <div className="aspect-[4/5] relative bg-brand-bgsecondary rounded-xl overflow-hidden mb-4 border border-brand-borderlight">
-                <Image
-                  src={item.Image}
-                  alt={item.title}
-                  fill // Added fill here
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-              </div>
-              <p className="font-body text-sm text-brand-gray text-center">
-                {item.title}
-              </p>
-            </div>
-          ))}
         </div>
       </section>
 

@@ -29,7 +29,7 @@ const imFell = IM_Fell_English_SC({
 });
 
 export const metadata: Metadata = {
-  title: "aakhya | Modern Occasion Wear",
+  title: "Aakhya | Modern Occasion Wear",
   description: "Premium Modern Indian Womenswear",
 };
 

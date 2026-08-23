@@ -12,6 +12,14 @@ import {
 
 // ================= TYPES =================
 
+export type VariantNode = {
+  id: string;
+  title: string;
+  availableForSale: boolean;
+  price: { amount: string; currencyCode: string };
+  selectedOptions: { name: string; value: string }[];
+};
+
 export type CartItem = {
   id: string;
   title: string;
@@ -19,6 +27,9 @@ export type CartItem = {
   image: string;
   quantity: number;
   handle: string;
+  variantTitle?: string;                // e.g. "M / Sage"
+  selectedOptions?: { name: string; value: string }[];
+  availableVariants?: VariantNode[];    // full variant list from the product
 };
 
 // ================= CONTEXT TYPE =================
@@ -30,6 +41,7 @@ type CartContextType = {
   cartItems: CartItem[];
   addToCart: (item: Omit<CartItem, "quantity">) => void;
   updateQuantity: (id: string, delta: number) => void;
+  updateVariant: (oldId: string, newVariant: Omit<CartItem, "quantity">) => void;
   removeFromCart: (id: string) => void;
   cartTotal: number;
   cartCount: number;
@@ -89,6 +101,55 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
+  // ================= UPDATE VARIANT =================
+  const updateVariant = useCallback((oldId: string, newVariant: Omit<CartItem, "quantity">) => {
+    setCartItems((prevItems) => {
+      const oldItem = prevItems.find((item) => item.id === oldId);
+      if (!oldItem) return prevItems;
+
+      const quantityToMove = oldItem.quantity;
+      const withoutOld = prevItems.filter((item) => item.id !== oldId);
+
+      // If the newly selected variant is ALREADY in the cart, combine their quantities
+      const existingNewItem = withoutOld.find((item) => item.id === newVariant.id);
+      if (existingNewItem) {
+        return withoutOld.map((item) =>
+          item.id === newVariant.id
+            ? { ...item, quantity: item.quantity + quantityToMove }
+            : item,
+        );
+      }
+
+      // Otherwise, just push the new variant with the old quantity
+      return [...withoutOld, { ...newVariant, quantity: quantityToMove }];
+    });
+  }, []);
+
+  // // ================= UPDATE VARIANT =================
+  // const updateVariant = useCallback(
+  //   (oldId: string, newVariant: Omit<CartItem, "quantity">) => {
+  //     setCartItems((prevItems) => {
+  //       const oldItemIndex = prevItems.findIndex((item) => item.id === oldId);
+  //       if (oldItemIndex === -1) return prevItems;
+
+  //       const oldQuantity = prevItems[oldItemIndex].quantity;
+  //       const existingIndex = prevItems.findIndex((item) => item.id === newVariant.id);
+
+  //       if (existingIndex !== -1 && existingIndex !== oldItemIndex) {
+  //         const newItems = [...prevItems];
+  //         newItems[existingIndex].quantity += oldQuantity;
+  //         newItems.splice(oldItemIndex, 1);
+  //         return newItems;
+  //       } else {
+  //         const newItems = [...prevItems];
+  //         newItems[oldItemIndex] = { ...newVariant, quantity: oldQuantity };
+  //         return newItems;
+  //       }
+  //     });
+  //   },
+  //   []
+  // );
+
   // ================= REMOVE =================
   const removeFromCart = useCallback((id: string) => {
     setCartItems((prev) => prev.filter((item) => item.id !== id));
@@ -119,6 +180,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       cartItems,
       addToCart,
       updateQuantity,
+      updateVariant,
       removeFromCart,
       cartTotal,
       cartCount,
@@ -130,6 +192,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       cartItems,
       addToCart,
       updateQuantity,
+      updateVariant,
       removeFromCart,
       cartTotal,
       cartCount,
