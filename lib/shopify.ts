@@ -16,10 +16,10 @@ const token = USE_MOCK
 
 if (!USE_MOCK) {
   if (!process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN) {
-    throw new Error("NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN is not set");
+    console.warn("⚠ NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN is not set — Shopify fetches will fail at runtime.");
   }
   if (!process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN) {
-    throw new Error("NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN is not set");
+    console.warn("⚠ NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN is not set — Shopify fetches will fail at runtime.");
   }
 }
 
