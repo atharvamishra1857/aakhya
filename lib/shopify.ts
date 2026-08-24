@@ -504,6 +504,7 @@ async function shopifyFetch<T>(query: string, variables = {}): Promise<T> {
 // ============================================================
 export async function getProductsInCollection(
   first = 20,
+  handle = "frontpage",
 ): Promise<ShopifyProductNode[]> {
   if (USE_MOCK) {
     return MOCK_PRODUCTS.slice(0, first).map((p) => ({ node: p }));
@@ -511,30 +512,32 @@ export async function getProductsInCollection(
 
   const data = await shopifyFetch<any>(
     `
-    query Products($first: Int!) {
-      products(first: $first, sortKey: CREATED_AT, reverse: true) {
-        edges {
-          node {
-            id title handle description descriptionHtml updatedAt
-            fabricCustom: metafield(namespace: "custom", key: "fabric") { value }
-            fabricShopify: metafield(namespace: "shopify", key: "fabric") { 
-              value 
-              references(first: 10) { edges { node { ... on Metaobject { handle fields { key value } } } } }
-            }
-            careCustom: metafield(namespace: "custom", key: "care_instructions") { value }
-            careShopify: metafield(namespace: "shopify", key: "care_instructions") { 
-              value 
-              references(first: 10) { edges { node { ... on Metaobject { handle fields { key value } } } } }
-            }
-            priceRange { minVariantPrice { amount currencyCode } }
-            images(first: 5) { edges { node { url altText } } }
-            variants(first: 10) {
-              edges {
-                node {
-                  id title availableForSale
-                  selectedOptions { name value }
-                  price { amount currencyCode }
-                  compareAtPrice { amount currencyCode }
+    query CollectionProducts($handle: String!, $first: Int!) {
+      collection(handle: $handle) {
+        products(first: $first, sortKey: MANUAL) {
+          edges {
+            node {
+              id title handle description descriptionHtml updatedAt
+              fabricCustom: metafield(namespace: "custom", key: "fabric") { value }
+              fabricShopify: metafield(namespace: "shopify", key: "fabric") { 
+                value 
+                references(first: 10) { edges { node { ... on Metaobject { handle fields { key value } } } } }
+              }
+              careCustom: metafield(namespace: "custom", key: "care_instructions") { value }
+              careShopify: metafield(namespace: "shopify", key: "care_instructions") { 
+                value 
+                references(first: 10) { edges { node { ... on Metaobject { handle fields { key value } } } } }
+              }
+              priceRange { minVariantPrice { amount currencyCode } }
+              images(first: 5) { edges { node { url altText } } }
+              variants(first: 10) {
+                edges {
+                  node {
+                    id title availableForSale
+                    selectedOptions { name value }
+                    price { amount currencyCode }
+                    compareAtPrice { amount currencyCode }
+                  }
                 }
               }
             }
@@ -543,10 +546,10 @@ export async function getProductsInCollection(
       }
     }
   `,
-    { first },
+    { handle, first },
   );
 
-  return data.products.edges;
+  return data.collection?.products?.edges ?? [];
 }
 
 export async function getProduct(
