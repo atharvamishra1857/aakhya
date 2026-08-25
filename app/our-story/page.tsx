@@ -148,7 +148,7 @@ export default function OurStory() {
               </div>
               <div className="w-full md:w-1/2">
                 <CinematicImage 
-                  src="/aakhya-collection1.jpeg" 
+                  src="/aakhya-collection1.png" 
                   alt="Story image 1" 
                   aspectClass="aspect-[4/3]"
                   speed={0.8}

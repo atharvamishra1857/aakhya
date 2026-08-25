@@ -72,7 +72,7 @@ export default function Home() {
       {/* ---------------- SECTION 1: HERO ---------------- */}
       <section className="relative h-[90vh] flex items-center px-6 md:px-16">
         <Image
-          src="/hero-bg.jpg"
+          src="/hero-bg.png"
           alt="Rose pink vest"
           className="absolute inset-0 object-cover"
           fill // Added fill instead of strict width/height
