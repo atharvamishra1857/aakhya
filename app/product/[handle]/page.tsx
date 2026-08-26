@@ -832,64 +832,63 @@ export default function ProductPage({
           </div>
         </div>
 
-        {similarProducts.length > 0 && (
-          <section className="py-24 px-6 md:px-16 w-full text-center border-t border-brand-bgprimary">
-            <h3 className="font-display text-4xl text-brand-ink mb-12">
-              Complete the Look
-            </h3>
-            <div
-              className="flex overflow-x-auto gap-6 pb-8 snap-x justify-center"
-              style={{ scrollSnapType: "x mandatory" }}
-            >
-              {similarProducts.map((item) => {
-                const titleStr = item.node.title.toLowerCase();
-                let productCardBadge =
-                  "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
-                if (titleStr.includes("sage") || titleStr.includes("green")) {
-                  productCardBadge =
-                    "bg-[rgba(143,168,130,0.12)] text-brand-sage border-[rgba(143,168,130,0.3)]";
-                } else if (
-                  titleStr.includes("sky") ||
-                  titleStr.includes("blue")
-                ) {
-                  productCardBadge =
-                    "bg-[rgba(134,167,185,0.12)] text-brand-blue border-[rgba(134,167,185,0.3)]";
-                }
+       
+              {/* ── Similar Products ──────────────────────────────────────────────── */}
+{similarProducts.length > 0 && (
+  <section className="py-24 w-full border-t border-brand-bgprimary">
+    <h3 className="font-display text-4xl text-brand-ink mb-12 px-6 text-center">
+      Complete the Look
+    </h3>
+    <div
+      className="flex overflow-x-auto gap-4 md:gap-6 pb-8 snap-x snap-mandatory pl-6 pr-6 hide-scrollbar md:justify-center"
+    >
+      {similarProducts.map((item) => {
+        const titleStr = item.node.title.toLowerCase();
+        let productCardBadge =
+          "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
+        if (titleStr.includes("sage") || titleStr.includes("green")) {
+          productCardBadge =
+            "bg-[rgba(143,168,130,0.12)] text-brand-sage border-[rgba(143,168,130,0.3)]";
+        } else if (titleStr.includes("sky") || titleStr.includes("blue")) {
+          productCardBadge =
+            "bg-[rgba(134,167,185,0.12)] text-brand-blue border-[rgba(134,167,185,0.3)]";
+        }
 
-                return (
-                  <Link
-                    href={`/product/${item.node.handle}`}
-                    key={item.node.id}
-                    className="flex-none w-[80vw] md:w-[25vw] snap-center group"
-                  >
-                    <div className="aspect-[3/4] bg-brand-bgprimary rounded-xl overflow-hidden mb-4 border border-brand-borderlight cursor-pointer relative shadow-[0_2px_12px_rgba(44,37,32,0.06)] group-hover:-translate-y-1 transition-all duration-300">
-                      <div
-                        className={`absolute top-3 right-3 z-10 border text-[11px] px-[8px] py-[2px] rounded-full font-body ${productCardBadge}`}
-                      >
-                        Limited
-                      </div>
-                      <Image
-                        src={
-                          item.node.images.edges[0]?.node.url ||
-                          "https://images.unsplash.com/photo-1596455607563-ad6193f76b17"
-                        }
-                        alt={item.node.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
-                    </div>
-                    <h4 className="font-display text-lg text-brand-ink transition-colors">
-                      {item.node.title}
-                    </h4>
-                    <p className="font-body text-sm text-brand-gray mt-1">
-                      ₹{item.node.priceRange.minVariantPrice.amount}
-                    </p>
-                  </Link>
-                );
-              })}
+        return (
+          <Link
+            href={`/product/${item.node.handle}`}
+            key={item.node.id}
+            className="flex-none w-[72vw] max-w-[280px] md:w-[240px] snap-center group text-left"
+          >
+            <div className="aspect-[3/4] bg-brand-bgprimary rounded-xl overflow-hidden mb-4 border border-brand-borderlight cursor-pointer relative shadow-[0_2px_12px_rgba(44,37,32,0.06)] group-hover:-translate-y-1 transition-all duration-300">
+              <div
+                className={`absolute top-3 right-3 z-10 border text-[11px] px-[8px] py-[2px] rounded-full font-body ${productCardBadge}`}
+              >
+                Limited
+              </div>
+              <Image
+                src={
+                  item.node.images.edges[0]?.node.url ||
+                  "https://images.unsplash.com/photo-1596455607563-ad6193f76b17"
+                }
+                alt={item.node.title}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
+              />
             </div>
-          </section>
-        )}
+            <h4 className="font-display text-lg text-brand-ink transition-colors">
+              {item.node.title}
+            </h4>
+            <p className="font-body text-sm text-brand-gray mt-1">
+              ₹{item.node.priceRange.minVariantPrice.amount}
+            </p>
+          </Link>
+        );
+      })}
+    </div>
+  </section>
+)}
+
       </main>
     </div>
   );

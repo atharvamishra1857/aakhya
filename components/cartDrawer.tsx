@@ -36,6 +36,18 @@ export default function CartDrawer() {
   // Portal root — sheet renders directly on body, escaping all overflow-hidden ancestors
   useEffect(() => { setMounted(true); }, []);
 
+  // RESETS CHECKOUT BUTTON IF USER HITS THE BROWSER "BACK" BUTTON
+  useEffect(() => {
+    const handlePageShow = (event: PageTransitionEvent) => {
+      // event.persisted is true if the page was loaded from the browser cache
+      if (event.persisted) {
+        setIsCheckingOut(false);
+      }
+    };
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, []);
+
   const FREE_SHIPPING_THRESHOLD = 20000;
   const progressPercent = Math.min(
     100,
@@ -79,10 +91,11 @@ export default function CartDrawer() {
       const checkoutUrl = json.data?.cartCreate?.cart?.checkoutUrl;
 
       if (checkoutUrl) {
-        window.location.href = checkoutUrl;
-      } else {
-        console.error("Checkout URL not generated:", json);
-        setIsCheckingOut(false);
+        const safeUrl = checkoutUrl.replace(
+          /^https?:\/\/[^/]+/,
+          "https://checkout.aakhyaofficial.com"
+        );
+        window.location.href = safeUrl;
       }
     } catch (err) {
       console.error("Error connecting to checkout:", err);

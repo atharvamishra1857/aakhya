@@ -27,9 +27,9 @@ export type CartItem = {
   image: string;
   quantity: number;
   handle: string;
-  variantTitle?: string;                // e.g. "M / Sage"
+  variantTitle?: string;
   selectedOptions?: { name: string; value: string }[];
-  availableVariants?: VariantNode[];    // full variant list from the product
+  availableVariants?: VariantNode[];
 };
 
 // ================= CONTEXT TYPE =================
@@ -43,13 +43,13 @@ type CartContextType = {
   updateQuantity: (id: string, delta: number) => void;
   updateVariant: (oldId: string, newVariant: Omit<CartItem, "quantity">) => void;
   removeFromCart: (id: string) => void;
+  clearCart: () => void;
   cartTotal: number;
   cartCount: number;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-// 🔑 session-based storage key
 const CART_STORAGE_KEY = "aakhya_cart";
 
 // ================= PROVIDER =================
@@ -57,10 +57,8 @@ const CART_STORAGE_KEY = "aakhya_cart";
 export function CartProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  // ✅ LOAD FROM SESSION STORAGE (runs once)
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     if (typeof window === "undefined") return [];
-
     try {
       const stored = sessionStorage.getItem(CART_STORAGE_KEY);
       return stored ? JSON.parse(stored) : [];
@@ -72,7 +70,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const openCart = useCallback(() => setIsOpen(true), []);
   const closeCart = useCallback(() => setIsOpen(false), []);
 
-  // ================= ADD TO CART =================
+  // AUTOMATIC CART CLEARING LISTENER
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.search.includes("clear_cart=true")) {
+      setCartItems([]);
+      sessionStorage.removeItem(CART_STORAGE_KEY);
+      
+      // Silently clean up the URL so the user doesn't see the query string
+      const url = new URL(window.location.href);
+      url.searchParams.delete("clear_cart");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, []);
+
   const addToCart = useCallback((newItem: Omit<CartItem, "quantity">) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === newItem.id);
@@ -88,7 +98,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setIsOpen(true);
   }, []);
 
-  // ================= UPDATE QUANTITY =================
   const updateQuantity = useCallback((id: string, delta: number) => {
     setCartItems((prevItems) =>
       prevItems.map((item) => {
@@ -101,7 +110,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
-  // ================= UPDATE VARIANT =================
   const updateVariant = useCallback((oldId: string, newVariant: Omit<CartItem, "quantity">) => {
     setCartItems((prevItems) => {
       const oldItem = prevItems.find((item) => item.id === oldId);
@@ -110,7 +118,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const quantityToMove = oldItem.quantity;
       const withoutOld = prevItems.filter((item) => item.id !== oldId);
 
-      // If the newly selected variant is ALREADY in the cart, combine their quantities
       const existingNewItem = withoutOld.find((item) => item.id === newVariant.id);
       if (existingNewItem) {
         return withoutOld.map((item) =>
@@ -120,42 +127,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
         );
       }
 
-      // Otherwise, just push the new variant with the old quantity
       return [...withoutOld, { ...newVariant, quantity: quantityToMove }];
     });
   }, []);
 
-  // // ================= UPDATE VARIANT =================
-  // const updateVariant = useCallback(
-  //   (oldId: string, newVariant: Omit<CartItem, "quantity">) => {
-  //     setCartItems((prevItems) => {
-  //       const oldItemIndex = prevItems.findIndex((item) => item.id === oldId);
-  //       if (oldItemIndex === -1) return prevItems;
-
-  //       const oldQuantity = prevItems[oldItemIndex].quantity;
-  //       const existingIndex = prevItems.findIndex((item) => item.id === newVariant.id);
-
-  //       if (existingIndex !== -1 && existingIndex !== oldItemIndex) {
-  //         const newItems = [...prevItems];
-  //         newItems[existingIndex].quantity += oldQuantity;
-  //         newItems.splice(oldItemIndex, 1);
-  //         return newItems;
-  //       } else {
-  //         const newItems = [...prevItems];
-  //         newItems[oldItemIndex] = { ...newVariant, quantity: oldQuantity };
-  //         return newItems;
-  //       }
-  //     });
-  //   },
-  //   []
-  // );
-
-  // ================= REMOVE =================
   const removeFromCart = useCallback((id: string) => {
     setCartItems((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
-  // ================= SAVE TO SESSION STORAGE =================
+  const clearCart = useCallback(() => {
+    setCartItems([]);
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem(CART_STORAGE_KEY);
+    }
+  }, []);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
@@ -165,7 +151,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [cartItems]);
 
-  // ================= DERIVED VALUES =================
   const cartTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
@@ -182,6 +167,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       updateQuantity,
       updateVariant,
       removeFromCart,
+      clearCart,
       cartTotal,
       cartCount,
     }),
@@ -194,6 +180,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       updateQuantity,
       updateVariant,
       removeFromCart,
+      clearCart,
       cartTotal,
       cartCount,
     ],
@@ -203,8 +190,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>
   );
 }
-
-// ================= HOOK =================
 
 export function useCart() {
   const context = useContext(CartContext);
