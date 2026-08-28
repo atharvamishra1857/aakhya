@@ -82,9 +82,9 @@ export default function Home() {
 
         <div className="relative max-w-2xl space-y-6 text-brand-ivory reveal z-10">
           <h1 className="text-5xl md:text-7xl font-display italic leading-[1.1]">
-            Soft Statements.
+            Soft statements.
             <br />
-            Handcrafted Elegance.
+            Handcrafted elegance.
           </h1>
 
           <p className="font-body text-base font-light text-brand-ivory opacity-90 max-w-md">
@@ -127,7 +127,7 @@ export default function Home() {
               Collection Highlight
             </h2>
             <p className="font-display italic text-brand-muted max-w-2xl mx-auto text-lg leading-relaxed">
-              "Crafted, not mass produced. At aakhya, every piece is designed to
+              "Crafted, not mass produced. At Aakhya, every piece is designed to
               feel soft, intentional, and timeless."
             </p>
           </div>

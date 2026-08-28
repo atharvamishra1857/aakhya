@@ -10,7 +10,11 @@ export async function POST(req: NextRequest) {
     const salt = process.env.PAYU_SALT!;
     const key = process.env.NEXT_PUBLIC_PAYU_KEY!;
 
-    const hashString = `${key}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${udf1}||||||||||${salt}`;
+    // FIX: Fallback to an empty string to prevent "undefined" from being injected
+    const safeUdf1 = udf1 || "";
+
+    // The sequence requires exactly 16 pipes between the key and salt.
+    const hashString = `${key}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${safeUdf1}||||||||||${salt}`;
 
     const hash = crypto
       .createHash("sha512")
