@@ -7,9 +7,11 @@ import { X, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { useCart, type CartItem } from "@/context/cartcontext";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 export default function CartDrawer() {
+  const router = useRouter();
   const {
     isOpen,
     closeCart,
@@ -95,7 +97,7 @@ export default function CartDrawer() {
           /^https?:\/\/[^/]+/,
           "https://checkout.aakhyaofficial.com"
         );
-        window.location.href = safeUrl;
+        router.push("/checkout");
       }
     } catch (err) {
       console.error("Error connecting to checkout:", err);

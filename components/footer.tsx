@@ -69,7 +69,7 @@ export default function Footer() {
                   href="/collection"
                   className="hover:text-brand-gold transition-colors"
                 >
-                  Vasara - Powder Blue
+                  Vasara
                 </Link>
               </li>
               <li>
@@ -77,7 +77,7 @@ export default function Footer() {
                   href="/collection"
                   className="hover:text-brand-gold transition-colors"
                 >
-                  Vasara - Sage Green
+                  Calyx
                 </Link>
               </li>
               <li>
@@ -85,7 +85,7 @@ export default function Footer() {
                   href="/collection"
                   className="hover:text-brand-gold transition-colors"
                 >
-                  Vasara - Blush Pink
+                  Rubal - Necklace
                 </Link>
               </li>
             </ul>

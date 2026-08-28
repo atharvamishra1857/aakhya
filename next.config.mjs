@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 const isDev = process.env.NODE_ENV === 'development';
 
+const payuDomains = "https://test.payu.in https://secure.payu.in https://*.payu.in";
+
+const devCSP = `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' ${payuDomains}; connect-src 'self' https://*.myshopify.com ${payuDomains}; img-src 'self' data: blob: https://cdn.shopify.com https://images.unsplash.com https://picsum.photos https://*.payu.in; style-src 'self' 'unsafe-inline'; frame-src ${payuDomains};`;
+
+const prodCSP = `default-src 'self'; script-src 'self' 'unsafe-inline' ${payuDomains}; connect-src 'self' https://*.myshopify.com ${payuDomains}; img-src 'self' data: blob: https://cdn.shopify.com https://images.unsplash.com https://picsum.photos https://*.payu.in; style-src 'self' 'unsafe-inline'; frame-src ${payuDomains};`;
+
 const nextConfig = {
   images: {
     unoptimized: isDev,
@@ -21,9 +27,7 @@ const nextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
           {
             key: "Content-Security-Policy",
-            value: isDev
-              ? "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https://*.myshopify.com; img-src 'self' data: blob: https://cdn.shopify.com https://images.unsplash.com https://picsum.photos; style-src 'self' 'unsafe-inline';"
-              : "default-src 'self'; script-src 'self' 'unsafe-inline' https://checkout.razorpay.com; connect-src 'self' https://*.myshopify.com https://api.razorpay.com; img-src 'self' data: blob: https://cdn.shopify.com https://images.unsplash.com https://picsum.photos; style-src 'self' 'unsafe-inline'; frame-src https://api.razorpay.com;",
+            value: isDev ? devCSP : prodCSP,
           },
         ],
       },
