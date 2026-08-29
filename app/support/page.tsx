@@ -29,7 +29,7 @@ export default function SupportPage() {
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("Form submitted");
+    // console.log("Form submitted");
 
     // 1. Grab the form element to use later for resetting
     const form = event.target as HTMLFormElement;
