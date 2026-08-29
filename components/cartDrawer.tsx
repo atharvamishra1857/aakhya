@@ -93,16 +93,14 @@ export default function CartDrawer() {
       const checkoutUrl = json.data?.cartCreate?.cart?.checkoutUrl;
 
       if (checkoutUrl) {
-        const safeUrl = checkoutUrl.replace(
-          /^https?:\/\/[^/]+/,
-          "https://checkout.aakhyaofficial.com"
-        );
-        router.push("/checkout");
-      }
+  closeCart();
+  router.push("/checkout");
+}
     } catch (err) {
-      console.error("Error connecting to checkout:", err);
-      setIsCheckingOut(false);
-    }
+  console.error("Error connecting to checkout:", err);
+  closeCart();
+  router.push("/checkout");
+}
   };
 
   // Maps a color name from Shopify to a CSS hex/color value for the swatch dot.
