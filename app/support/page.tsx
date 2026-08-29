@@ -29,12 +29,13 @@ export default function SupportPage() {
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    console.log("Form submitted");
 
     // 1. Grab the form element to use later for resetting
     const form = event.target as HTMLFormElement;
     const formData = new FormData(form);
 
-    formData.append("access_key", "669de8d3-6564-4c3f-95c4-913e563532be");
+    formData.append("access_key", "1f4a3be1-0e35-4a82-8e27-5acb21a6a9ab");
 
     const response = await fetch("https://api.web3forms.com/submit", {
       method: "POST",
@@ -45,8 +46,8 @@ export default function SupportPage() {
 
     if (data.success) {
       setResult("Success!");
-      // 2. Reset the form fields automatically on success
       form.reset();
+      setTimeout(() => setResult(""), 3000);
     } else {
       setResult("Error");
     }
@@ -84,6 +85,12 @@ export default function SupportPage() {
           >
             {/* The Form */}
             <form className="flex flex-col gap-6" onSubmit={onSubmit}>
+              <input
+                type="hidden"
+                name="subject"
+                value="New message from Aakhya support form"
+              />
+              <input type="hidden" name="from_name" value="Aakhya Support" />
               <h2 className="text-2xl font-display mb-2">Send a Message</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                 <input
