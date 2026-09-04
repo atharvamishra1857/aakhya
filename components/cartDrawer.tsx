@@ -50,6 +50,15 @@ export default function CartDrawer() {
     return () => window.removeEventListener("pageshow", handlePageShow);
   }, []);
 
+  // RESETS CHECKOUT BUTTON WHENEVER THE CART DRAWER REOPENS
+  // Covers the case where the user navigates away mid-checkout
+  // (e.g. clicks the logo to go back home) and then reopens the cart.
+  useEffect(() => {
+    if (isOpen) {
+      setIsCheckingOut(false);
+    }
+  }, [isOpen]);
+
   const FREE_SHIPPING_THRESHOLD = 20000;
   const progressPercent = Math.min(
     100,
