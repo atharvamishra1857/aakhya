@@ -2,42 +2,92 @@ export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { createShopifyOrder } from "@/app/actions/createorder";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = await req.formData();
 
-    // 1. Explicitly convert EVERYTHING to strings and trim whitespace
-    const txnid = String(body.txnid || "").trim();
-    const amount = String(body.amount || "").trim(); // Make sure this perfectly matches the frontend (e.g., "100.00" vs "100")
-    const productinfo = String(body.productinfo || "").trim();
-    const firstname = String(body.firstname || "").trim();
-    const email = String(body.email || "").trim();
-    const udf1 = String(body.udf1 || "").trim();
+    const status = body.get("status") as string;
+    const txnid = body.get("txnid") as string;
+    const amount = body.get("amount") as string;
+    const productinfo = body.get("productinfo") as string;
+    const firstname = body.get("firstname") as string;
+    const lastname = body.get("lastname") as string;
+    const email = body.get("email") as string;
+    const phone = body.get("phone") as string;
+    const address1 = body.get("address1") as string;
+    const city = body.get("city") as string;
+    const state = body.get("state") as string;
+    const zipcode = body.get("zipcode") as string;
+    const udf1 = body.get("udf1") as string;
+    const udf2 = body.get("udf2") as string || "";
+    const udf3 = body.get("udf3") as string || "";
+    const udf4 = body.get("udf4") as string || "";
+    const udf5 = body.get("udf5") as string || "";
+    const mihpayid = body.get("mihpayid") as string;
+    const receivedHash = body.get("hash") as string;
 
-    // 2. Clean environment variables (removes accidental spaces from .env)
-    const salt = (process.env.PAYU_SALT || "").trim();
-    const key = (process.env.NEXT_PUBLIC_PAYU_KEY || "").trim();
+    const salt = process.env.PAYU_SALT!;
+    const key = process.env.NEXT_PUBLIC_PAYU_KEY!;
 
-    if (!key || !salt) {
-      console.error("Missing PayU Key or Salt in environment variables.");
-      return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
-    }
-
-    // 3. Construct the exact hash sequence (16 pipes)
-    const hashString = `${key}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${udf1}||||||||||${salt}`;
-
-    // 4. Generate the SHA-512 hash
-    const hash = crypto
+    // PayU reverse hash formula — exact order matters
+    const hashString = `${salt}|${status}|${udf5}|${udf4}|${udf3}|${udf2}|${udf1}|${email}|${firstname}|${productinfo}|${amount}|${txnid}|${key}`;
+    const expectedHash = crypto
       .createHash("sha512")
       .update(hashString)
       .digest("hex");
 
-    // Tip: We are temporarily returning the hashString so you can debug it in your browser console!
-    return NextResponse.json({ hash, key, debug_hashString: hashString });
-    
+    // SECURITY: this check is mandatory. Without it, anyone can POST status=success
+    // directly to this endpoint and trigger a real Shopify order with no real payment.
+    if (expectedHash !== receivedHash) {
+      console.error("PayU hash mismatch — possible forged or corrupted callback.", {
+        txnid,
+        status,
+      });
+      return NextResponse.redirect(new URL("/order-failed", req.url));
+    }
+
+    if (status !== "success") {
+      return NextResponse.redirect(new URL("/order-failed", req.url));
+    }
+
+    // Parse cart items from udf1
+    let cartItems = [];
+    try {
+      cartItems = JSON.parse(udf1 || "[]");
+    } catch {
+      console.error("Failed to parse cart items from udf1");
+    }
+
+    // Create Shopify order
+    try {
+      await createShopifyOrder(
+        cartItems,
+        {
+          firstName: firstname,
+          lastName: lastname,
+          email,
+          phone,
+          address1,
+          city,
+          province: state,
+          zip: zipcode,
+          country: "India",
+        },
+        mihpayid,
+        parseFloat(amount)
+      );
+    } catch (err) {
+      console.error("Shopify order creation failed:", err);
+      // Don't fail the redirect even if Shopify order fails
+    }
+
+    return NextResponse.redirect(
+      new URL(`/order-confirmed?txnid=${txnid}&paymentId=${mihpayid}`, req.url)
+    );
   } catch (err) {
-    console.error("PayU hash generation failed:", err);
-    return NextResponse.json({ error: "Hash generation failed" }, { status: 500 });
+    console.error("PayU verification failed:", err);
+    return NextResponse.redirect(new URL("/order-failed", req.url));
   }
 }

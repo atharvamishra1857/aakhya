@@ -38,14 +38,15 @@ export async function POST(req: NextRequest) {
       .update(hashString)
       .digest("hex");
 
-    console.log("Expected hash:", expectedHash);
-    console.log("Received hash:", receivedHash);
-    console.log("Status:", status);
-
-    // Skip hash check for now to debug — REMOVE THIS IN PRODUCTION
-    // if (expectedHash !== receivedHash) {
-    //   return NextResponse.redirect(new URL("/order-failed", req.url));
-    // }
+    // SECURITY: this check is mandatory. Without it, anyone can POST status=success
+    // directly to this endpoint and trigger a real Shopify order with no real payment.
+    if (expectedHash !== receivedHash) {
+      console.error("PayU hash mismatch — possible forged or corrupted callback.", {
+        txnid,
+        status,
+      });
+      return NextResponse.redirect(new URL("/order-failed", req.url));
+    }
 
     if (status !== "success") {
       return NextResponse.redirect(new URL("/order-failed", req.url));
