@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useCart } from "@/context/cartcontext";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -9,6 +9,9 @@ export default function CheckoutPage() {
   const { cartItems, cartTotal } = useCart();
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
+  // FIX 1: Ref-based guard prevents double-submit if user clicks Pay twice fast
+  const isSubmittingRef = useRef(false);
+
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -30,6 +33,9 @@ export default function CheckoutPage() {
   const handlePayment = async () => {
     if (cartItems.length === 0) return;
 
+    // FIX 1: Hard guard — if already submitting, bail immediately
+    if (isSubmittingRef.current) return;
+
     const required = [
       "firstName",
       "lastName",
@@ -46,6 +52,16 @@ export default function CheckoutPage() {
       }
     }
 
+    // FIX 2: Validate PayU URL before doing anything — fail loud, not silent
+    const payuUrl = process.env.NEXT_PUBLIC_PAYU_BASE_URL;
+    if (!payuUrl) {
+      console.error("NEXT_PUBLIC_PAYU_BASE_URL is not set in environment variables.");
+      alert("Payment configuration error. Please contact support.");
+      return;
+    }
+
+    // Lock submission
+    isSubmittingRef.current = true;
     setIsProcessing(true);
 
     try {
@@ -58,21 +74,38 @@ export default function CheckoutPage() {
       const firstname = form.firstName;
       const email = form.email;
 
-      // Get hash from our API
-      const udf1 = JSON.stringify(cartItems.map(i => ({
-        id: i.id,
-        title: i.title,
-        price: i.price,
-        quantity: i.quantity,
-      })));
+      const udf1 = JSON.stringify(
+        cartItems.map((i) => ({
+          id: i.id,
+          title: i.title,
+          price: i.price,
+          quantity: i.quantity,
+        })),
+      );
 
+      // FIX 3: Check for non-OK response before parsing JSON
       const hashRes = await fetch("/api/payu/hash", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ txnid, amount, productinfo, firstname, email, udf1 }),
+        body: JSON.stringify({
+          txnid,
+          amount,
+          productinfo,
+          firstname,
+          email,
+          udf1,
+        }),
       });
 
+      if (!hashRes.ok) {
+        throw new Error(`Hash API returned ${hashRes.status}`);
+      }
+
       const { hash, key } = await hashRes.json();
+
+      if (!hash || !key) {
+        throw new Error("Hash or key missing from API response");
+      }
 
       // Store cart + address in sessionStorage for after payment returns
       sessionStorage.setItem(
@@ -80,7 +113,7 @@ export default function CheckoutPage() {
         JSON.stringify({ cartItems, cartTotal, form, txnid }),
       );
 
-      // Build PayU form and auto-submit
+      // Build PayU form and submit
       const payuData: Record<string, string> = {
         key,
         txnid,
@@ -95,7 +128,7 @@ export default function CheckoutPage() {
         state: form.province,
         zipcode: form.zip,
         country: form.country,
-        udf1: udf1,
+        udf1,
         hash,
         surl: `${window.location.origin}/api/payu/verify`,
         furl: `${window.location.origin}/order-failed`,
@@ -103,9 +136,8 @@ export default function CheckoutPage() {
 
       const payuForm = document.createElement("form");
       payuForm.method = "POST";
-      payuForm.action =
-        process.env.NEXT_PUBLIC_PAYU_BASE_URL ||
-        "https://test.payu.in/_payment";
+      // FIX 2: Use validated env var — never falls back to test URL
+      payuForm.action = payuUrl;
 
       Object.entries(payuData).forEach(([k, v]) => {
         const input = document.createElement("input");
@@ -117,9 +149,13 @@ export default function CheckoutPage() {
 
       document.body.appendChild(payuForm);
       payuForm.submit();
+      // Note: do NOT reset isSubmittingRef here — page is navigating away.
+      // The ref resets naturally when the component unmounts.
     } catch (err) {
       console.error("Payment error:", err);
       alert("Something went wrong. Please try again.");
+      // FIX 1: Only unlock on error so user can retry
+      isSubmittingRef.current = false;
       setIsProcessing(false);
     }
   };

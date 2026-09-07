@@ -7,37 +7,58 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    // 1. Explicitly convert EVERYTHING to strings and trim whitespace
+    // Convert everything to strings and trim whitespace
     const txnid = String(body.txnid || "").trim();
-    const amount = String(body.amount || "").trim(); // Make sure this perfectly matches the frontend (e.g., "100.00" vs "100")
+    const amount = String(body.amount || "").trim();
     const productinfo = String(body.productinfo || "").trim();
     const firstname = String(body.firstname || "").trim();
     const email = String(body.email || "").trim();
     const udf1 = String(body.udf1 || "").trim();
 
-    // 2. Clean environment variables (removes accidental spaces from .env)
+    // FIX: trim() on both — removes accidental spaces/newlines from Vercel env var storage
     const salt = (process.env.PAYU_SALT || "").trim();
     const key = (process.env.NEXT_PUBLIC_PAYU_KEY || "").trim();
 
     if (!key || !salt) {
       console.error("Missing PayU Key or Salt in environment variables.");
-      return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Server configuration error" },
+        { status: 500 },
+      );
     }
 
-    // 3. Construct the exact hash sequence (16 pipes)
+    // Validate required fields — prevents malformed hash reaching PayU
+    if (!txnid || !amount || !productinfo || !firstname || !email) {
+      console.error("PayU hash: missing required fields", {
+        txnid: !!txnid,
+        amount: !!amount,
+        productinfo: !!productinfo,
+        firstname: !!firstname,
+        email: !!email,
+      });
+      return NextResponse.json(
+        { error: "Missing required payment fields" },
+        { status: 400 },
+      );
+    }
+
+    // Exact PayU hash sequence: key|txnid|amount|productinfo|firstname|email|udf1|||||||||salt
     const hashString = `${key}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${udf1}||||||||||${salt}`;
 
-    // 4. Generate the SHA-512 hash
     const hash = crypto
       .createHash("sha512")
       .update(hashString)
       .digest("hex");
 
-    // SECURITY: never return hashString/salt to the client. Only hash + key are needed.
-    return NextResponse.json({ hash, key });
+    console.log(`[PayU] Hash generated for txnid=${txnid} at ${new Date().toISOString()}`);
 
+    // Never return hashString or salt to the client
+    return NextResponse.json({ hash, key });
   } catch (err) {
     console.error("PayU hash generation failed:", err);
-    return NextResponse.json({ error: "Hash generation failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Hash generation failed" },
+      { status: 500 },
+    );
   }
 }
