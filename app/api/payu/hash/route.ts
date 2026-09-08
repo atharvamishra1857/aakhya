@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
   hash,
   key,
   debug: {
+    hashFull: hash, // ADD THIS
     keyLen: key.length,
     saltLen: salt.length,
     saltFirst3: salt.substring(0, 3),
