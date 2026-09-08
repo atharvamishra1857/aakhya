@@ -1,7 +1,6 @@
-export const runtime = "nodejs";
+export const runtime = "edge"; // Changed for Cloudflare compatibility
 
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,7 +14,6 @@ export async function POST(req: NextRequest) {
     const email = String(body.email || "").trim();
     const udf1 = String(body.udf1 || "").trim();
 
-    // FIX: trim() on both — removes accidental spaces/newlines from Vercel env var storage
     const salt = (process.env.PAYU_SALT || "").trim();
     const key = (process.env.NEXT_PUBLIC_PAYU_KEY || "").trim();
 
@@ -27,32 +25,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Validate required fields — prevents malformed hash reaching PayU
     if (!txnid || !amount || !productinfo || !firstname || !email) {
-      console.error("PayU hash: missing required fields", {
-        txnid: !!txnid,
-        amount: !!amount,
-        productinfo: !!productinfo,
-        firstname: !!firstname,
-        email: !!email,
-      });
       return NextResponse.json(
         { error: "Missing required payment fields" },
         { status: 400 },
       );
     }
 
-    // Exact PayU hash sequence: key|txnid|amount|productinfo|firstname|email|udf1|||||||||salt
+    // Exact PayU hash sequence
     const hashString = `${key}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${udf1}||||||||||${salt}`;
 
-    const hash = crypto
-      .createHash("sha512")
-      .update(hashString)
-      .digest("hex");
+    // Cloudflare Edge compatible Web Crypto API
+    const encoder = new TextEncoder();
+    const data = encoder.encode(hashString);
+    const hashBuffer = await crypto.subtle.digest("SHA-512", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hash = hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
 
-    console.log(`[PayU] Hash generated for txnid=${txnid} at ${new Date().toISOString()}`);
+    console.log(`[PayU] Hash generated for txnid=${txnid}`);
 
-    // Never return hashString or salt to the client
     return NextResponse.json({ hash, key });
   } catch (err) {
     console.error("PayU hash generation failed:", err);
