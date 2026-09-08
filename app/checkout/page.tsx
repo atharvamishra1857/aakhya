@@ -138,9 +138,10 @@ export default function CheckoutPage() {
         payuForm.appendChild(input);
       });
 
-      console.log("PAYU FORM DATA:", payuData);
+      
 
       document.body.appendChild(payuForm);
+      console.log("PAYU FORM DATA:", payuData);
       payuForm.submit();
     } catch (err) {
       console.error("Payment error:", err);
