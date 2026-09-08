@@ -76,14 +76,15 @@ export default function CheckoutPage() {
       const firstname = form.firstName;
       const email = form.email;
 
-      const udf1 = JSON.stringify(
-        cartItems.map((i) => ({
-          id: i.id,
-          title: i.title,
-          price: i.price,
-          quantity: i.quantity,
-        })),
-      );
+      // const udf1 = JSON.stringify(
+      //   cartItems.map((i) => ({
+      //     id: i.id,
+      //     title: i.title,
+      //     price: i.price,
+      //     quantity: i.quantity,
+      //   })),
+      // );
+      const udf1 = "test";
 
       // FIX 3: Check for non-OK response before parsing JSON
       const hashRes = await fetch("/api/payu/hash", {

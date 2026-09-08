@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const hashString = `${key}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${udf1}|||||||||${salt}`;
+    const hashString = `${key}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${udf1}||||||||||${salt}`;
 
     const encoder = new TextEncoder();
     const data = encoder.encode(hashString);
