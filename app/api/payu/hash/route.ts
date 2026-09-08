@@ -1,4 +1,4 @@
-export const runtime = "edge"; // Changed for Cloudflare compatibility
+// export const runtime = "edge"; // Changed for Cloudflare compatibility
 
 import { NextRequest, NextResponse } from "next/server";
 
