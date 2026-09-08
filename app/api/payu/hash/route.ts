@@ -1,4 +1,4 @@
-// export const runtime = "edge"; // Changed for Cloudflare compatibility
+// NO runtime = "edge" line at all
 
 import { NextRequest, NextResponse } from "next/server";
 
@@ -6,7 +6,6 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    // Convert everything to strings and trim whitespace
     const txnid = String(body.txnid || "").trim();
     const amount = String(body.amount || "").trim();
     const productinfo = String(body.productinfo || "").trim();
@@ -32,17 +31,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Exact PayU hash sequence
     const hashString = `${key}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${udf1}||||||||||${salt}`;
 
-    // Cloudflare Edge compatible Web Crypto API
     const encoder = new TextEncoder();
     const data = encoder.encode(hashString);
     const hashBuffer = await crypto.subtle.digest("SHA-512", data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hash = hashArray
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
+    const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 
     console.log(`[PayU] Hash generated for txnid=${txnid}`);
 
