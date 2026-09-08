@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 
-    return NextResponse.json({ hash, key });
+    return NextResponse.json({ hash, key, debug: { hashString } });
   } catch (err) {
     return NextResponse.json(
       { error: "Hash generation failed" },

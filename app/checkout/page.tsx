@@ -138,6 +138,8 @@ export default function CheckoutPage() {
         payuForm.appendChild(input);
       });
 
+      console.log("PAYU FORM DATA:", payuData);
+
       document.body.appendChild(payuForm);
       payuForm.submit();
     } catch (err) {
