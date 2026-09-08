@@ -9,10 +9,17 @@ export async function POST(req: NextRequest) {
     const productinfo = String(body.productinfo || "").trim();
     const firstname = String(body.firstname || "").trim();
     const email = String(body.email || "").trim();
-    const udf1 = "test";
+    const udf1 = String(body.udf1 || "").trim();
 
     const salt = "dCWmlOTvp6upSuBPDwsjkQmwRWGEZ4i8";
     const key = "oPPqMI";
+
+    if (!txnid || !amount || !productinfo || !firstname || !email) {
+      return NextResponse.json(
+        { error: "Missing required payment fields" },
+        { status: 400 },
+      );
+    }
 
     const hashString = `${key}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${udf1}||||||||||${salt}`;
 
@@ -22,8 +29,11 @@ export async function POST(req: NextRequest) {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 
-    return NextResponse.json({ hash, key, debug: { hashString, hash } });
+    return NextResponse.json({ hash, key });
   } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: "Hash generation failed" },
+      { status: 500 },
+    );
   }
 }
