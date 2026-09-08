@@ -16,6 +16,7 @@ export async function POST(req: NextRequest) {
     const salt = (process.env.PAYU_SALT || "").trim();
     const key = (process.env.NEXT_PUBLIC_PAYU_KEY || "").trim();
    
+    console.log(`[PayU DEBUG] key="${key}" salt="${salt}" saltLen=${salt.length} keyLen=${key.length}`);
 
     if (!key || !salt) {
       console.error("Missing PayU Key or Salt in environment variables.");

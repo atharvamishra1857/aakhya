@@ -5,7 +5,15 @@ const payuDomains = "https://test.payu.in https://secure.payu.in https://*.payu.
 
 const devCSP = `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' ${payuDomains}; connect-src 'self' https://*.myshopify.com ${payuDomains} https://api.web3forms.com; img-src 'self' data: blob: https://cdn.shopify.com https://images.unsplash.com https://picsum.photos https://*.payu.in; style-src 'self' 'unsafe-inline'; frame-src ${payuDomains};`;
 
-const prodCSP = `default-src 'self'; script-src 'self' 'unsafe-inline' ${payuDomains}; connect-src 'self' https://*.myshopify.com ${payuDomains} https://api.web3forms.com; img-src 'self' data: blob: https://cdn.shopify.com https://images.unsplash.com https://picsum.photos https://*.payu.in; style-src 'self' 'unsafe-inline'; frame-src ${payuDomains};`;
+const prodCSP = `
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' ${payuDomains} https://static.cloudflareinsights.com;
+  connect-src 'self' https://*.myshopify.com ${payuDomains} https://api.web3forms.com https://static.cloudflareinsights.com;
+  img-src 'self' data: blob: https://cdn.shopify.com https://images.unsplash.com https://picsum.photos https://*.payu.in;
+  style-src 'self' 'unsafe-inline' ${payuDomains};
+  frame-src ${payuDomains};
+  font-src 'self' ${payuDomains};
+`.replace(/\n/g, " ").trim();
 const nextConfig = {
   images: {
     unoptimized: isDev,
