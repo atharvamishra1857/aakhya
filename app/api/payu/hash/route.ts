@@ -37,3 +37,11 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+// route.ts
+export async function GET() {
+  return NextResponse.json({
+    version: "debug-v3",
+    saltLen: (process.env.PAYU_SALT || "").length,
+    saltLast4: (process.env.PAYU_SALT || "").slice(-4),
+  });
+}
