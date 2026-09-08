@@ -1,5 +1,3 @@
-// NO runtime = "edge" line at all
-
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -15,21 +13,11 @@ export async function POST(req: NextRequest) {
 
     const salt = (process.env.PAYU_SALT || "").trim();
     const key = (process.env.NEXT_PUBLIC_PAYU_KEY || "").trim();
-   
-    console.log(`[PayU DEBUG] key="${key}" salt="${salt}" saltLen=${salt.length} keyLen=${key.length}`);
 
     if (!key || !salt) {
-      console.error("Missing PayU Key or Salt in environment variables.");
       return NextResponse.json(
-        { error: "Server configuration error" },
+        { error: "Server configuration error", saltPresent: !!salt, keyPresent: !!key },
         { status: 500 },
-      );
-    }
-
-    if (!txnid || !amount || !productinfo || !firstname || !email) {
-      return NextResponse.json(
-        { error: "Missing required payment fields" },
-        { status: 400 },
       );
     }
 
@@ -41,13 +29,22 @@ export async function POST(req: NextRequest) {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 
-    console.log(`[PayU] Hash generated for txnid=${txnid}`);
-
-    return NextResponse.json({ hash, key });
+    return NextResponse.json({
+      hash,
+      key,
+      debug: {
+        keyLen: key.length,
+        saltLen: salt.length,
+        saltFirst3: salt.substring(0, 3),
+        saltLast3: salt.slice(-3),
+        keyFirst3: key.substring(0, 3),
+        keyLast3: key.slice(-3),
+        hashFirst6: hash.substring(0, 6),
+      }
+    });
   } catch (err) {
-    console.error("PayU hash generation failed:", err);
     return NextResponse.json(
-      { error: "Hash generation failed" },
+      { error: "Hash generation failed", detail: String(err) },
       { status: 500 },
     );
   }
