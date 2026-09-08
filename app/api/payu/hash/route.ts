@@ -29,19 +29,19 @@ export async function POST(req: NextRequest) {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 
-    return NextResponse.json({
-      hash,
-      key,
-      debug: {
-        keyLen: key.length,
-        saltLen: salt.length,
-        saltFirst3: salt.substring(0, 3),
-        saltLast3: salt.slice(-3),
-        keyFirst3: key.substring(0, 3),
-        keyLast3: key.slice(-3),
-        hashFirst6: hash.substring(0, 6),
-      }
-    });
+   return NextResponse.json({
+  hash,
+  key,
+  debug: {
+    keyLen: key.length,
+    saltLen: salt.length,
+    saltFirst3: salt.substring(0, 3),
+    saltLast3: salt.slice(-3),
+    hashFirst6: hash.substring(0, 6),
+    // Show exact hash input (safe since txnid/amount aren't sensitive)
+    hashInput: `${key}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${udf1}||||||||||${salt}`,
+  }
+});
   } catch (err) {
     return NextResponse.json(
       { error: "Hash generation failed", detail: String(err) },
