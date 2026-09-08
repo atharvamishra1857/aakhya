@@ -55,7 +55,9 @@ export default function CheckoutPage() {
     // FIX 2: Validate PayU URL before doing anything — fail loud, not silent
     const payuUrl = process.env.NEXT_PUBLIC_PAYU_BASE_URL;
     if (!payuUrl) {
-      console.error("NEXT_PUBLIC_PAYU_BASE_URL is not set in environment variables.");
+      console.error(
+        "NEXT_PUBLIC_PAYU_BASE_URL is not set in environment variables.",
+      );
       alert("Payment configuration error. Please contact support.");
       return;
     }
@@ -101,7 +103,8 @@ export default function CheckoutPage() {
         throw new Error(`Hash API returned ${hashRes.status}`);
       }
 
-      const { hash, key } = await hashRes.json();
+      const { hash, key, debug } = await hashRes.json();
+      alert(JSON.stringify(debug)); // TEMP
 
       if (!hash || !key) {
         throw new Error("Hash or key missing from API response");
