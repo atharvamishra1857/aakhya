@@ -14,6 +14,7 @@ import {
 } from "@/lib/shopify";
 import Image from "next/image";
 import Link from "next/link";
+import { fbTrack } from "@/lib/fbpixel";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type CartState = "idle" | "adding" | "success";
@@ -366,6 +367,22 @@ export default function ProductPage({
       if (extractedColors.length > 0) setSelectedColor(extractedColors[0]);
     }
   }, [product]);
+
+  // ── META PIXEL: ViewContent ──
+  // This component serves every product handle (Calyx included), so this
+  // fires ViewContent for whichever product the visitor is looking at.
+  useEffect(() => {
+    if (product) {
+      fbTrack("ViewContent", {
+        content_ids: [product.id],
+        content_name: product.title,
+        content_type: "product",
+        value: Number(product.priceRange.minVariantPrice.amount),
+        currency: "INR",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.id]);
 
   // Match the Active Variant ID when User Changes Size or Color
   useEffect(() => {

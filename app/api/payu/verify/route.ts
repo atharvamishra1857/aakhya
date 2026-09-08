@@ -7,6 +7,76 @@ import { createShopifyOrder } from "@/app/actions/createorder";
 // For multi-instance Edge production deployments, consider a KV / Redis SET NX check.
 const processedTxns = new Set<string>();
 
+const META_PIXEL_ID = "1733404514535351";
+
+async function sha256Hex(input: string): Promise<string> {
+  const data = new TextEncoder().encode(input.trim().toLowerCase());
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+// ── META PIXEL: Purchase (server-side, via Conversions API) ──
+// This is the reliable half of Purchase tracking — it fires from the
+// server, right after the order is confirmed and created in Shopify, so
+// it isn't lost to ad blockers, iOS privacy restrictions, or a closed tab.
+// `eventId` (the txnid) is also used by the client-side pixel fire on
+// /order-confirmed, so Meta deduplicates the two into a single event.
+async function sendPurchaseToMeta(params: {
+  eventId: string;
+  amount: number;
+  email: string;
+  phone: string;
+  cartItems: Array<{ id: string; title: string; price: number; quantity: number }>;
+}) {
+  const accessToken = process.env.META_CAPI_ACCESS_TOKEN;
+  if (!accessToken) {
+    console.error("[Meta CAPI] Missing META_CAPI_ACCESS_TOKEN — Purchase event not sent");
+    return;
+  }
+
+  try {
+    const body = {
+      data: [
+        {
+          event_name: "Purchase",
+          event_time: Math.floor(Date.now() / 1000),
+          event_id: params.eventId,
+          action_source: "website",
+          user_data: {
+            em: [await sha256Hex(params.email)],
+            ph: [await sha256Hex(params.phone.replace(/\D/g, ""))],
+          },
+          custom_data: {
+            currency: "INR",
+            value: params.amount,
+            content_ids: params.cartItems.map((i) => i.id),
+            contents: params.cartItems.map((i) => ({
+              id: i.id,
+              quantity: i.quantity,
+              item_price: i.price,
+            })),
+          },
+        },
+      ],
+    };
+
+    const res = await fetch(
+      `https://graph.facebook.com/v20.0/${META_PIXEL_ID}/events?access_token=${accessToken}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      },
+    );
+    const json = await res.json();
+    console.log("[Meta CAPI] Purchase event response:", JSON.stringify(json));
+  } catch (err) {
+    console.error("[Meta CAPI] Failed to send Purchase event:", err);
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.formData();
@@ -61,7 +131,15 @@ export async function POST(req: NextRequest) {
         expectedHash,
         receivedHash,
       });
-      return NextResponse.redirect(new URL("/order-failed", req.url));
+      // TEMP DEBUG - remove after fix
+      const debugUrl = new URL("/order-failed", req.url);
+      debugUrl.searchParams.set("dbg_status", status || "");
+      debugUrl.searchParams.set("dbg_saltLen", String(salt.length));
+      debugUrl.searchParams.set("dbg_keyLen", String(key.length));
+      debugUrl.searchParams.set("dbg_expected6", expectedHash.substring(0, 6));
+      debugUrl.searchParams.set("dbg_received6", receivedHash.substring(0, 6));
+      debugUrl.searchParams.set("dbg_udf1len", String((udf1 || "").length));
+      return NextResponse.redirect(debugUrl);
     }
 
     if (status !== "success") {
@@ -105,6 +183,17 @@ export async function POST(req: NextRequest) {
         parseFloat(amount),
       );
       console.log(`[PayU verify] Shopify order created for txnid=${txnid}`);
+
+      // Fire the server-side half of the Purchase event now that the
+      // order is confirmed. Uses txnid as the eventID for dedup against
+      // the client-side pixel fire on /order-confirmed.
+      await sendPurchaseToMeta({
+        eventId: txnid,
+        amount: parseFloat(amount),
+        email,
+        phone,
+        cartItems,
+      });
     } catch (err) {
       console.error("[PayU verify] Shopify order creation failed:", err);
     }

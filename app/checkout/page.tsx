@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useCart } from "@/context/cartcontext";
 import { useRouter } from "next/navigation";
+import { fbTrack } from "@/lib/fbpixel";
 import Image from "next/image";
 
 export default function CheckoutPage() {
@@ -61,7 +62,7 @@ export default function CheckoutPage() {
 
     try {
       const txnid = `TXN${Date.now()}`;
-      const amount = cartTotal.toFixed(2);
+      const amount = "1.00"; // TEMP TESTING - hardcoded to ₹1, revert to cartTotal.toFixed(2) after testing
       const productinfo = cartItems
         .map((i) => i.title)
         .join(", ")
@@ -76,6 +77,26 @@ export default function CheckoutPage() {
           price: i.price,
           quantity: i.quantity,
         })),
+      );
+
+      // ── META PIXEL: InitiateCheckout ──
+      // Fired here, before the PayU handoff, once we know the user has
+      // valid delivery details and is about to be redirected off-site.
+      // Uses the same txnid as the eventID so a future retry doesn't
+      // create a duplicate InitiateCheckout event in Meta's dedup window.
+      fbTrack(
+        "InitiateCheckout",
+        {
+          value: cartTotal,
+          currency: "INR",
+          content_ids: cartItems.map((i) => i.id),
+          contents: cartItems.map((i) => ({
+            id: i.id,
+            quantity: i.quantity,
+          })),
+          num_items: cartItems.length,
+        },
+        txnid,
       );
 
       const hashRes = await fetch("/api/payu/hash", {

@@ -3,12 +3,49 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useEffect } from "react";
 import { CheckCircle } from "lucide-react";
+import { fbTrack } from "@/lib/fbpixel";
 
 function OrderConfirmedContent() {
   const params = useSearchParams();
   const router = useRouter();
   const txnid = params.get("txnid");
   const paymentId = params.get("paymentId");
+
+  // ── META PIXEL: Purchase (client-side) ──
+  // This fires the browser-side half of the Purchase event. The server-side
+  // half is fired from /api/payu/verify via the Conversions API. Both use
+  // `txnid` as the shared eventID so Meta deduplicates them into one event
+  // instead of counting two purchases.
+  useEffect(() => {
+    if (!txnid) return;
+
+    let order: { cartItems?: { id: string; quantity: number }[]; cartTotal?: number } | null =
+      null;
+    try {
+      const pending = sessionStorage.getItem("payu_pending_order");
+      order = pending ? JSON.parse(pending) : null;
+    } catch {
+      order = null;
+    }
+
+    fbTrack(
+      "Purchase",
+      {
+        value: order?.cartTotal,
+        currency: "INR",
+        content_ids: order?.cartItems?.map((i) => i.id) || [],
+        contents: order?.cartItems?.map((i) => ({
+          id: i.id,
+          quantity: i.quantity,
+        })) || [],
+      },
+      txnid,
+    );
+
+    // Clean up now that the purchase has been recorded client-side.
+    sessionStorage.removeItem("payu_pending_order");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [txnid]);
 
   useEffect(() => {
     // Clear cart is already handled

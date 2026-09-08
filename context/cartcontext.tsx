@@ -9,6 +9,7 @@ import {
   useCallback,
   useMemo,
 } from "react";
+import { fbTrack } from "@/lib/fbpixel";
 
 // ================= TYPES =================
 
@@ -96,6 +97,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return [...prevItems, { ...newItem, quantity: 1 }];
     });
     setIsOpen(true);
+
+    // ── META PIXEL: AddToCart ──
+    // Central location — every add-to-cart entry point in the app (product
+    // page, combo offers, quick-add, etc.) calls this function, so firing
+    // it here covers all of them in one place.
+    fbTrack("AddToCart", {
+      content_ids: [newItem.id],
+      content_name: newItem.title,
+      content_type: "product",
+      value: newItem.price,
+      currency: "INR",
+    });
   }, []);
 
   const updateQuantity = useCallback((id: string, delta: number) => {

@@ -5,6 +5,7 @@ import { CartProvider } from "@/context/cartcontext"; // Import Provider
 import CartDrawer from "@/components/cartDrawer"; // Import Component
 import Footer from "@/components/footer";
 import CustomCursor from "@/components/customCursor";
+import MetaPixel from "@/components/metapixel";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -45,6 +46,7 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${cormorant.variable} ${jost.variable} ${imFell.variable} font-body flex flex-col min-h-screen relative selection:bg-brand-burgundy selection:text-brand-cream overflow-x-hidden`}
       >
+        <MetaPixel />
         <CartProvider>
           <main className="flex-grow flex flex-col relative z-10 w-full">
             {children}
