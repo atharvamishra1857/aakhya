@@ -11,3 +11,10 @@ routes = [
   { pattern = "aakhyaofficial.com/*", zone_name = "aakhyaofficial.com" },
   { pattern = "www.aakhyaofficial.com/*", zone_name = "aakhyaofficial.com" }
 ]
+
+[vars]
+NEXT_PUBLIC_PAYU_KEY = "oPPqMI"
+NEXT_PUBLIC_PAYU_BASE_URL = "https://secure.payu.in/_payment"
+SHOPIFY_STORE_DOMAIN = "aakhyalabel.myshopify.com"
+NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN = "aakhyalabel.myshopify.com"
+NEXT_PUBLIC_USE_MOCK_SHOPIFY = "false"
