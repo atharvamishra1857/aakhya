@@ -9,7 +9,6 @@ export default function CheckoutPage() {
   const { cartItems, cartTotal } = useCart();
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
-  // FIX 1: Ref-based guard prevents double-submit if user clicks Pay twice fast
   const isSubmittingRef = useRef(false);
 
   const [form, setForm] = useState({
@@ -33,7 +32,6 @@ export default function CheckoutPage() {
   const handlePayment = async () => {
     if (cartItems.length === 0) return;
 
-    // FIX 1: Hard guard — if already submitting, bail immediately
     if (isSubmittingRef.current) return;
 
     const required = [
@@ -52,17 +50,12 @@ export default function CheckoutPage() {
       }
     }
 
-    // FIX 2: Validate PayU URL before doing anything — fail loud, not silent
     const payuUrl = process.env.NEXT_PUBLIC_PAYU_BASE_URL;
     if (!payuUrl) {
-      console.error(
-        "NEXT_PUBLIC_PAYU_BASE_URL is not set in environment variables.",
-      );
       alert("Payment configuration error. Please contact support.");
       return;
     }
 
-    // Lock submission
     isSubmittingRef.current = true;
     setIsProcessing(true);
 
@@ -76,17 +69,15 @@ export default function CheckoutPage() {
       const firstname = form.firstName;
       const email = form.email;
 
-      // const udf1 = JSON.stringify(
-      //   cartItems.map((i) => ({
-      //     id: i.id,
-      //     title: i.title,
-      //     price: i.price,
-      //     quantity: i.quantity,
-      //   })),
-      // );
-      const udf1 = "test";
+      const udf1 = JSON.stringify(
+        cartItems.map((i) => ({
+          id: i.id,
+          title: i.title,
+          price: i.price,
+          quantity: i.quantity,
+        })),
+      );
 
-      // FIX 3: Check for non-OK response before parsing JSON
       const hashRes = await fetch("/api/payu/hash", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -104,19 +95,17 @@ export default function CheckoutPage() {
         throw new Error(`Hash API returned ${hashRes.status}`);
       }
 
-     const { hash, key } = await hashRes.json();
+      const { hash, key } = await hashRes.json();
 
       if (!hash || !key) {
         throw new Error("Hash or key missing from API response");
       }
 
-      // Store cart + address in sessionStorage for after payment returns
       sessionStorage.setItem(
         "payu_pending_order",
         JSON.stringify({ cartItems, cartTotal, form, txnid }),
       );
 
-      // Build PayU form and submit
       const payuData: Record<string, string> = {
         key,
         txnid,
@@ -139,7 +128,6 @@ export default function CheckoutPage() {
 
       const payuForm = document.createElement("form");
       payuForm.method = "POST";
-      // FIX 2: Use validated env var — never falls back to test URL
       payuForm.action = payuUrl;
 
       Object.entries(payuData).forEach(([k, v]) => {
@@ -152,12 +140,9 @@ export default function CheckoutPage() {
 
       document.body.appendChild(payuForm);
       payuForm.submit();
-      // Note: do NOT reset isSubmittingRef here — page is navigating away.
-      // The ref resets naturally when the component unmounts.
     } catch (err) {
       console.error("Payment error:", err);
       alert("Something went wrong. Please try again.");
-      // FIX 1: Only unlock on error so user can retry
       isSubmittingRef.current = false;
       setIsProcessing(false);
     }
@@ -181,7 +166,6 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF7]">
-      {/* Header */}
       <div className="border-b border-brand-ink/10 px-6 py-4 flex items-center justify-between">
         <button
           onClick={() => router.push("/")}
@@ -195,7 +179,6 @@ export default function CheckoutPage() {
       </div>
 
       <div className="max-w-5xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 gap-12">
-        {/* Left — Form */}
         <div>
           <h2 className="font-display text-2xl text-brand-ink mb-8">
             Delivery Details
@@ -315,7 +298,6 @@ export default function CheckoutPage() {
           </p>
         </div>
 
-        {/* Right — Order Summary */}
         <div>
           <h2 className="font-display text-2xl text-brand-ink mb-8">
             Order Summary
