@@ -11,8 +11,8 @@ export async function POST(req: NextRequest) {
     const email = String(body.email || "").trim();
     const udf1 = String(body.udf1 || "").trim();
 
-    const salt = "dCWmlOTvp6upSuBPDwsjkQmwRWGEZ4i8";
-    const key = "oPPqMI";
+    const salt = (process.env.PAYU_SALT || "").trim();
+    const key = (process.env.NEXT_PUBLIC_PAYU_KEY || "").trim();
 
     if (!txnid || !amount || !productinfo || !firstname || !email) {
       return NextResponse.json(
