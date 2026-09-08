@@ -105,7 +105,7 @@ export default function CheckoutPage() {
       }
 
       const { hash, key, debug } = await hashRes.json();
-      alert(debug.hashFull);
+alert(debug.hashString + "\n\n" + debug.hash);
 
       if (!hash || !key) {
         throw new Error("Hash or key missing from API response");

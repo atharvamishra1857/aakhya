@@ -9,18 +9,10 @@ export async function POST(req: NextRequest) {
     const productinfo = String(body.productinfo || "").trim();
     const firstname = String(body.firstname || "").trim();
     const email = String(body.email || "").trim();
-    const udf1 = String(body.udf1 || "").trim();
+    const udf1 = "test";
 
-    // const salt = (process.env.PAYU_SALT || "").trim();
     const salt = "dCWmlOTvp6upSuBPDwsjkQmwRWGEZ4i8";
-    const key = (process.env.NEXT_PUBLIC_PAYU_KEY || "").trim();
-
-    if (!key || !salt) {
-      return NextResponse.json(
-        { error: "Server configuration error", saltPresent: !!salt, keyPresent: !!key },
-        { status: 500 },
-      );
-    }
+    const key = "oPPqMI";
 
     const hashString = `${key}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${udf1}||||||||||${salt}`;
 
@@ -30,24 +22,8 @@ export async function POST(req: NextRequest) {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 
-   return NextResponse.json({
-  hash,
-  key,
-  debug: {
-    hashFull: hash, // ADD THIS
-    keyLen: key.length,
-    saltLen: salt.length,
-    saltFirst3: salt.substring(0, 3),
-    saltLast3: salt.slice(-3),
-    hashFirst6: hash.substring(0, 6),
-    // Show exact hash input (safe since txnid/amount aren't sensitive)
-    hashInput: `${key}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${udf1}||||||||||${salt}`,
-  }
-});
+    return NextResponse.json({ hash, key, debug: { hashString, hash } });
   } catch (err) {
-    return NextResponse.json(
-      { error: "Hash generation failed", detail: String(err) },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }
