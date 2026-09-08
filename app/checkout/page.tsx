@@ -62,7 +62,7 @@ export default function CheckoutPage() {
 
     try {
       const txnid = `TXN${Date.now()}`;
-      const amount = "1.00"; // TEMP TESTING - hardcoded to ₹1, revert to cartTotal.toFixed(2) after testing
+      const amount = cartTotal.toFixed(2); 
       const productinfo = cartItems
         .map((i) => i.title)
         .join(", ")
