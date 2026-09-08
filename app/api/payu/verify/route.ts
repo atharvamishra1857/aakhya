@@ -111,8 +111,8 @@ export async function POST(req: NextRequest) {
 
     console.log(`[PayU verify] Callback received: txnid=${txnid} status=${status} at ${new Date().toISOString()}`);
 
-    // PayU reverse hash formula: salt|status|udf5|udf4|udf3|udf2|udf1|email|firstname|productinfo|amount|txnid|key
-    const hashString = `${salt}|${status}|${udf5}|${udf4}|${udf3}|${udf2}|${udf1}|${email}|${firstname}|${productinfo}|${amount}|${txnid}|${key}`;
+    // PayU reverse hash formula: salt|status|udf10|udf9|udf8|udf7|udf6|udf5|udf4|udf3|udf2|udf1|email|firstname|productinfo|amount|txnid|key
+    const hashString = `${salt}|${status}||||||${udf5}|${udf4}|${udf3}|${udf2}|${udf1}|${email}|${firstname}|${productinfo}|${amount}|${txnid}|${key}`;
 
     // Cloudflare Edge compatible Web Crypto SHA-512
     const encoder = new TextEncoder();
@@ -131,15 +131,7 @@ export async function POST(req: NextRequest) {
         expectedHash,
         receivedHash,
       });
-      // TEMP DEBUG - remove after fix
-      const debugUrl = new URL("/order-failed", req.url);
-      debugUrl.searchParams.set("dbg_status", status || "");
-      debugUrl.searchParams.set("dbg_saltLen", String(salt.length));
-      debugUrl.searchParams.set("dbg_keyLen", String(key.length));
-      debugUrl.searchParams.set("dbg_expected6", expectedHash.substring(0, 6));
-      debugUrl.searchParams.set("dbg_received6", receivedHash.substring(0, 6));
-      debugUrl.searchParams.set("dbg_udf1len", String((udf1 || "").length));
-      return NextResponse.redirect(debugUrl);
+      return NextResponse.redirect(new URL("/order-failed", req.url));
     }
 
     if (status !== "success") {
