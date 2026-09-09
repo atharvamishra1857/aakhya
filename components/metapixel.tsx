@@ -25,7 +25,7 @@ function PixelRouteListener() {
 export default function MetaPixel() {
   return (
     <>
-      <Script id="meta-pixel-base" strategy="afterInteractive">
+      <Script id="meta-pixel-base" strategy="afterInteractive" data-cfasync="false">
         {`
           !function(f,b,e,v,n,t,s)
           {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
