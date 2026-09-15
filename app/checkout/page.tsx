@@ -5,6 +5,13 @@ import { useCart } from "@/context/cartcontext";
 import { useRouter } from "next/navigation";
 import { fbTrack } from "@/lib/fbpixel";
 import Image from "next/image";
+import Script from "next/script";
+
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 export default function CheckoutPage() {
   const { cartItems, cartTotal } = useCart();
@@ -32,18 +39,9 @@ export default function CheckoutPage() {
 
   const handlePayment = async () => {
     if (cartItems.length === 0) return;
-
     if (isSubmittingRef.current) return;
 
-    const required = [
-      "firstName",
-      "lastName",
-      "email",
-      "phone",
-      "address1",
-      "city",
-      "zip",
-    ];
+    const required = ["firstName", "lastName", "email", "phone", "address1", "city", "zip"];
     for (const field of required) {
       if (!form[field as keyof typeof form]) {
         alert(`Please fill in your ${field}`);
@@ -51,9 +49,8 @@ export default function CheckoutPage() {
       }
     }
 
-    const payuUrl = process.env.NEXT_PUBLIC_PAYU_BASE_URL;
-    if (!payuUrl) {
-      alert("Payment configuration error. Please contact support.");
+    if (!window.Razorpay) {
+      alert("Payment is still loading. Please try again in a moment.");
       return;
     }
 
@@ -62,108 +59,111 @@ export default function CheckoutPage() {
 
     try {
       const txnid = `TXN${Date.now()}`;
-      const amount = cartTotal.toFixed(2); 
-      const productinfo = cartItems
-        .map((i) => i.title)
-        .join(", ")
-        .slice(0, 100);
-      const firstname = form.firstName;
-      const email = form.email;
+      const amount = cartTotal;
 
-      const udf1 = JSON.stringify(
-        cartItems.map((i) => ({
-          id: i.id,
-          title: i.title,
-          price: i.price,
-          quantity: i.quantity,
-        })),
-      );
-
-      // ── META PIXEL: InitiateCheckout ──
-      // Fired here, before the PayU handoff, once we know the user has
-      // valid delivery details and is about to be redirected off-site.
-      // Uses the same txnid as the eventID so a future retry doesn't
-      // create a duplicate InitiateCheckout event in Meta's dedup window.
       fbTrack(
         "InitiateCheckout",
         {
           value: cartTotal,
           currency: "INR",
           content_ids: cartItems.map((i) => i.id),
-          contents: cartItems.map((i) => ({
-            id: i.id,
-            quantity: i.quantity,
-          })),
+          contents: cartItems.map((i) => ({ id: i.id, quantity: i.quantity })),
           num_items: cartItems.length,
         },
         txnid,
       );
 
-      const hashRes = await fetch("/api/payu/hash", {
+      // 1. Create Razorpay order server-side
+      const orderRes = await fetch("/api/razorpay/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          txnid,
-          amount,
-          productinfo,
-          firstname,
-          email,
-          udf1,
-        }),
+        body: JSON.stringify({ amount, receipt: txnid }),
       });
 
-      if (!hashRes.ok) {
-        throw new Error(`Hash API returned ${hashRes.status}`);
+      if (!orderRes.ok) {
+        throw new Error(`Order API returned ${orderRes.status}`);
       }
 
-      const { hash, key } = await hashRes.json();
+      const { orderId, amount: orderAmount, currency, key } = await orderRes.json();
 
-      if (!hash || !key) {
-        throw new Error("Hash or key missing from API response");
+      if (!orderId || !key) {
+        throw new Error("Order ID or key missing from response");
       }
 
-      sessionStorage.setItem(
-        "payu_pending_order",
-        JSON.stringify({ cartItems, cartTotal, form, txnid }),
-      );
-
-      const payuData: Record<string, string> = {
+      // 2. Open Razorpay checkout popup
+      const options = {
         key,
-        txnid,
-        amount,
-        productinfo,
-        firstname,
-        lastname: form.lastName,
-        email,
-        phone: form.phone,
-        address1: form.address1,
-        city: form.city,
-        state: form.province,
-        zipcode: form.zip,
-        country: form.country,
-        udf1,
-        hash,
-        surl: `${window.location.origin}/api/payu/verify`,
-        furl: `${window.location.origin}/order-failed`,
+        amount: orderAmount,
+        currency,
+        name: "Aakhya",
+        description: cartItems.map((i) => i.title).join(", ").slice(0, 100),
+        order_id: orderId,
+        prefill: {
+          name: `${form.firstName} ${form.lastName}`.trim(),
+          email: form.email,
+          contact: form.phone,
+        },
+        theme: {
+          color: "#2b2420",
+        },
+        handler: async function (response: {
+          razorpay_payment_id: string;
+          razorpay_order_id: string;
+          razorpay_signature: string;
+        }) {
+          try {
+            const verifyRes = await fetch("/api/razorpay/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                cartItems: cartItems.map((i) => ({
+                  id: i.id,
+                  title: i.title,
+                  price: i.price,
+                  quantity: i.quantity,
+                })),
+                amount,
+                form,
+                txnid,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (verifyData.success) {
+              router.push(
+                `/order-confirmed?txnid=${verifyData.txnid}&paymentId=${verifyData.paymentId}`,
+              );
+            } else {
+              router.push("/order-failed");
+            }
+          } catch (err) {
+            console.error("Verification error:", err);
+            router.push("/order-failed");
+          } finally {
+            isSubmittingRef.current = false;
+            setIsProcessing(false);
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            // User closed the popup without paying
+            isSubmittingRef.current = false;
+            setIsProcessing(false);
+          },
+        },
       };
 
-      const payuForm = document.createElement("form");
-      payuForm.method = "POST";
-      payuForm.action = payuUrl;
-
-      Object.entries(payuData).forEach(([k, v]) => {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = k;
-        input.value = v;
-        payuForm.appendChild(input);
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", function () {
+        isSubmittingRef.current = false;
+        setIsProcessing(false);
+        router.push("/order-failed");
       });
-
-      
-
-      document.body.appendChild(payuForm);
-      console.log("PAYU FORM DATA:", payuData);
-      payuForm.submit();
+      rzp.open();
     } catch (err) {
       console.error("Payment error:", err);
       alert("Something went wrong. Please try again.");
@@ -175,13 +175,8 @@ export default function CheckoutPage() {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-brand-bgprimary">
-        <p className="font-display text-2xl text-brand-ink mb-6">
-          Your cart is empty
-        </p>
-        <button
-          onClick={() => router.push("/")}
-          className="font-body text-sm text-brand-ink underline"
-        >
+        <p className="font-display text-2xl text-brand-ink mb-6">Your cart is empty</p>
+        <button onClick={() => router.push("/")} className="font-body text-sm text-brand-ink underline">
           Continue Shopping
         </button>
       </div>
@@ -190,119 +185,33 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF7]">
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
+
       <div className="border-b border-brand-ink/10 px-6 py-4 flex items-center justify-between">
-        <button
-          onClick={() => router.push("/")}
-          className="font-display text-2xl text-brand-ink"
-        >
+        <button onClick={() => router.push("/")} className="font-display text-2xl text-brand-ink">
           Aakhya
         </button>
-        <p className="font-body text-xs text-brand-ink/40 tracking-widest uppercase">
-          Secure Checkout
-        </p>
+        <p className="font-body text-xs text-brand-ink/40 tracking-widest uppercase">Secure Checkout</p>
       </div>
 
       <div className="max-w-5xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 gap-12">
         <div>
-          <h2 className="font-display text-2xl text-brand-ink mb-8">
-            Delivery Details
-          </h2>
+          <h2 className="font-display text-2xl text-brand-ink mb-8">Delivery Details</h2>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <input
-                name="firstName"
-                placeholder="First name"
-                value={form.firstName}
-                onChange={handleChange}
-                className="border border-brand-ink/20 rounded-lg px-4 py-3 font-body text-sm text-brand-ink bg-transparent focus:outline-none focus:border-brand-ink"
-              />
-              <input
-                name="lastName"
-                placeholder="Last name"
-                value={form.lastName}
-                onChange={handleChange}
-                className="border border-brand-ink/20 rounded-lg px-4 py-3 font-body text-sm text-brand-ink bg-transparent focus:outline-none focus:border-brand-ink"
-              />
+              <input name="firstName" placeholder="First name" value={form.firstName} onChange={handleChange} className="border border-brand-ink/20 rounded-lg px-4 py-3 font-body text-sm text-brand-ink bg-transparent focus:outline-none focus:border-brand-ink" />
+              <input name="lastName" placeholder="Last name" value={form.lastName} onChange={handleChange} className="border border-brand-ink/20 rounded-lg px-4 py-3 font-body text-sm text-brand-ink bg-transparent focus:outline-none focus:border-brand-ink" />
             </div>
-            <input
-              name="email"
-              type="email"
-              placeholder="Email"
-              value={form.email}
-              onChange={handleChange}
-              className="w-full border border-brand-ink/20 rounded-lg px-4 py-3 font-body text-sm text-brand-ink bg-transparent focus:outline-none focus:border-brand-ink"
-            />
-            <input
-              name="phone"
-              type="tel"
-              placeholder="Phone number"
-              value={form.phone}
-              onChange={handleChange}
-              className="w-full border border-brand-ink/20 rounded-lg px-4 py-3 font-body text-sm text-brand-ink bg-transparent focus:outline-none focus:border-brand-ink"
-            />
-            <input
-              name="address1"
-              placeholder="Address"
-              value={form.address1}
-              onChange={handleChange}
-              className="w-full border border-brand-ink/20 rounded-lg px-4 py-3 font-body text-sm text-brand-ink bg-transparent focus:outline-none focus:border-brand-ink"
-            />
+            <input name="email" type="email" placeholder="Email" value={form.email} onChange={handleChange} className="w-full border border-brand-ink/20 rounded-lg px-4 py-3 font-body text-sm text-brand-ink bg-transparent focus:outline-none focus:border-brand-ink" />
+            <input name="phone" type="tel" placeholder="Phone number" value={form.phone} onChange={handleChange} className="w-full border border-brand-ink/20 rounded-lg px-4 py-3 font-body text-sm text-brand-ink bg-transparent focus:outline-none focus:border-brand-ink" />
+            <input name="address1" placeholder="Address" value={form.address1} onChange={handleChange} className="w-full border border-brand-ink/20 rounded-lg px-4 py-3 font-body text-sm text-brand-ink bg-transparent focus:outline-none focus:border-brand-ink" />
             <div className="grid grid-cols-2 gap-4">
-              <input
-                name="city"
-                placeholder="City"
-                value={form.city}
-                onChange={handleChange}
-                className="border border-brand-ink/20 rounded-lg px-4 py-3 font-body text-sm text-brand-ink bg-transparent focus:outline-none focus:border-brand-ink"
-              />
-              <input
-                name="zip"
-                placeholder="PIN code"
-                value={form.zip}
-                onChange={handleChange}
-                className="border border-brand-ink/20 rounded-lg px-4 py-3 font-body text-sm text-brand-ink bg-transparent focus:outline-none focus:border-brand-ink"
-              />
+              <input name="city" placeholder="City" value={form.city} onChange={handleChange} className="border border-brand-ink/20 rounded-lg px-4 py-3 font-body text-sm text-brand-ink bg-transparent focus:outline-none focus:border-brand-ink" />
+              <input name="zip" placeholder="PIN code" value={form.zip} onChange={handleChange} className="border border-brand-ink/20 rounded-lg px-4 py-3 font-body text-sm text-brand-ink bg-transparent focus:outline-none focus:border-brand-ink" />
             </div>
-            <select
-              name="province"
-              value={form.province}
-              onChange={handleChange}
-              className="w-full border border-brand-ink/20 rounded-lg px-4 py-3 font-body text-sm text-brand-ink bg-transparent focus:outline-none focus:border-brand-ink"
-            >
-              {[
-                "Andhra Pradesh",
-                "Arunachal Pradesh",
-                "Assam",
-                "Bihar",
-                "Chhattisgarh",
-                "Goa",
-                "Gujarat",
-                "Haryana",
-                "Himachal Pradesh",
-                "Jharkhand",
-                "Karnataka",
-                "Kerala",
-                "Madhya Pradesh",
-                "Maharashtra",
-                "Manipur",
-                "Meghalaya",
-                "Mizoram",
-                "Nagaland",
-                "Odisha",
-                "Punjab",
-                "Rajasthan",
-                "Sikkim",
-                "Tamil Nadu",
-                "Telangana",
-                "Tripura",
-                "Uttar Pradesh",
-                "Uttarakhand",
-                "West Bengal",
-                "Delhi",
-              ].map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
+            <select name="province" value={form.province} onChange={handleChange} className="w-full border border-brand-ink/20 rounded-lg px-4 py-3 font-body text-sm text-brand-ink bg-transparent focus:outline-none focus:border-brand-ink">
+              {["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Delhi"].map((s) => (
+                <option key={s} value={s}>{s}</option>
               ))}
             </select>
           </div>
@@ -312,51 +221,28 @@ export default function CheckoutPage() {
             disabled={isProcessing}
             className="mt-8 w-full h-14 bg-brand-ink text-brand-ivory rounded-full font-body text-sm uppercase tracking-[0.15em] transition-all hover:bg-brand-ink/80 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
-            {isProcessing
-              ? "Redirecting to PayU..."
-              : `Pay ₹${cartTotal.toLocaleString("en-IN")}`}
+            {isProcessing ? "Processing..." : `Pay ₹${cartTotal.toLocaleString("en-IN")}`}
           </button>
-
-          <p className="mt-4 text-center font-body text-xs text-brand-ink/40">
-            🔒 Secured by PayU · All transactions are encrypted
-          </p>
+          <p className="mt-4 text-center font-body text-xs text-brand-ink/40">🔒 Secured by Razorpay · All transactions are encrypted</p>
         </div>
 
         <div>
-          <h2 className="font-display text-2xl text-brand-ink mb-8">
-            Order Summary
-          </h2>
+          <h2 className="font-display text-2xl text-brand-ink mb-8">Order Summary</h2>
           <div className="space-y-4">
             {cartItems.map((item) => (
               <div key={item.id} className="flex items-center gap-4">
                 <div className="relative w-16 h-20 rounded-lg overflow-hidden bg-brand-bgprimary flex-shrink-0">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover"
-                  />
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-ink text-brand-ivory text-[10px] rounded-full flex items-center justify-center font-body">
-                    {item.quantity}
-                  </span>
+                  <Image src={item.image} alt={item.title} fill className="object-cover" />
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-ink text-brand-ivory text-[10px] rounded-full flex items-center justify-center font-body">{item.quantity}</span>
                 </div>
                 <div className="flex-1">
-                  <p className="font-display text-sm text-brand-ink">
-                    {item.title}
-                  </p>
-                  {item.variantTitle && (
-                    <p className="font-body text-xs text-brand-ink/50">
-                      {item.variantTitle}
-                    </p>
-                  )}
+                  <p className="font-display text-sm text-brand-ink">{item.title}</p>
+                  {item.variantTitle && <p className="font-body text-xs text-brand-ink/50">{item.variantTitle}</p>}
                 </div>
-                <p className="font-body text-sm text-brand-ink">
-                  ₹{(item.price * item.quantity).toLocaleString("en-IN")}
-                </p>
+                <p className="font-body text-sm text-brand-ink">₹{(item.price * item.quantity).toLocaleString("en-IN")}</p>
               </div>
             ))}
           </div>
-
           <div className="mt-8 pt-6 border-t border-brand-ink/10 space-y-2">
             <div className="flex justify-between font-body text-sm text-brand-ink/60">
               <span>Subtotal</span>
@@ -364,9 +250,7 @@ export default function CheckoutPage() {
             </div>
             <div className="flex justify-between font-body text-sm text-brand-ink/60">
               <span>Shipping</span>
-              <span>
-                {cartTotal >= 20000 ? "Free" : "Calculated at next step"}
-              </span>
+              <span>{cartTotal >= 20000 ? "Free" : "Calculated at next step"}</span>
             </div>
             <div className="flex justify-between font-display text-lg text-brand-ink pt-2 border-t border-brand-ink/10">
               <span>Total</span>

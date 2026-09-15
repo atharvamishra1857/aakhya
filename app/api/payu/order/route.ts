@@ -3,45 +3,63 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    const amount = Number(body.amount); // rupees, e.g. 750.00
+    const receipt = String(body.receipt || `rcpt_${Date.now()}`).slice(0, 40);
 
-    const txnid = String(body.txnid || "").trim();
-    const amount = String(body.amount || "").trim();
-    const productinfo = String(body.productinfo || "").trim();
-    const firstname = String(body.firstname || "").trim();
-    const email = String(body.email || "").trim();
-    const udf1 = String(body.udf1 || "").trim();
+    const keyId = (process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "").trim();
+    const keySecret = (process.env.RAZORPAY_KEY_SECRET || "").trim();
 
-    const salt = (process.env.PAYU_SALT || "").trim();
-    const key = (process.env.NEXT_PUBLIC_PAYU_KEY || "").trim();
-
-    if (!txnid || !amount || !productinfo || !firstname || !email) {
+    if (!keyId || !keySecret) {
+      console.error("Missing Razorpay Key ID or Secret in environment variables.");
       return NextResponse.json(
-        { error: "Missing required payment fields" },
+        { error: "Server configuration error" },
+        { status: 500 },
+      );
+    }
+
+    if (!amount || amount <= 0) {
+      return NextResponse.json(
+        { error: "Invalid amount" },
         { status: 400 },
       );
     }
 
-    const hashString = `${key}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${udf1}||||||||||${salt}`;
+    const auth = btoa(`${keyId}:${keySecret}`);
 
-    const encoder = new TextEncoder();
-    const data = encoder.encode(hashString);
-    const hashBuffer = await crypto.subtle.digest("SHA-512", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+    const res = await fetch("https://api.razorpay.com/v1/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${auth}`,
+      },
+      body: JSON.stringify({
+        amount: Math.round(amount * 100), // Razorpay expects paise
+        currency: "INR",
+        receipt,
+      }),
+    });
 
-    return NextResponse.json({ hash, key, debug: { hashString } });
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Razorpay order creation failed:", JSON.stringify(data));
+      return NextResponse.json(
+        { error: "Failed to create order", detail: data },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json({
+      orderId: data.id,
+      amount: data.amount,
+      currency: data.currency,
+      key: keyId,
+    });
   } catch (err) {
+    console.error("Razorpay order route failed:", err);
     return NextResponse.json(
-      { error: "Hash generation failed" },
+      { error: "Order creation failed" },
       { status: 500 },
     );
   }
-}
-// route.ts
-export async function GET() {
-  return NextResponse.json({
-    version: "debug-v3",
-    saltLen: (process.env.PAYU_SALT || "").length,
-    saltLast4: (process.env.PAYU_SALT || "").slice(-4),
-  });
 }

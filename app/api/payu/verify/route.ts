@@ -1,10 +1,7 @@
-// export const runtime = "edge";
-
 import { NextRequest, NextResponse } from "next/server";
 import { createShopifyOrder } from "@/app/actions/createorder";
 
 // In-memory dedup guard for the lifetime of this isolate instance.
-// For multi-instance Edge production deployments, consider a KV / Redis SET NX check.
 const processedTxns = new Set<string>();
 
 const META_PIXEL_ID = "1733404514535351";
@@ -17,12 +14,23 @@ async function sha256Hex(input: string): Promise<string> {
     .join("");
 }
 
-// ── META PIXEL: Purchase (server-side, via Conversions API) ──
-// This is the reliable half of Purchase tracking — it fires from the
-// server, right after the order is confirmed and created in Shopify, so
-// it isn't lost to ad blockers, iOS privacy restrictions, or a closed tab.
-// `eventId` (the txnid) is also used by the client-side pixel fire on
-// /order-confirmed, so Meta deduplicates the two into a single event.
+async function hmacSha256Hex(secret: string, message: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(secret);
+  const msgData = encoder.encode(message);
+  const cryptoKey = await crypto.subtle.importKey(
+    "raw",
+    keyData,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signature = await crypto.subtle.sign("HMAC", cryptoKey, msgData);
+  return Array.from(new Uint8Array(signature))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 async function sendPurchaseToMeta(params: {
   eventId: string;
   amount: number;
@@ -79,122 +87,84 @@ async function sendPurchaseToMeta(params: {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.formData();
+    const body = await req.json();
 
-    const status = body.get("status") as string;
-    const txnid = body.get("txnid") as string;
-    const amount = body.get("amount") as string;
-    const productinfo = body.get("productinfo") as string;
-    const firstname = body.get("firstname") as string;
-    const lastname = body.get("lastname") as string;
-    const email = body.get("email") as string;
-    const phone = body.get("phone") as string;
-    const address1 = body.get("address1") as string;
-    const city = body.get("city") as string;
-    const state = body.get("state") as string;
-    const zipcode = body.get("zipcode") as string;
-    const udf1 = body.get("udf1") as string;
-    const udf2 = (body.get("udf2") as string) || "";
-    const udf3 = (body.get("udf3") as string) || "";
-    const udf4 = (body.get("udf4") as string) || "";
-    const udf5 = (body.get("udf5") as string) || "";
-    const mihpayid = body.get("mihpayid") as string;
-    const receivedHash = (body.get("hash") as string) || "";
+    const razorpay_order_id = String(body.razorpay_order_id || "");
+    const razorpay_payment_id = String(body.razorpay_payment_id || "");
+    const razorpay_signature = String(body.razorpay_signature || "");
+    const cartItems: Array<{ id: string; title: string; price: number; quantity: number }> =
+      body.cartItems || [];
+    const amount = Number(body.amount) || 0;
+    const form = body.form || {};
+    const txnid = String(body.txnid || razorpay_order_id);
 
-    const salt = (process.env.PAYU_SALT || "").trim();
-    const key = (process.env.NEXT_PUBLIC_PAYU_KEY || "").trim();
-
-    if (!salt || !key) {
-      console.error("[PayU verify] Missing PAYU_SALT or NEXT_PUBLIC_PAYU_KEY");
-      return NextResponse.redirect(new URL("/order-failed", req.url));
+    const keySecret = (process.env.RAZORPAY_KEY_SECRET || "").trim();
+    if (!keySecret) {
+      console.error("[Razorpay verify] Missing RAZORPAY_KEY_SECRET");
+      return NextResponse.json({ success: false, error: "Server configuration error" }, { status: 500 });
     }
 
-    console.log(`[PayU verify] Callback received: txnid=${txnid} status=${status} at ${new Date().toISOString()}`);
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return NextResponse.json({ success: false, error: "Missing payment fields" }, { status: 400 });
+    }
 
-    // PayU reverse hash formula: salt|status|udf10|udf9|udf8|udf7|udf6|udf5|udf4|udf3|udf2|udf1|email|firstname|productinfo|amount|txnid|key
-    const hashString = `${salt}|${status}||||||${udf5}|${udf4}|${udf3}|${udf2}|${udf1}|${email}|${firstname}|${productinfo}|${amount}|${txnid}|${key}`;
+    // Razorpay signature formula: HMAC_SHA256(order_id + "|" + payment_id, key_secret)
+    const expectedSignature = await hmacSha256Hex(
+      keySecret,
+      `${razorpay_order_id}|${razorpay_payment_id}`,
+    );
 
-    // Cloudflare Edge compatible Web Crypto SHA-512
-    const encoder = new TextEncoder();
-    const data = encoder.encode(hashString);
-    const hashBuffer = await crypto.subtle.digest("SHA-512", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const expectedHash = hashArray
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-
-    // Case-insensitive comparison for hash validation
-    if (expectedHash.toLowerCase() !== receivedHash.toLowerCase()) {
-      console.error("[PayU verify] Hash mismatch — possible forged callback", {
-        txnid,
-        status,
-        expectedHash,
-        receivedHash,
+    if (expectedSignature !== razorpay_signature) {
+      console.error("[Razorpay verify] Signature mismatch — possible forged callback", {
+        razorpay_order_id,
+        razorpay_payment_id,
       });
-      return NextResponse.redirect(new URL("/order-failed", req.url));
-    }
-
-    if (status !== "success") {
-      console.warn(`[PayU verify] Payment not successful: txnid=${txnid} status=${status}`);
-      return NextResponse.redirect(new URL("/order-failed", req.url));
+      return NextResponse.json({ success: false, error: "Signature verification failed" }, { status: 400 });
     }
 
     // Deduplication check
-    if (processedTxns.has(txnid)) {
-      console.warn(`[PayU verify] Duplicate callback for txnid=${txnid} — skipping Shopify order`);
-      return NextResponse.redirect(
-        new URL(`/order-confirmed?txnid=${txnid}&paymentId=${mihpayid}`, req.url),
-      );
+    if (processedTxns.has(razorpay_payment_id)) {
+      console.warn(`[Razorpay verify] Duplicate callback for payment=${razorpay_payment_id} — skipping`);
+      return NextResponse.json({ success: true, txnid, paymentId: razorpay_payment_id });
     }
-    processedTxns.add(txnid);
-
-    // Parse cart items from udf1
-    let cartItems: Array<{ id: string; title: string; price: number; quantity: number }> = [];
-    try {
-      cartItems = JSON.parse(udf1 || "[]");
-    } catch {
-      console.error("[PayU verify] Failed to parse cart items from udf1");
-    }
+    processedTxns.add(razorpay_payment_id);
 
     // Create Shopify order
     try {
       await createShopifyOrder(
         cartItems,
         {
-          firstName: firstname,
-          lastName: lastname,
-          email,
-          phone,
-          address1,
-          city,
-          province: state,
-          zip: zipcode,
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          phone: form.phone,
+          address1: form.address1,
+          city: form.city,
+          province: form.province,
+          zip: form.zip,
           country: "India",
         },
-        mihpayid,
-        parseFloat(amount),
+        razorpay_payment_id,
+        amount,
       );
-      console.log(`[PayU verify] Shopify order created for txnid=${txnid}`);
+      console.log(`[Razorpay verify] Shopify order created for payment=${razorpay_payment_id}`);
 
-      // Fire the server-side half of the Purchase event now that the
-      // order is confirmed. Uses txnid as the eventID for dedup against
-      // the client-side pixel fire on /order-confirmed.
       await sendPurchaseToMeta({
         eventId: txnid,
-        amount: parseFloat(amount),
-        email,
-        phone,
+        amount,
+        email: form.email,
+        phone: form.phone,
         cartItems,
       });
     } catch (err) {
-      console.error("[PayU verify] Shopify order creation failed:", err);
+      console.error("[Razorpay verify] Shopify order creation failed:", err);
+      // Payment succeeded but Shopify order failed — still report success to user,
+      // but this should be monitored/alerted on since the order needs manual creation.
     }
 
-    return NextResponse.redirect(
-      new URL(`/order-confirmed?txnid=${txnid}&paymentId=${mihpayid}`, req.url),
-    );
+    return NextResponse.json({ success: true, txnid, paymentId: razorpay_payment_id });
   } catch (err) {
-    console.error("[PayU verify] Verification failed:", err);
-    return NextResponse.redirect(new URL("/order-failed", req.url));
+    console.error("[Razorpay verify] Verification failed:", err);
+    return NextResponse.json({ success: false, error: "Verification failed" }, { status: 500 });
   }
 }
