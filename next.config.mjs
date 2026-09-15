@@ -1,21 +1,23 @@
 /** @type {import('next').NextConfig} */
 const isDev = process.env.NODE_ENV === 'development';
 
-const payuDomains = "https://test.payu.in https://secure.payu.in https://*.payu.in";
+const razorpayScript = "https://checkout.razorpay.com";
+const razorpayConnect = "https://api.razorpay.com https://lumberjack.razorpay.com https://checkout.razorpay.com";
+const razorpayFrame = "https://api.razorpay.com https://checkout.razorpay.com";
 const metaDomains = "https://connect.facebook.net";
 const metaConnect = "https://www.facebook.com https://connect.facebook.net";
 const metaImg = "https://www.facebook.com";
 
-const devCSP = `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' ${payuDomains} ${metaDomains}; connect-src 'self' https://*.myshopify.com ${payuDomains} https://api.web3forms.com ${metaConnect}; img-src 'self' data: blob: https://cdn.shopify.com https://images.unsplash.com https://picsum.photos https://*.payu.in ${metaImg}; style-src 'self' 'unsafe-inline'; frame-src ${payuDomains};`;
+const devCSP = `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' ${razorpayScript} ${metaDomains}; connect-src 'self' https://*.myshopify.com ${razorpayConnect} https://api.web3forms.com ${metaConnect}; img-src 'self' data: blob: https://cdn.shopify.com https://images.unsplash.com https://picsum.photos ${metaImg}; style-src 'self' 'unsafe-inline'; frame-src ${razorpayFrame};`;
 
 const prodCSP = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline' ${payuDomains} https://static.cloudflareinsights.com ${metaDomains};
-  connect-src 'self' https://*.myshopify.com ${payuDomains} https://api.web3forms.com https://static.cloudflareinsights.com ${metaConnect};
-  img-src 'self' data: blob: https://cdn.shopify.com https://images.unsplash.com https://picsum.photos https://*.payu.in ${metaImg};
-  style-src 'self' 'unsafe-inline' ${payuDomains};
-  frame-src ${payuDomains};
-  font-src 'self' ${payuDomains};
+  script-src 'self' 'unsafe-inline' ${razorpayScript} https://static.cloudflareinsights.com ${metaDomains};
+  connect-src 'self' https://*.myshopify.com ${razorpayConnect} https://api.web3forms.com https://static.cloudflareinsights.com ${metaConnect};
+  img-src 'self' data: blob: https://cdn.shopify.com https://images.unsplash.com https://picsum.photos ${metaImg};
+  style-src 'self' 'unsafe-inline';
+  frame-src ${razorpayFrame};
+  font-src 'self';
 `.replace(/\n/g, " ").trim();
 const nextConfig = {
   images: {
