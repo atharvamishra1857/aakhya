@@ -73,16 +73,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   // AUTOMATIC CART CLEARING LISTENER
   useEffect(() => {
-    if (typeof window !== "undefined" && window.location.search.includes("clear_cart=true")) {
-      setCartItems([]);
-      sessionStorage.removeItem(CART_STORAGE_KEY);
-      
-      // Silently clean up the URL so the user doesn't see the query string
-      const url = new URL(window.location.href);
-      url.searchParams.delete("clear_cart");
-      window.history.replaceState({}, "", url.toString());
-    }
-  }, []);
+  if (typeof window === "undefined") return;
+
+  const url = new URL(window.location.href);
+  const isOrderConfirmed = url.pathname.includes("order-confirmed");
+  const hasPaymentId = url.searchParams.has("paymentId") || url.searchParams.has("txnid");
+  const hasClearFlag = url.searchParams.get("clear_cart") === "true";
+
+  if (hasClearFlag || (isOrderConfirmed && hasPaymentId)) {
+    setCartItems([]);
+    sessionStorage.removeItem(CART_STORAGE_KEY);
+
+    // Silently clean up the URL so the user doesn't see the query string
+    url.searchParams.delete("clear_cart");
+    window.history.replaceState({}, "", url.toString());
+  }
+}, []);
 
   const addToCart = useCallback((newItem: Omit<CartItem, "quantity">) => {
     setCartItems((prevItems) => {
