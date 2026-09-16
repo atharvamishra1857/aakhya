@@ -153,6 +153,7 @@ export default function CheckoutPage() {
             // User closed the popup without paying
             isSubmittingRef.current = false;
             setIsProcessing(false);
+            alert("Payment cancelled. You can try again whenever you're ready.");
           },
         },
       };
