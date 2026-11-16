@@ -6,8 +6,8 @@ import { ShoppingBag, User, Search, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/cartcontext";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
-import { nav } from "framer-motion/client";
+
+
 
 // Add this above the Navbar function, alongside NavLink
 const NavIcon = ({
