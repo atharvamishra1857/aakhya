@@ -820,3 +820,32 @@ export async function loginCustomer(email: string, password: string) {
   const res = await shopifyFetch<any>(query, variables);
   return res?.customerAccessTokenCreate;
 }
+
+
+//search 
+export async function searchProducts(query: string): Promise<ShopifyProductNode[]> {
+  const gql = `
+    query SearchProducts($query: String!) {
+      products(first: 20, query: $query) {
+        edges {
+          node {
+            id
+            title
+            handle
+            priceRange {
+              minVariantPrice { amount currencyCode }
+            }
+            images(first: 1) {
+              edges { node { url altText } }
+            }
+            productType
+            tags
+          }
+        }
+      }
+    }
+  `;
+
+  const data = await shopifyFetch<any>(gql, { query });
+return data?.products?.edges ?? [];
+}

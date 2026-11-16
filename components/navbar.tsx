@@ -6,6 +6,7 @@ import { ShoppingBag, User, Search, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/cartcontext";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { nav } from "framer-motion/client";
 
 // Add this above the Navbar function, alongside NavLink
@@ -47,6 +48,8 @@ const NavIcon = ({
     </button>
   );
 };
+
+// const router = useRouter();
 
 // Reusable Navigation Link Component to enforce consistent UI states
 const NavLink = ({
@@ -132,12 +135,12 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
       ? "text-brand-white"
       : "text-brand-ink";
 
-  const iconColor = isMobileMenuOpen 
-    ? "#F5F0E8" 
-    : isScrolled 
-      ? "#2C2520" 
-      : (textColorClass.includes("white") || textColorClass.includes("ivory")) 
-        ? "#FFFFFF" 
+  const iconColor = isMobileMenuOpen
+    ? "#F5F0E8"
+    : isScrolled
+      ? "#2C2520"
+      : textColorClass.includes("white") || textColorClass.includes("ivory")
+        ? "#FFFFFF"
         : "#2C2520";
 
   return (
@@ -177,7 +180,7 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
               }}
               className="text-2xl font-display font-bold uppercase tracking-[0.1em] block scale-y-110"
             >
-            AAKHY<span className="small-caps">A</span>
+              AAKHY<span className="small-caps">A</span>
             </span>
           </Link>
         </div>
@@ -204,18 +207,30 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
 
         {/* --- RIGHT: ICONS --- */}
         <div className="flex items-center gap-2 md:gap-4 z-[110]">
-          <NavIcon ariaLabel="Open search" onClick={() => setIsSearchOpen(true)}
-            className="hidden sm:flex" baseColor={iconColor}>
+          <NavIcon
+            ariaLabel="Open search"
+            onClick={() => setIsSearchOpen(true)}
+            className="hidden sm:flex"
+            baseColor={iconColor}
+          >
             <Search size={22} strokeWidth={1} />
           </NavIcon>
 
-          <NavIcon ariaLabel="User account" href="/account"
-            className="hidden sm:flex" baseColor={iconColor}>
+          <NavIcon
+            ariaLabel="User account"
+            href="/account"
+            className="hidden sm:flex"
+            baseColor={iconColor}
+          >
             <User size={22} strokeWidth={1} />
           </NavIcon>
 
-          <NavIcon ariaLabel="Open cart" onClick={openCart}
-            className="relative" baseColor={iconColor}>
+          <NavIcon
+            ariaLabel="Open cart"
+            onClick={openCart}
+            className="relative"
+            baseColor={iconColor}
+          >
             <ShoppingBag size={22} strokeWidth={1} />
             <AnimatePresence>
               {cartCount > 0 && (
@@ -231,9 +246,17 @@ export default function Navbar({ isHome = false }: { isHome?: boolean }) {
             </AnimatePresence>
           </NavIcon>
 
-          <NavIcon ariaLabel="Toggle mobile menu" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden" baseColor={iconColor}>
-            {isMobileMenuOpen ? <X size={26} strokeWidth={1} /> : <Menu size={26} strokeWidth={1} />}
+          <NavIcon
+            ariaLabel="Toggle mobile menu"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden"
+            baseColor={iconColor}
+          >
+            {isMobileMenuOpen ? (
+              <X size={26} strokeWidth={1} />
+            ) : (
+              <Menu size={26} strokeWidth={1} />
+            )}
           </NavIcon>
         </div>
       </nav>

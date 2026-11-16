@@ -72,23 +72,125 @@ const DEFAULT_SIZE_CHART = [
 ];
 
 const CALYX_DETAILED_CHART = [
-  { id: "A", name: "HPS Length", S: "39.5", M: "40", L: "40.5", XL: "41", tol: "0.5" },
-  { id: "B", name: "Chest Circumference", S: "36.5", M: "37", L: "38.5", XL: "39.5", tol: "0.75" },
-  { id: "C", name: "Neckline Depth", S: "5.75", M: "6.25", L: "6", XL: "6.5", tol: "0.5" },
-  { id: "D", name: "Armhole Circumference", S: "18", M: "19", L: "17", XL: "20", tol: "1" },
-  { id: "E", name: "Shoulder Width", S: "13.5", M: "13", L: "14", XL: "14.5", tol: "0.5" },
-  { id: "F", name: "Waist Circumference", S: "33.5", M: "32", L: "31.5", XL: "34.5", tol: "0.5" },
-  { id: "G", name: "Hip Circumference", S: "43", M: "41", L: "42", XL: "44", tol: "1" },
-  { id: "H", name: "Length for Right Side", S: "44.5", M: "44", L: "43.5", XL: "45", tol: "0.5" },
-  { id: "I", name: "Back Shoulder Depth", S: "8.75", M: "9.75", L: "9.5", XL: "10", tol: "0.75" },
-  { id: "J", name: "Side Pocket Opening", S: "6.5", M: "6.5", L: "6.5", XL: "6.5", tol: "0" },
+  {
+    id: "A",
+    name: "HPS Length",
+    S: "39.5",
+    M: "40",
+    L: "40.5",
+    XL: "41",
+    tol: "0.5",
+  },
+  {
+    id: "B",
+    name: "Chest Circumference",
+    S: "36.5",
+    M: "37",
+    L: "38.5",
+    XL: "39.5",
+    tol: "0.75",
+  },
+  {
+    id: "C",
+    name: "Neckline Depth",
+    S: "5.75",
+    M: "6.25",
+    L: "6",
+    XL: "6.5",
+    tol: "0.5",
+  },
+  {
+    id: "D",
+    name: "Armhole Circumference",
+    S: "18",
+    M: "19",
+    L: "17",
+    XL: "20",
+    tol: "1",
+  },
+  {
+    id: "E",
+    name: "Shoulder Width",
+    S: "13.5",
+    M: "13",
+    L: "14",
+    XL: "14.5",
+    tol: "0.5",
+  },
+  {
+    id: "F",
+    name: "Waist Circumference",
+    S: "33.5",
+    M: "32",
+    L: "31.5",
+    XL: "34.5",
+    tol: "0.5",
+  },
+  {
+    id: "G",
+    name: "Hip Circumference",
+    S: "43",
+    M: "41",
+    L: "42",
+    XL: "44",
+    tol: "1",
+  },
+  {
+    id: "H",
+    name: "Length for Right Side",
+    S: "44.5",
+    M: "44",
+    L: "43.5",
+    XL: "45",
+    tol: "0.5",
+  },
+  {
+    id: "I",
+    name: "Back Shoulder Depth",
+    S: "8.75",
+    M: "9.75",
+    L: "9.5",
+    XL: "10",
+    tol: "0.75",
+  },
+  {
+    id: "J",
+    name: "Side Pocket Opening",
+    S: "6.5",
+    M: "6.5",
+    L: "6.5",
+    XL: "6.5",
+    tol: "0",
+  },
   { id: "K", name: "Pocket Depth", S: "5", M: "5", L: "5", XL: "5", tol: "0" },
-  { id: "L", name: "Neckline to Slit Opening", S: "17", M: "17", L: "17", XL: "17", tol: "0" },
-  { id: "M", name: "Bottom Opening Circ.", S: "35", M: "36", L: "34", XL: "37", tol: "1" },
+  {
+    id: "L",
+    name: "Neckline to Slit Opening",
+    S: "17",
+    M: "17",
+    L: "17",
+    XL: "17",
+    tol: "0",
+  },
+  {
+    id: "M",
+    name: "Bottom Opening Circ.",
+    S: "35",
+    M: "36",
+    L: "34",
+    XL: "37",
+    tol: "1",
+  },
 ];
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
-function SizeChartModal({ onClose, productHandle }: { onClose: () => void, productHandle: string }) {
+function SizeChartModal({
+  onClose,
+  productHandle,
+}: {
+  onClose: () => void;
+  productHandle: string;
+}) {
   const isCalyx = productHandle === "calyx";
 
   return (
@@ -127,8 +229,8 @@ function SizeChartModal({ onClose, productHandle }: { onClose: () => void, produ
           </div>
 
           <p className="font-body text-[12px] text-brand-gray tracking-wide mb-5 shrink-0">
-            {isCalyx 
-              ? "Detailed garment measurements in inches." 
+            {isCalyx
+              ? "Detailed garment measurements in inches."
               : "All measurements in inches. When between sizes, size up for a relaxed fit."}
           </p>
 
@@ -137,7 +239,15 @@ function SizeChartModal({ onClose, productHandle }: { onClose: () => void, produ
               <table className="w-full text-left font-body text-[12px] whitespace-nowrap">
                 <thead>
                   <tr className="bg-brand-bgsecondary sticky top-0 z-10 shadow-sm">
-                    {["Code", "Measurement (Inches)", "S", "M", "L", "XL", "Tol +/-"].map((h) => (
+                    {[
+                      "Code",
+                      "Measurement (Inches)",
+                      "S",
+                      "M",
+                      "L",
+                      "XL",
+                      "Tol +/-",
+                    ].map((h) => (
                       <th
                         key={h}
                         className="px-4 py-3 text-[10px] tracking-widest uppercase text-brand-gray font-normal"
@@ -155,7 +265,9 @@ function SizeChartModal({ onClose, productHandle }: { onClose: () => void, produ
                         i % 2 === 0 ? "" : "bg-brand-bgsecondary/10"
                       }`}
                     >
-                      <td className="px-4 py-2.5 text-brand-sage font-medium">{row.id}</td>
+                      <td className="px-4 py-2.5 text-brand-sage font-medium">
+                        {row.id}
+                      </td>
                       <td className="px-4 py-2.5 text-brand-ink">{row.name}</td>
                       <td className="px-4 py-2.5 text-brand-ink">{row.S}</td>
                       <td className="px-4 py-2.5 text-brand-ink">{row.M}</td>
@@ -186,7 +298,9 @@ function SizeChartModal({ onClose, productHandle }: { onClose: () => void, produ
                       key={row.size}
                       className={`border-t border-brand-borderlight ${i % 2 === 0 ? "" : "bg-brand-bgsecondary/40"}`}
                     >
-                      <td className="px-4 py-3 text-brand-sage font-medium">{row.size}</td>
+                      <td className="px-4 py-3 text-brand-sage font-medium">
+                        {row.size}
+                      </td>
                       <td className="px-4 py-3 text-brand-ink">{row.chest}</td>
                       <td className="px-4 py-3 text-brand-ink">{row.waist}</td>
                       <td className="px-4 py-3 text-brand-ink">{row.hip}</td>
@@ -199,7 +313,7 @@ function SizeChartModal({ onClose, productHandle }: { onClose: () => void, produ
           </div>
 
           <p className="font-body text-[11px] text-brand-gray/70 mt-5 text-center shrink-0">
-            {isCalyx 
+            {isCalyx
               ? "Please refer to the tech pack drawing for measurement points A through M."
               : "Model is 5′8″ wearing size S. Measurements may vary ±0.5″."}
           </p>
@@ -308,8 +422,8 @@ export default function ProductPage({
       let comboHandleToFetch = null;
 
       if (resolvedParams.handle === "calyx") {
-        comboHandleToFetch = "rubal-necklace"; 
-      } 
+        comboHandleToFetch = "rubal-necklace";
+      }
 
       if (comboHandleToFetch) {
         const comboData = await getProduct(comboHandleToFetch);
@@ -479,13 +593,18 @@ export default function ProductPage({
     setActiveIndex(0);
   };
 
+  const selectedVariant = product.variants.edges.find(
+    ({ node }) => node.id === selectedVariantId,
+  )?.node;
+
+  const isSelectedVariantAvailable =
+    (selectedVariant as any)?.availableForSale ?? true;
+
   const handleAddToCart = () => {
     if (cartState !== "idle" || !selectedVariantId) return;
-    setCartState("adding");
+    if (!isSelectedVariantAvailable) return; // hard guard
 
-    const matchedVariant = product.variants.edges.find(
-      ({ node }) => node.id === selectedVariantId,
-    )?.node;
+    setCartState("adding");
 
     addToCart({
       id: selectedVariantId,
@@ -494,9 +613,9 @@ export default function ProductPage({
       image: mainImage,
       handle: product.handle,
       variantTitle:
-        matchedVariant?.title ||
+        selectedVariant?.title ||
         `${selectedSize}${selectedColor ? ` / ${selectedColor.label}` : ""}`,
-      selectedOptions: matchedVariant?.selectedOptions || [],
+      selectedOptions: selectedVariant?.selectedOptions || [],
       availableVariants: product.variants.edges.map((e) => ({
         id: e.node.id,
         title: e.node.title,
@@ -515,18 +634,25 @@ export default function ProductPage({
 
   // ─── CONTEXT-AWARE ACCORDION LOGIC ───
   const productTitleLower = product.title.toLowerCase();
-  const isJewelry = productTitleLower.includes("necklace") || productTitleLower.includes("ring") || productTitleLower.includes("earring");
+  const isJewelry =
+    productTitleLower.includes("necklace") ||
+    productTitleLower.includes("ring") ||
+    productTitleLower.includes("earring");
 
-  const defaultFabric = isJewelry 
+  const defaultFabric = isJewelry
     ? ["Premium UV resin coating", "Hand-placed detailing on a durable base"]
     : [
         "100% fine European flax linen, OEKO-TEX certified",
         "Breathable, structured weave — softens with each wash",
         "Inner lining: 100% organic cotton voile",
       ];
-      
+
   const defaultCare = isJewelry
-    ? ["Wipe gently with a soft, dry cloth", "Keep away from moisture, perfumes, and harsh chemicals", "Store in a dry pouch or box"]
+    ? [
+        "Wipe gently with a soft, dry cloth",
+        "Keep away from moisture, perfumes, and harsh chemicals",
+        "Store in a dry pouch or box",
+      ]
     : ["Dry clean recommended"];
 
   const fabricData =
@@ -767,19 +893,54 @@ export default function ProductPage({
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-2.5">
-                    {availableSizes.map((s) => (
-                      <button
-                        key={s}
-                        onClick={() => setSelectedSize(s)}
-                        className={`h-10 px-5 rounded-full font-body text-xs border transition-colors cursor-pointer ${
-                          selectedSize === s
-                            ? "border-brand-sage bg-[rgba(143,168,130,0.1)] text-brand-sage"
-                            : "border-brand-borderlight text-brand-gray hover:border-brand-sage"
-                        }`}
-                      >
-                        {s}
-                      </button>
-                    ))}
+                    {availableSizes.map((s) => {
+                      // Check if ANY variant with this size (and current color) is available
+                      const isSizeAvailable = product.variants.edges.some(
+                        ({ node }) => {
+                          const hasSize = node.selectedOptions?.some(
+                            (o: any) =>
+                              o.name.toLowerCase() === "size" && o.value === s,
+                          );
+                          const hasColor =
+                            availableColors.length === 0 ||
+                            node.selectedOptions?.some(
+                              (o: any) =>
+                                o.name.toLowerCase() === "color" &&
+                                o.value.toLowerCase() === selectedColor?.value,
+                            );
+                          return (
+                            hasSize &&
+                            hasColor &&
+                            (node as any).availableForSale
+                          );
+                        },
+                      );
+
+                      return (
+                        <button
+                          key={s}
+                          onClick={() => setSelectedSize(s)}
+                          className={`h-10 px-5 rounded-full font-body text-xs border transition-colors relative
+        ${
+          selectedSize === s
+            ? isSizeAvailable
+              ? "border-brand-sage bg-[rgba(143,168,130,0.1)] text-brand-sage cursor-pointer"
+              : "border-brand-gray bg-brand-bgsecondary text-brand-gray cursor-pointer"
+            : isSizeAvailable
+              ? "border-brand-borderlight text-brand-gray hover:border-brand-sage cursor-pointer"
+              : "border-brand-borderlight text-brand-gray/40 cursor-pointer"
+        }`}
+                        >
+                          {s}
+                          {/* Strikethrough diagonal line for sold-out sizes */}
+                          {!isSizeAvailable && (
+                            <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                              <span className="absolute w-full h-px bg-brand-gray/40 rotate-[20deg]" />
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -787,11 +948,24 @@ export default function ProductPage({
               <div className="mb-10">
                 <button
                   onClick={handleAddToCart}
-                  disabled={cartState !== "idle"}
-                  className="w-full h-14 bg-brand-rose text-brand-ivory rounded-full font-body text-[13px] uppercase hover:bg-opacity-90 transition-all flex items-center justify-center shadow-lg hover:scale-[1.02] cursor-pointer disabled:cursor-default"
+                  disabled={cartState !== "idle" || !isSelectedVariantAvailable}
+                  className={`w-full h-14 rounded-full font-body text-[13px] uppercase transition-all flex items-center justify-center shadow-lg cursor-pointer disabled:cursor-default
+    ${
+      !isSelectedVariantAvailable
+        ? "bg-brand-bgsecondary text-brand-gray border border-brand-borderlight cursor-not-allowed"
+        : "bg-brand-rose text-brand-ivory hover:bg-opacity-90 hover:scale-[1.02]"
+    }`}
                 >
                   <AnimatePresence mode="wait">
-                    {cartState === "idle" && (
+                    {!isSelectedVariantAvailable ? (
+                      <motion.span
+                        key="soldout"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                      >
+                        Sold Out
+                      </motion.span>
+                    ) : cartState === "idle" ? (
                       <motion.span
                         key="idle"
                         initial={{ opacity: 0 }}
@@ -799,8 +973,7 @@ export default function ProductPage({
                       >
                         Add to Bag — ₹{Number(price).toLocaleString()}
                       </motion.span>
-                    )}
-                    {cartState === "adding" && (
+                    ) : cartState === "adding" ? (
                       <motion.div
                         key="adding"
                         initial={{ opacity: 0 }}
@@ -815,8 +988,7 @@ export default function ProductPage({
                           />
                         ))}
                       </motion.div>
-                    )}
-                    {cartState === "success" && (
+                    ) : (
                       <motion.span
                         key="success"
                         initial={{ opacity: 0 }}
@@ -841,7 +1013,7 @@ export default function ProductPage({
                   />
                 ))}
               </div>
-              
+
               {comboProduct && (
                 <ComboOffer mainProduct={product} comboProduct={comboProduct} />
               )}
@@ -849,63 +1021,62 @@ export default function ProductPage({
           </div>
         </div>
 
-       
-              {/* ── Similar Products ──────────────────────────────────────────────── */}
-{similarProducts.length > 0 && (
-  <section className="py-24 w-full border-t border-brand-bgprimary">
-    <h3 className="font-display text-4xl text-brand-ink mb-12 px-6 text-center">
-      Complete the Look
-    </h3>
-    <div
-      className="flex overflow-x-auto gap-4 md:gap-6 pb-8 snap-x snap-mandatory pl-6 pr-6 hide-scrollbar md:justify-center"
-    >
-      {similarProducts.map((item) => {
-        const titleStr = item.node.title.toLowerCase();
-        let productCardBadge =
-          "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
-        if (titleStr.includes("sage") || titleStr.includes("green")) {
-          productCardBadge =
-            "bg-[rgba(143,168,130,0.12)] text-brand-sage border-[rgba(143,168,130,0.3)]";
-        } else if (titleStr.includes("sky") || titleStr.includes("blue")) {
-          productCardBadge =
-            "bg-[rgba(134,167,185,0.12)] text-brand-blue border-[rgba(134,167,185,0.3)]";
-        }
-
-        return (
-          <Link
-            href={`/product/${item.node.handle}`}
-            key={item.node.id}
-            className="flex-none w-[72vw] max-w-[280px] md:w-[240px] snap-center group text-left"
-          >
-            <div className="aspect-[3/4] bg-brand-bgprimary rounded-xl overflow-hidden mb-4 border border-brand-borderlight cursor-pointer relative shadow-[0_2px_12px_rgba(44,37,32,0.06)] group-hover:-translate-y-1 transition-all duration-300">
-              <div
-                className={`absolute top-3 right-3 z-10 border text-[11px] px-[8px] py-[2px] rounded-full font-body ${productCardBadge}`}
-              >
-                Limited
-              </div>
-              <Image
-                src={
-                  item.node.images.edges[0]?.node.url ||
-                  "https://images.unsplash.com/photo-1596455607563-ad6193f76b17"
+        {/* ── Similar Products ──────────────────────────────────────────────── */}
+        {similarProducts.length > 0 && (
+          <section className="py-24 w-full border-t border-brand-bgprimary">
+            <h3 className="font-display text-4xl text-brand-ink mb-12 px-6 text-center">
+              Complete the Look
+            </h3>
+            <div className="flex overflow-x-auto gap-4 md:gap-6 pb-8 snap-x snap-mandatory pl-6 pr-6 hide-scrollbar md:justify-center">
+              {similarProducts.map((item) => {
+                const titleStr = item.node.title.toLowerCase();
+                let productCardBadge =
+                  "bg-[rgba(201,125,125,0.12)] text-brand-rose border-[rgba(201,125,125,0.3)]";
+                if (titleStr.includes("sage") || titleStr.includes("green")) {
+                  productCardBadge =
+                    "bg-[rgba(143,168,130,0.12)] text-brand-sage border-[rgba(143,168,130,0.3)]";
+                } else if (
+                  titleStr.includes("sky") ||
+                  titleStr.includes("blue")
+                ) {
+                  productCardBadge =
+                    "bg-[rgba(134,167,185,0.12)] text-brand-blue border-[rgba(134,167,185,0.3)]";
                 }
-                alt={item.node.title}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-            </div>
-            <h4 className="font-display text-lg text-brand-ink transition-colors">
-              {item.node.title}
-            </h4>
-            <p className="font-body text-sm text-brand-gray mt-1">
-              ₹{item.node.priceRange.minVariantPrice.amount}
-            </p>
-          </Link>
-        );
-      })}
-    </div>
-  </section>
-)}
 
+                return (
+                  <Link
+                    href={`/product/${item.node.handle}`}
+                    key={item.node.id}
+                    className="flex-none w-[72vw] max-w-[280px] md:w-[240px] snap-center group text-left"
+                  >
+                    <div className="aspect-[3/4] bg-brand-bgprimary rounded-xl overflow-hidden mb-4 border border-brand-borderlight cursor-pointer relative shadow-[0_2px_12px_rgba(44,37,32,0.06)] group-hover:-translate-y-1 transition-all duration-300">
+                      <div
+                        className={`absolute top-3 right-3 z-10 border text-[11px] px-[8px] py-[2px] rounded-full font-body ${productCardBadge}`}
+                      >
+                        Limited
+                      </div>
+                      <Image
+                        src={
+                          item.node.images.edges[0]?.node.url ||
+                          "https://images.unsplash.com/photo-1596455607563-ad6193f76b17"
+                        }
+                        alt={item.node.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                    </div>
+                    <h4 className="font-display text-lg text-brand-ink transition-colors">
+                      {item.node.title}
+                    </h4>
+                    <p className="font-body text-sm text-brand-gray mt-1">
+                      ₹{item.node.priceRange.minVariantPrice.amount}
+                    </p>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );
